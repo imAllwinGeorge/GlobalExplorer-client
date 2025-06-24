@@ -6,7 +6,7 @@ type ChildrenProps = {
   children: React.ReactNode;
 };
 
-export const UserHomeProtection = ({ children }: ChildrenProps) => {
+export const AdminHomeProtection = ({ children }: ChildrenProps) => {
   const [isVerified, setIsVerified] = useState(false);
   const navigate = useNavigate();
   const authAPI = new AuthAPI();
@@ -17,13 +17,13 @@ export const UserHomeProtection = ({ children }: ChildrenProps) => {
         const response = await authAPI.verifyToken();
         if (response.status === 200) {
           setIsVerified(true);
-          navigate("/");
+          navigate("/adminhome");
         } else {
-          navigate("/login");
+          navigate("/adminlogin");
         }
       } catch (error) {
         console.log(error);
-        navigate("/login");
+        navigate("/adminlogin");
       }
     };
     isValid();

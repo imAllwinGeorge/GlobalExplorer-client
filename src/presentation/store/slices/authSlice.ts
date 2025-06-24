@@ -1,24 +1,50 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { AuthUseCase } from "../../../application/usecases/AuthUsecase";
-import { AuthAPI } from "../../../infrastructure/api/AuthAPI";
+import { AuthAPI } from "../../../services/AuthAPI";
 import type { User } from "../../../shared/types/global";
-import { AuthRepository } from "../../../infrastructure/repositories/AuthRepository";
+import type { ErrorResponse } from "../../../shared/types/auth.type";
 
-const api = new AuthAPI();
-const repository = new AuthRepository(api)
-const authUsecase = new AuthUseCase(repository);
-
+const authAPI = new AuthAPI();
 export const register = createAsyncThunk(
   "auth/register",
   async (otp: string, { rejectWithValue }) => {
     try {
-      const response = await authUsecase.verify(otp);
+      const response = await authAPI.verify(otp);
       return response.data;
     } catch (error: unknown) {
-      return rejectWithValue(error || "something went wrong");
+      console.log("thunk error response: ",error)
+      return rejectWithValue((error as ErrorResponse)?.response?.data?.message || "login failed");
     }
   }
 );
+
+export const login = createAsyncThunk(
+  "auth/login",
+  async (
+    credentials: { email: string; password: string },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await authAPI.login(credentials);
+      console.log("login api response:",response)
+      return response.data;
+    } catch (error : unknown) {
+      console.log("thunk error response: ",error)
+      return rejectWithValue((error as ErrorResponse)?.response?.data?.message || "login failed");
+    }
+  }
+);
+
+export const googleLogin = createAsyncThunk(
+  "auth/google-login",
+  async(role: string, {rejectWithValue}) => {
+    try {
+      const response = await authAPI.googleLogin(role);
+      return response
+    } catch (error: unknown) {
+      return rejectWithValue((error as ErrorResponse)?.response?.data?.message || "google login failed")
+    }
+  } 
+)
 
 interface AuthState {
   user: null | User | undefined;
@@ -42,6 +68,10 @@ const authSlice = createSlice({
       state.user = null;
       state.token = null;
     },
+    setGoogleUser(state, action) {
+      state.user = action.payload;
+      state.token = "qwertyui"
+    } 
   },
   extraReducers: (builder) => {
     builder
@@ -52,14 +82,30 @@ const authSlice = createSlice({
       .addCase(register.fulfilled, (state, action) => {
         state.loading = false;
         state.user = action.payload.user;
-        state.token = action.payload.token;
+        state.token = "asdfghjklwertyuizxcvbnm";
       })
       .addCase(register.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
-      });
+      })
+      .addCase(login.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(login.fulfilled, (state, action) => {
+        console.log("login fullfilled", action)
+        state.loading = false;
+        state.user = action.payload.user;
+        state.token = action.payload.token;
+      })
+      .addCase(login.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+        console.log("login rejected",action)
+      })
+      
   },
 });
 
-export const { logout } = authSlice.actions;
+export const { logout, setGoogleUser } = authSlice.actions;
 export default authSlice.reducer;

@@ -11,3 +11,11 @@ export interface LoginFormError {
   email?: string;
   password?: string;
 }
+
+export type ErrorResponse = {
+  response?: {
+    data?: {
+      message?: string;
+    };
+  };
+};

@@ -1,10 +1,23 @@
 import { Menu, X } from "lucide-react"
 import { useState } from "react"
 import { Link } from "react-router-dom"
+import { useAppDispatch, useAppSelector } from "../../../hooks/useAppHooks"
+import { logout } from "../../../store/slices/authSlice"
+import { persistor } from "../../../store"
 
 
 const HomePage = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [showProfileOption, setShowProfileOption] = useState(false)
+  const user = useAppSelector(state => state.auth.user)
+  const dipatch = useAppDispatch();
+  console.log(user)
+
+  const handleLogout = () => {
+     dipatch(logout());
+     persistor.purge();
+     setShowProfileOption(false)
+  }
   return (
     <div>
        <nav className="w-full border-b border-gray-200 bg-white">
@@ -46,13 +59,19 @@ const HomePage = () => {
 
           {/* Login Button */}
           <div className="hidden md:block">
-            <Link
+            {user ? <button onClick={() => setShowProfileOption(state => !state)}>{`${user.firstName} ${user.lastName}`}</button>: <Link
               to="/login"
               className="rounded-full bg-blue-600 px-6 py-2 text-sm font-medium text-white hover:bg-blue-700"
             >
               Login
-            </Link>
+            </Link>}
           </div>
+
+          {showProfileOption && (
+            <div>
+              <button onClick={handleLogout} >logout</button>
+            </div>
+          )}
 
           {/* Mobile menu button */}
           <div className="flex md:hidden">

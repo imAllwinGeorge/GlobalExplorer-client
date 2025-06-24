@@ -1,27 +1,26 @@
-import { useState } from "react";
-import type { LoginFormError } from "../../../../domain/entities/Errors";
-import { validateLoginForm } from "../../../../application/usecases/validateLoginForm";
-import { AuthUseCase } from "../../../../application/usecases/AuthUsecase";
-import { AuthAPI } from "../../../../infrastructure/api/AuthAPI";
-import { AuthRepository } from "../../../../infrastructure/repositories/AuthRepository";
+import { useEffect, useState } from "react";
+import type { LoginFormError } from "../../../../shared/types/auth.type";
+import { validateLoginForm } from "../../../../shared/validation/validateLoginForm";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import Input from "../../../components/Input";
+import { useAppDispatch } from "../../../hooks/useAppHooks";
+import { login, setGoogleUser } from "../../../store/slices/authSlice";
+import { AuthAPI } from "../../../../services/AuthAPI";
 
 const Login = () => {
   const [data, setData] = useState({
     email: "",
     password: "",
-    role: "user"
+    role: "user",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<LoginFormError>({});
+  const dispatch = useAppDispatch();
 
-  const api = new AuthAPI();
-  const repository = new AuthRepository(api);
-  const authUsecase = new AuthUseCase(repository);
   const navigate = useNavigate();
+  const authAPI = new AuthAPI();
 
   const handleChange =
     (key: string) => async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,26 +38,50 @@ const Login = () => {
       return setError(errors);
     }
     try {
-        
-      const response = await authUsecase.login(data);
-      if (response.status === 200) {
-        navigate("/verify_otp");
+      const response = await dispatch(login(data));
+      if (login.fulfilled.match(response)) {
+        navigate("/");
+      } else {
+        alert(response.payload);
       }
+    } catch (error) {
+      console.log("dispatch error message: ", error);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      console.log("google login button clicked");
+      const role = "user";
+      await authAPI.googleLogin(role);
     } catch (error) {
       console.log(error);
     }
   };
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const userString = params.get("user");
+    if (userString) {
+      const user = JSON.parse(decodeURIComponent(userString));
+      console.log(user);
+      dispatch(setGoogleUser(user));
+      navigate("/");
+    }
+  }, []);
   return (
     <div
       className="flex min-h-screen bg-cover bg-center"
       style={{
-        backgroundImage:
-          "url('/background/hiking-quotes-1586278882.jpg')",
+        backgroundImage: "url('/background/hiking-quotes-1586278882.jpg')",
       }}
     >
       {/* Left side - Login Form */}
-      <div className="w-full md:w-[400px] bg-white/90 p-8 flex flex-col justify-center">
-        <div className="max-w-[320px] mx-auto">
+      <div className="w-full md:w-[500px] bg-white/90 p-8 flex flex-col justify-center">
+        <div className="w-auto h-auto">
+          <img src="/src/assets/globalexplorer.png" alt="GlobalExplorer" />
+        </div>
+        <div className="max-w-[500px] mx-auto">
           <h1 className="text-2xl font-bold text-center mb-1">Login</h1>
           <p className="text-sm text-gray-500 text-center mb-6">
             Welcome back! Please login to your account.
@@ -124,6 +147,9 @@ const Login = () => {
             >
               Login
             </button>
+            <Link to="/forgot-password" className=" text-indigo-600 hover:underline">
+             forgot password
+          </Link>
 
             {/* Navigation Link */}
             <p className="text-xs text-center text-gray-500 mt-4">
@@ -133,6 +159,21 @@ const Login = () => {
               </Link>
             </p>
           </form>
+          {/* Navigation Link */}
+
+          <div className="w-full py-4  ">
+            <button
+              className="flex items-center justify-center border border-black rounded px-4 py-2 w-full "
+              onClick={handleGoogleLogin}
+            >
+              <img
+                src="/icons/google.png"
+                alt="google"
+                className="w-5 h-5 mr-2"
+              />
+              <span>Login with Google</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>

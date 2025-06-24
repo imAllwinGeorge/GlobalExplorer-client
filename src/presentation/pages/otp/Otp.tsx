@@ -1,22 +1,21 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Input from "../../components/Input";
-import { AuthAPI } from "../../../infrastructure/api/AuthAPI";
-import { AuthRepository } from "../../../infrastructure/repositories/AuthRepository";
-import { AuthUseCase } from "../../../application/usecases/AuthUsecase";
+import { AuthAPI } from "../../../services/AuthAPI";
+import { useAppDispatch } from "../../hooks/useAppHooks";
+import { register } from "../../store/slices/authSlice";
 
 const Otp = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const [otp, setOtp] = useState("");
   const [timeLeft, setTimeLeft] = useState(120); // 2 minutes
   const [isActive, setIsActive] = useState(true);
 
-    // forgot password time it will be usefull...............
+  // forgot password time it will be usefull...............
   // const [email, setEmail] = useState("");
 
-  const api = new AuthAPI();
-  const repository = new AuthRepository(api);
-  const authUseCase = new AuthUseCase(repository)
+  const authAPI = new AuthAPI();
 
   type Timer = ReturnType<typeof setInterval> | null;
 
@@ -33,7 +32,7 @@ const Otp = () => {
       } else {
         setTimeLeft(0);
         setIsActive(false);
-        localStorage.removeItem("otp_expiry")
+        localStorage.removeItem("otp_expiry");
       }
     } else {
       // If no expiry time is stored, set default (optional)
@@ -80,13 +79,14 @@ const Otp = () => {
     }
 
     try {
-      const response = await authUseCase.verify(otp)
-      console.log(response)
-      if (response.status === 201) {
+      const response = await dispatch(register(otp));
+      console.log("dispatch response: ",response);
+     
+      if (register.fulfilled.match(response)) {
         console.log("verify otp response", response);
         navigate("/");
-      } 
-          // need to check at the time of forgot password.....................................
+      }
+      // need to check at the time of forgot password.....................................
 
       // else if (response.status === 200) {
       //   setEmail(response.data.user?.email);
@@ -104,7 +104,7 @@ const Otp = () => {
     }
 
     try {
-      const response = await authUseCase.resendOtp();
+      const response = await authAPI.resendOtp();
       if (response.status === 200) {
         const newExpiry = Date.now() + 120000; // 2 minutes from now
         localStorage.setItem("otp_expiry", newExpiry.toString());

@@ -3,12 +3,10 @@ import Input from "../../../components/Input";
 import { Button } from "../../../components/ui/button";
 import { Eye, EyeOff, Phone } from "lucide-react";
 
-import { validateSignupForm } from "../../../../application/usecases/validateSignupForm";
-import type { RegisterFormErrors } from "../../../../domain/entities/Errors";
-import { AuthAPI } from "../../../../infrastructure/api/AuthAPI";
+import { validateSignupForm } from "../../../../shared/validation/validateSignupFrom";
+import type { RegisterFormErrors } from "../../../../shared/types/auth.type";
+import { AuthAPI } from "../../../../services/AuthAPI";
 import { useNavigate } from "react-router-dom";
-import { AuthUseCase } from "../../../../application/usecases/AuthUsecase";
-import { AuthRepository } from "../../../../infrastructure/repositories/AuthRepository";
 import { Link } from "react-router-dom";
 
 const SignUP = () => {
@@ -26,9 +24,8 @@ const SignUP = () => {
 
   const [error, setError] = useState<RegisterFormErrors>({});
 
-  const api = new AuthAPI();
-  const repository = new AuthRepository(api);
-  const authUsecase = new AuthUseCase(repository);
+  const authAPI = new AuthAPI();
+
   const navigate = useNavigate();
 
   const handleChange =
@@ -51,7 +48,7 @@ const SignUP = () => {
       return setError(errors);
     }
     try {
-      const response = await authUsecase.register(data);
+      const response = await authAPI.register(data);
       if (response.status === 200) {
         navigate("/verify_otp");
       }
@@ -60,21 +57,23 @@ const SignUP = () => {
     }
   };
   return (
-    <div className="flex min-h-screen bg-cover bg-center"
-  style={{
-    backgroundImage: "url('/background/iStock-1153641199.jpg')",
-  }}>
+    <div
+      className="flex min-h-screen bg-cover bg-center"
+      style={{
+        backgroundImage: "url('/background/iStock-1153641199.jpg')",
+      }}
+    >
       {/* Form */}
-      <div className="w-full md:w-[400px] bg-white p-4 flex flex-col justify-center rounded-3xl m-8 ml-40">
+      <div className="max-full  md:w-[400px] bg-white p-4 flex flex-col justify-center rounded-3xl m-8 ml-40">
         <div className="max-w-[320px] mx-auto">
           <h1 className="text-2xl font-bold text-center mb-1">Sign UP</h1>
           <p className="text-sm text-gray-500 text-center mb-6">
             Signup For Better Experience
           </p>
 
-          <form className="space-y-4">
+          <form className="space-y-1">
             <div className="space-y-1">
-              <label htmlFor="firstName" className="text-sm text-gray-600">
+              <label htmlFor="firstName" className="text-sm font-bold text-gray-600">
                 First Name
               </label>
               <div className="relative">
@@ -108,12 +107,12 @@ const SignUP = () => {
                 </div>
               </div>
               {error.firstName && (
-            <span className="text-red-700">{error.firstName}</span>
-          )}
+                <span className="text-red-700">{error.firstName}</span>
+              )}
             </div>
 
             <div className="space-y-1">
-              <label htmlFor="lastName" className="text-sm text-gray-600">
+              <label htmlFor="lastName" className="text-sm font-bold text-gray-600">
                 Last Name
               </label>
               <div className="relative">
@@ -146,13 +145,13 @@ const SignUP = () => {
                   </svg>
                 </div>
               </div>
-             {error.lastName && (
-            <span className="text-red-700">{error.lastName}</span>
-          )}
+              {error.lastName && (
+                <span className="text-red-700">{error.lastName}</span>
+              )}
             </div>
 
             <div className="space-y-1">
-              <label htmlFor="email" className="text-sm text-gray-600">
+              <label htmlFor="email" className="text-sm font-bold text-gray-600">
                 E-mail
               </label>
               <div className="relative">
@@ -195,7 +194,7 @@ const SignUP = () => {
             </div>
 
             <div className="space-y-1">
-              <label htmlFor="phoneNumber" className="text-sm text-gray-600">
+              <label htmlFor="phoneNumber" className="text-sm font-bold text-gray-600">
                 Mobile No
               </label>
               <div className="relative">
@@ -219,7 +218,7 @@ const SignUP = () => {
             </div>
 
             <div className="space-y-1">
-              <label htmlFor="password" className="text-sm text-gray-600">
+              <label htmlFor="password" className="text-sm font-bold text-gray-600">
                 Password
               </label>
               <div className="relative">
@@ -247,7 +246,7 @@ const SignUP = () => {
             <div className="space-y-1">
               <label
                 htmlFor="confirmPassword"
-                className="text-sm text-gray-600"
+                className="text-sm font-bold text-gray-600"
               >
                 Confirm password
               </label>
@@ -298,8 +297,9 @@ const SignUP = () => {
           </form>
         </div>
       </div>
-
-      
+      <div>
+        <img src="src/assets/globalexplorer.png" alt="GlobalExplorer" />
+      </div>
     </div>
   );
 };
