@@ -7,6 +7,7 @@ import ProtectedRoute from '../utils/protected/ProtectedRoute'
 import PublicRoute from '../utils/protected/PublicRoute'
 import VerifyEmail from '../presentation/pages/user/forgotpassword/VerifyEmail'
 import ResetPassword from '../presentation/pages/user/changePasswod/ResetPassword'
+import UserLayout from '../presentation/components/layouts/UserLayout'
 
 const UserRoutes = () => {
   return (
@@ -14,9 +15,12 @@ const UserRoutes = () => {
         <Route path='/' element={<ProtectedRoute element={<HomePage/>} allowedRoles={['user']} />} />
         <Route path='/login' element={<PublicRoute element={<Login/>}  />} />
         <Route path='/forgot-password' element={<VerifyEmail />} />
-        <Route path='/reset-password/:id/:token' element={<ResetPassword />} />
+        <Route path='/reset-password/:role/:id/:token' element={<ResetPassword />} />
         <Route path="/signup" element={<SignUP />} />
         <Route path="/verify_otp" element={<Otp />} />
+        <Route path='/' element={<ProtectedRoute element={<UserLayout />} allowedRoles={['user']} />} >
+          <Route path='home' element={<HomePage />} />
+        </Route>
     </Routes>
   )
 }

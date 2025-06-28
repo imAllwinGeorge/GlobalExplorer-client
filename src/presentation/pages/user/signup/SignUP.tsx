@@ -4,10 +4,13 @@ import { Button } from "../../../components/ui/button";
 import { Eye, EyeOff, Phone } from "lucide-react";
 
 import { validateSignupForm } from "../../../../shared/validation/validateSignupFrom";
-import type { RegisterFormErrors } from "../../../../shared/types/auth.type";
+import type {
+  RegisterFormErrors,
+} from "../../../../shared/types/auth.type";
 import { AuthAPI } from "../../../../services/AuthAPI";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import toast from "react-hot-toast";
 
 const SignUP = () => {
   const [data, setData] = useState({
@@ -54,6 +57,9 @@ const SignUP = () => {
       }
     } catch (error) {
       console.log(error);
+      if(error instanceof Error){
+        toast.error(error.message)
+      }
     }
   };
   return (
@@ -73,7 +79,10 @@ const SignUP = () => {
 
           <form className="space-y-1">
             <div className="space-y-1">
-              <label htmlFor="firstName" className="text-sm font-bold text-gray-600">
+              <label
+                htmlFor="firstName"
+                className="text-sm font-bold text-gray-600"
+              >
                 First Name
               </label>
               <div className="relative">
@@ -112,7 +121,10 @@ const SignUP = () => {
             </div>
 
             <div className="space-y-1">
-              <label htmlFor="lastName" className="text-sm font-bold text-gray-600">
+              <label
+                htmlFor="lastName"
+                className="text-sm font-bold text-gray-600"
+              >
                 Last Name
               </label>
               <div className="relative">
@@ -151,7 +163,10 @@ const SignUP = () => {
             </div>
 
             <div className="space-y-1">
-              <label htmlFor="email" className="text-sm font-bold text-gray-600">
+              <label
+                htmlFor="email"
+                className="text-sm font-bold text-gray-600"
+              >
                 E-mail
               </label>
               <div className="relative">
@@ -194,7 +209,10 @@ const SignUP = () => {
             </div>
 
             <div className="space-y-1">
-              <label htmlFor="phoneNumber" className="text-sm font-bold text-gray-600">
+              <label
+                htmlFor="phoneNumber"
+                className="text-sm font-bold text-gray-600"
+              >
                 Mobile No
               </label>
               <div className="relative">
@@ -218,7 +236,10 @@ const SignUP = () => {
             </div>
 
             <div className="space-y-1">
-              <label htmlFor="password" className="text-sm font-bold text-gray-600">
+              <label
+                htmlFor="password"
+                className="text-sm font-bold text-gray-600"
+              >
                 Password
               </label>
               <div className="relative">
@@ -298,7 +319,7 @@ const SignUP = () => {
         </div>
       </div>
       <div>
-        <img src="src/assets/globalexplorer.png" alt="GlobalExplorer" />
+        <img src="assets/globalexplorer.png" alt="GlobalExplorer" />
       </div>
     </div>
   );

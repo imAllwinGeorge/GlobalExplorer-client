@@ -4,14 +4,15 @@ import { useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { isValidPassword } from "../../../../shared/validation/validations"
 import { AuthAPI } from "../../../../services/AuthAPI"
+import toast from "react-hot-toast"
 
 export default function ChangePassword() {
   const [newPassword, setNewPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
-  const [isSuccess, setIsSuccess] = useState(false)
+  // const [isSuccess, setIsSuccess] = useState(false)
   const [error, setError] = useState("")
-  const {id, token} = useParams();
+  const {id, token, role} = useParams();
   const authAPI = new AuthAPI()
   const navigate = useNavigate();
 
@@ -36,60 +37,65 @@ export default function ChangePassword() {
 
     try {
       // Simulate API call
-      if(id && token && newPassword) {
-        const response = authAPI.resetPassword(id, token, newPassword)
-        if((await response).status === 200){
-          setIsSuccess(true)
+      if(id && token && newPassword && role) {
+        const response = await authAPI.resetPassword(id, role, token, newPassword)
+        if(response.status === 200){
+          // setIsSuccess(true)
+          toast.success(response.data.message || "password updated")
           navigate('/login')
         }
       
       }else {
-        alert("something went wrong")
+        toast.error("something went wrong")
       }
     } catch (err) {
         console.log(err)
+        if(err instanceof Error){
+          console.log('sgvsiog',err.message)
+          toast.error(err.message)
+        }
       setError("Failed to change password. Please try again.")
     } finally {
       setIsLoading(false)
     }
   }
 
-  const resetForm = () => {
-    setNewPassword("")
-    setConfirmPassword("")
-    setIsSuccess(false)
-    setError("")
-  }
+  // const resetForm = () => {
+  //   setNewPassword("")
+  //   setConfirmPassword("")
+  //   setIsSuccess(false)
+  //   setError("")
+  // }
 
-  if (isSuccess) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
-        <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-          <div className="text-center">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-green-600 text-2xl">✓</span>
-            </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">Password Changed Successfully</h1>
-            <p className="text-gray-600 mb-6">
-              Your password has been updated successfully. You can now use your new password to sign in.
-            </p>
-            <button
-              onClick={resetForm}
-              className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 mb-3"
-            >
-              Change Password Again
-            </button>
-            <button
-              onClick={() => console.log("Go to dashboard")}
-              className="w-full text-gray-500 py-2 px-4 hover:text-gray-700"
-            >
-              Go to Dashboard
-            </button>
-          </div>
-        </div>
-      </div>
-    )
-  }
+  // if (isSuccess) {
+  //   return (
+  //     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+  //       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+  //         <div className="text-center">
+  //           <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+  //             <span className="text-green-600 text-2xl">✓</span>
+  //           </div>
+  //           <h1 className="text-2xl font-bold text-gray-900 mb-4">Password Changed Successfully</h1>
+  //           <p className="text-gray-600 mb-6">
+  //             Your password has been updated successfully. You can now use your new password to sign in.
+  //           </p>
+  //           <button
+  //             onClick={resetForm}
+  //             className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 mb-3"
+  //           >
+  //             Change Password Again
+  //           </button>
+  //           <button
+  //             onClick={() => console.log("Go to dashboard")}
+  //             className="w-full text-gray-500 py-2 px-4 hover:text-gray-700"
+  //           >
+  //             Go to Dashboard
+  //           </button>
+  //         </div>
+  //       </div>
+  //     </div>
+  //   )
+  // }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
@@ -111,9 +117,8 @@ export default function ChangePassword() {
               type="password"
               placeholder="Enter your new password"
               value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
+              onChange={(e) => {setNewPassword(e.target.value); setIsLoading(false)}}
               required
-              disabled={isLoading}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100"
             />
             <p className="text-xs text-gray-500 mt-1">Password must be at least 6 characters long</p>
@@ -128,9 +133,8 @@ export default function ChangePassword() {
               type="password"
               placeholder="Confirm your new password"
               value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              onChange={(e) => {setConfirmPassword(e.target.value); setIsLoading(false)}}
               required
-              disabled={isLoading}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100"
             />
           </div>
@@ -151,7 +155,7 @@ export default function ChangePassword() {
         </form>
 
         <div className="text-center">
-          <button onClick={() => console.log("Cancel")} className="text-gray-500 text-sm hover:text-gray-700">
+          <button onClick={() => {setError(""); setIsLoading(false)}} className="text-gray-500 text-sm hover:text-gray-700">
             Cancel
           </button>
         </div>

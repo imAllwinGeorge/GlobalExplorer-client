@@ -19,3 +19,12 @@ export const isValidPassword = (password: string) => {
         password
       )
 }
+
+export const isValidIFSC = (ifsc: string) => {
+    return /^[A-Z]{4}0[A-Z0-9]{6}$/.test(ifsc)
+}
+
+export const isValidAccontNumber = (accountNumber: string) => {
+    return /^\d{11,17}$/.test(accountNumber)
+}
+

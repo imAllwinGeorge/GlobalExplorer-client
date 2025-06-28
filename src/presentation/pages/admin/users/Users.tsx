@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import ConfirmModal from "../../../components/ReusableComponents/ConfirmModal";
 import type { User } from "../../../../shared/types/global";
 import { adminService } from "../../../../services/AdminService";
+import toast from "react-hot-toast";
 // import { toast } from 'react-toastify';
 
 
@@ -22,20 +23,27 @@ const Users = () => {
               }
           } catch (error) {
               console.log("fetch users",error);
-            //   toast(error.response.data)
+              if(error instanceof Error){
+                toast.error(error.message)
+              }
           }
       }
       fetchUserData();
   }, [triggerFetch])
+
   const handleUserState = async () => {
     if(!selectedUser) return null
     try {
+      const toastId = toast.loading('Loading.....')
       const value = {
         isBlocked: !selectedUser.isBlocked
       }
       const response = await adminService.updateStatus(selectedUser._id, value);
       if(response.status === 200){
         setTriggerFetch(state => !state)
+        toast.dismiss(toastId)
+        console.log("response changeing status", response)
+        toast.success(response.data.message || "qwertyui")
       }
     } catch (error) {
      console.log(error) 
@@ -98,7 +106,7 @@ const Users = () => {
     onConfirm={handleUserState}
     title={`${selectedUser?.isBlocked ? "Unblock" : "Block"} User`}
     message={`Are you sure you want to ${
-      selectedUser?.isBlocked ? "unblock" : "block"
+      selectedUser?.isBlocked ? "Unblock" : "Block"
     } ${selectedUser?.firstName} ${selectedUser?.lastName}?`}
     confirmText="Confirm"
     cancelText="Cancel"

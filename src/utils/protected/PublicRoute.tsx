@@ -1,6 +1,6 @@
 import { type JSX } from 'react'
 import { useSelector } from 'react-redux'
-import { getAdminSession, getUserSession } from '../helpers/getActiveSession'
+import { getAdminSession, getHostSession, getUserSession } from '../helpers/getActiveSession'
 import { Navigate, useLocation } from 'react-router-dom';
 
 interface PublicRouteProps {
@@ -10,6 +10,7 @@ interface PublicRouteProps {
 const PublicRoute = ({element}: PublicRouteProps) => {
     const userSession = useSelector(getUserSession);
     const adminSession = useSelector(getAdminSession);
+    const hostSession = useSelector(getHostSession);
     console.log(userSession,adminSession)
     const location = useLocation()
     const path = location.pathname.toLowerCase();
@@ -17,6 +18,8 @@ const PublicRoute = ({element}: PublicRouteProps) => {
     let session;
     if(path.startsWith("/admin")){
         session = adminSession
+    }else if(path.startsWith("/host")){
+        session = hostSession
     }else{
         session = userSession
     }
@@ -25,6 +28,7 @@ const PublicRoute = ({element}: PublicRouteProps) => {
         const roleRedirects: Record<string,string> = {
             user : "/",
             admin: "/admin/adminhome",
+            host: "/host/home",
         };
         return <Navigate to={roleRedirects[session.role] || "/unauthrorized"} />
     }

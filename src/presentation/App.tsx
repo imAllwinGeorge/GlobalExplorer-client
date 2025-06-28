@@ -1,6 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 import UserRoutes from "../routes/UserRoutes";
 import AdminRoutes from "../routes/AdminRoutes";
+import HostRoutes from "../routes/HostRoutes";
 
 
 const App = () => {
@@ -8,6 +9,7 @@ const App = () => {
     <div>
       <Routes>
         <Route path="/*" element={<UserRoutes/>} />
+        <Route path="/host/*" element={<HostRoutes />} />
         <Route path="/admin/*" element={<AdminRoutes />} />
       </Routes>
     </div>

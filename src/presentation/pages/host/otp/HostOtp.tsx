@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Input from "../../components/Input";
-import { AuthAPI } from "../../../services/AuthAPI";
-import { useAppDispatch } from "../../hooks/useAppHooks";
-import { register } from "../../store/slices/authSlice";
 import toast from "react-hot-toast";
+import { AuthAPI } from "../../../../services/AuthAPI";
+import { useDispatch } from "react-redux";
+import { hostRegister } from "../../../store/slices/hostSlice";
+import Input from "../../../components/Input";
 
-const Otp = () => {
+const HostOtp = () => {
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
+  const dispatch = useDispatch();
   const [otp, setOtp] = useState("");
   const [timeLeft, setTimeLeft] = useState(120); // 2 minutes
   const [isActive, setIsActive] = useState(true);
@@ -80,14 +80,13 @@ const Otp = () => {
     }
 
     try {
-      const response = await dispatch(register(otp));
+      const response = await authAPI.verify(otp)
       console.log("dispatch response: ",response);
      
-      if (register.fulfilled.match(response)) {
-        console.log("verify otp response", response);
-        navigate("/");
-      }else{
-        toast.error(response.payload as string)
+      if(response.status === 201){
+        dispatch(hostRegister(response.data.user));
+        console.log(response)
+        navigate("/host/home")
       }
       // need to check at the time of forgot password.....................................
 
@@ -186,4 +185,4 @@ const Otp = () => {
   );
 };
 
-export default Otp;
+export default HostOtp;

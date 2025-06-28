@@ -1,24 +1,26 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { LoginFormError } from "../../../../shared/types/auth.type";
 import { validateLoginForm } from "../../../../shared/validation/validateLoginForm";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import Input from "../../../components/Input";
-import { useAppDispatch } from "../../../hooks/useAppHooks";
-import { login, setGoogleUser } from "../../../store/slices/authSlice";
 import { AuthAPI } from "../../../../services/AuthAPI";
 import toast from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import { hostLogin } from "../../../store/slices/hostSlice";
 
-const Login = () => {
-  const [data, setData] = useState({
+ 
+
+const HostLogin = () => {
+   const [data, setData] = useState({
     email: "",
     password: "",
-    role: "user",
+    role: "host",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<LoginFormError>({});
-  const dispatch = useAppDispatch();
+  const dispatch = useDispatch();
 
   const navigate = useNavigate();
   const authAPI = new AuthAPI();
@@ -39,37 +41,19 @@ const Login = () => {
       return setError(errors);
     }
     try {
-      const response = await dispatch(login(data));
-      if (login.fulfilled.match(response)) {
-        navigate("/");
-      } else {
-        toast.error(response.payload as string)
+      const response = await authAPI.login(data)
+      if(response.status === 200){
+        dispatch(hostLogin(response.data.user))
+        navigate("/host/home")
       }
     } catch (error) {
-      console.log("dispatch error message: ", error);
+      console.log("login error message: ", error);
+      if(error instanceof Error){
+        toast.error(error.message)
+      }
     }
   };
 
-  const handleGoogleLogin = async () => {
-    try {
-      console.log("google login button clicked");
-      const role = "user";
-      await authAPI.googleLogin(role);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const userString = params.get("user");
-    if (userString) {
-      const user = JSON.parse(decodeURIComponent(userString));
-      console.log(user);
-      dispatch(setGoogleUser(user));
-      navigate("/");
-    }
-  }, [navigate, dispatch]);
   return (
     <div
       className="flex min-h-screen bg-cover bg-center"
@@ -80,7 +64,7 @@ const Login = () => {
       {/* Left side - Login Form */}
       <div className="w-full md:w-[500px] bg-white/90 p-8 flex flex-col justify-center">
         <div className="w-auto h-auto">
-          <img src="assets/globalexplorer.png" alt="GlobalExplorer" />
+          <img src="/assets/globalexplorer.png" alt="GlobalExplorer" />
         </div>
         <div className="max-w-[500px] mx-auto">
           <h1 className="text-2xl font-bold text-center mb-1">Login</h1>
@@ -148,7 +132,7 @@ const Login = () => {
             >
               Login
             </button>
-            <Link to="/forgot-password" state={"user"} className=" text-indigo-600 hover:underline">
+            <Link to="/forgot-password" state={"host"} className=" text-indigo-600 hover:underline">
              forgot password
           </Link>
 
@@ -160,25 +144,11 @@ const Login = () => {
               </Link>
             </p>
           </form>
-          {/* Navigation Link */}
-
-          <div className="w-full py-4  ">
-            <button
-              className="flex items-center justify-center border border-black rounded px-4 py-2 w-full "
-              onClick={handleGoogleLogin}
-            >
-              <img
-                src="/icons/google.png"
-                alt="google"
-                className="w-5 h-5 mr-2"
-              />
-              <span>Login with Google</span>
-            </button>
-          </div>
+          
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Login;
+export default HostLogin

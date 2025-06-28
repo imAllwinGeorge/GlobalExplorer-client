@@ -20,9 +20,9 @@ export interface AuthResponse {
 export interface ResponseType<T> {
   data: T;
   status: number;
-  statusText: string;
-  headers: Record<string,string>;
-  config: {
+  statusText?: string;
+  headers?: Record<string,string>;
+  config?: {
     url?: string;
     method?: string;
   };

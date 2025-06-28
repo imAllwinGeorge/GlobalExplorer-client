@@ -1,7 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { AuthAPI } from "../../../services/AuthAPI";
 import type { User } from "../../../shared/types/global";
-import type { ErrorResponse } from "../../../shared/types/auth.type";
 
 const authAPI = new AuthAPI();
 export const register = createAsyncThunk(
@@ -12,7 +11,9 @@ export const register = createAsyncThunk(
       return response.data;
     } catch (error: unknown) {
       console.log("thunk error response: ",error)
-      return rejectWithValue((error as ErrorResponse)?.response?.data?.message || "login failed");
+      if(error instanceof Error){
+        return rejectWithValue(error.message || "unexpected error occured")
+      };
     }
   }
 );
@@ -29,7 +30,9 @@ export const login = createAsyncThunk(
       return response.data;
     } catch (error : unknown) {
       console.log("thunk error response: ",error)
-      return rejectWithValue((error as ErrorResponse)?.response?.data?.message || "login failed");
+      if(error instanceof Error){
+        return rejectWithValue(error.message || "login failed");
+      }
     }
   }
 );
@@ -41,7 +44,9 @@ export const googleLogin = createAsyncThunk(
       const response = await authAPI.googleLogin(role);
       return response
     } catch (error: unknown) {
-      return rejectWithValue((error as ErrorResponse)?.response?.data?.message || "google login failed")
+      if(error instanceof Error){
+        return rejectWithValue(error.message || "google login failed")
+      }
     }
   } 
 )
@@ -81,7 +86,9 @@ const authSlice = createSlice({
       })
       .addCase(register.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload.user;
+        if(action.payload){
+          state.user = action.payload.user;
+        }
         state.token = "asdfghjklwertyuizxcvbnm";
       })
       .addCase(register.rejected, (state, action) => {
@@ -95,8 +102,10 @@ const authSlice = createSlice({
       .addCase(login.fulfilled, (state, action) => {
         console.log("login fullfilled", action)
         state.loading = false;
-        state.user = action.payload.user;
+        if(action.payload){
+          state.user = action.payload.user;
         state.token = action.payload.token;
+        }
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = false;

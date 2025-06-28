@@ -1,6 +1,7 @@
 import type { AuthResponse, ResponseType } from "../shared/types/global";
 import { authAxiosInstace } from "../api/auth.axios";
 import type { SignupDTO } from "../shared/types/DTO";
+import type { ErrorResponse } from "../shared/types/auth.type";
 
 // interface SignupDTO {
 //   firstName: string;
@@ -15,79 +16,128 @@ interface LoginDTO {
 }
 
 export class AuthAPI {
-  async register(data: SignupDTO): Promise<ResponseType<AuthResponse>> {
-    const response = await authAxiosInstace.post<AuthResponse>(
-      "/api/send-otp",
-      {
-        data,
-      }
-    );
-    if (!response) throw new Error("signup faild");
-    console.log(response);
-    return response;
+  async register(data: SignupDTO | FormData): Promise<ResponseType<AuthResponse>> {
+    try {
+      const response = await authAxiosInstace.post<AuthResponse>(
+        "/api/send-otp",
+        data
+      );
+
+      console.log(response);
+      return response;
+    } catch (error) {
+      const message =
+        (error as ErrorResponse).response?.data?.message ||
+        "something went wrong!. Please try again";
+      throw new Error(message);
+    }
   }
 
   async verify(otp: string): Promise<ResponseType<AuthResponse>> {
     try {
       const response = await authAxiosInstace.post<AuthResponse>(
-      "/api/register",
-      {
-        otp,
-      }
-    );
-    return response;
+        "/api/register",
+        {
+          otp,
+        }
+      );
+      return response;
     } catch (error) {
-      console.log("please checkthis error: ",error)
-      if(error){
-        return error
-      }
+      console.log("please checkthis error: ", error);
+      const message =
+        (error as ErrorResponse).response?.data?.message ||
+        "something went wrong!. Please try again";
+
+      throw new Error(message); // ✅ Throw a proper error
     }
   }
 
-  async verifyEmail(email: string): Promise<ResponseType<AuthResponse>> {
-    const response = await authAxiosInstace.post<AuthResponse>(
-      "/api/forgot-password",{email}
-    )
-    if(!response) throw new Error("email verification Error")
-      console.log(response)
-    return response
+  async verifyEmail(email: string, role: string): Promise<ResponseType<AuthResponse>> {
+    try {
+      const response = await authAxiosInstace.post<AuthResponse>(
+        "/api/forgot-password",
+        { email, role }
+      );
+      
+      return response;
+    } catch (error) {
+      const message =
+        (error as ErrorResponse).response?.data?.message ||
+        "something went wrong!. Please try again";
+
+      throw new Error(message);
+    }
   }
 
-  async resetPassword(id: string, token: string, password: string): Promise<ResponseType<AuthResponse>> {
+  async resetPassword(
+    id: string,
+    role: string,
+    token: string,
+    password: string
+  ): Promise<ResponseType<AuthResponse>> {
     try {
       const response = await authAxiosInstace.patch<AuthResponse>(
-      `/api/reset-password/${id}/${token}`,{password}
-    )
-    return response
+        `/api/reset-password/${role}/${id}/${token}`,
+        { password }
+      );
+      return response;
     } catch (error) {
-      console.log(error)
-      return 
+      console.log(error);
+      const message =
+        (error as ErrorResponse).response?.data?.message ||
+        "something went wrong!. Please try again";
+        
+      throw new Error(message);
     }
   }
 
   async resendOtp(): Promise<ResponseType<unknown>> {
-    const response = await authAxiosInstace.post("/api/resend-otp");
-    if (!response) throw new Error("resend otp error");
-    return response;
+    try {
+      const response = await authAxiosInstace.post("/api/resend-otp");
+      return response;
+    } catch (error) {
+      const message =
+        (error as ErrorResponse).response?.data?.message ||
+        "something went wrong!. Please try again";
+      throw new Error(message);
+    }
   }
 
   async login(data: LoginDTO): Promise<ResponseType<AuthResponse>> {
-    const response = await authAxiosInstace.post<AuthResponse>("/api/login", {
-      data,
-    });
-    if (!response) throw new Error("login failed");
-    return response;
+    try {
+      const response = await authAxiosInstace.post<AuthResponse>("/api/login", {
+        data,
+      });
+      return response;
+    } catch (error) {
+      console.log("login",error)
+      const message = (error as ErrorResponse).response?.data?.message ||
+        "something went wrong!. Please try again";
+      throw new Error(message);
+    }
   }
 
   async verifyToken(): Promise<ResponseType<AuthResponse>> {
-    const response = await authAxiosInstace.post<AuthResponse>(
-      "/api/verify-token"
-    );
-    if (!response) throw new Error("something went wrong");
-    return response;
+    try {
+      const response = await authAxiosInstace.post<AuthResponse>(
+        "/api/verify-token"
+      );
+      if (!response) throw new Error("something went wrong");
+      return response;
+    } catch (error) {
+      const message = (error as ErrorResponse).response?.data?.message ||
+        "something went wrong!. Please try again";
+      throw new Error(message);
+    }
   }
 
   async googleLogin(role: string) {
-   window.location.href = `http://localhost:3000/api/auth/google?role=${role}`
+    try {
+      window.location.href = `http://localhost:3000/api/auth/google?role=${role}`;
+    } catch (error) {
+      if (error) {
+        throw new Error("something went wrong please try again");
+      }
+    }
   }
 }

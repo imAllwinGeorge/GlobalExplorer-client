@@ -3,12 +3,14 @@ import type React from "react"
 import { useState } from "react"
 import { isValidEmail } from "../../../../shared/validation/validations"
 import { AuthAPI } from "../../../../services/AuthAPI"
-import { useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
+import toast from "react-hot-toast"
 export default function VerifyEmail() {
   const [email, setEmail] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [error, setError] = useState("")
+  const location = useLocation();
 
   const navigate = useNavigate();
   const authAPI = new AuthAPI();
@@ -23,13 +25,16 @@ export default function VerifyEmail() {
       setError("please Enter valid email")
     }
     try {
-      const response = await authAPI.verifyEmail(email);
+      const response = await authAPI.verifyEmail(email, location.state);
       if(response.status === 200){
         setIsSubmitted(true)
+        toast.success(response.data.message || "Recovery link sented to you email")
       }
     } catch (error) {
       console.log(error)
-      alert("please enter valid email")
+      if(error instanceof Error){
+        toast.error(error.message)
+      }
       setIsLoading(false)
     }
   }

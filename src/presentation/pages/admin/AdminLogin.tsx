@@ -5,6 +5,7 @@ import { validateLoginForm } from "../../../shared/validation/validateLoginForm"
 import { AuthAPI } from "../../../services/AuthAPI";
 import { useDispatch } from "react-redux";
 import { adminLogin } from "../../store/slices/adminSlice";
+import toast from "react-hot-toast";
 
 
 const AdminLogin = () => {
@@ -43,12 +44,13 @@ const AdminLogin = () => {
         setTimeout(() => {
           dispatch(adminLogin(response.data.user))
         navigate("/admin/users");
-        },3000)
+        },1000)
       }
     } catch (error) {
       console.log(error);
-      //   toast(error.response.data);
-      alert("something went wrong!");
+       if(error instanceof Error){
+        toast.error(error.message)
+       }
     }
   };
 

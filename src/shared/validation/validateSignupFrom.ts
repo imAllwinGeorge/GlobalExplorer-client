@@ -1,5 +1,5 @@
-import type { RegisterFormErrors } from "../types/auth.type";
-import type { SignupDTO } from "../types/DTO";
+import type { HostSignupFormErrors, RegisterFormErrors } from "../types/auth.type";
+import type { HostSignupDTO, SignupDTO } from "../types/DTO";
 import {
   checkDigits,
   isValidEmail,
@@ -35,3 +35,30 @@ export const validateSignupForm = (data: SignupDTO) => {
 
   return errors;
 };
+
+export const validateHostSignupForm = (data: HostSignupDTO) => {
+  const errors: HostSignupFormErrors = {};
+
+  if(!isValidName(data.name)) {
+    errors.name = "Name can only contain letters";
+  }
+
+  if(!isValidEmail(data.email)) {
+    errors.email = "Please enter valid email address";
+  }
+
+  if(!isValidPhoneNumber(data.phoneNumber)) {
+    errors.phoneNumber = "Phone number must start from 6-9 and must be 10 digits";
+  }
+
+  if(checkDigits(data.phoneNumber)) {
+    errors.phoneNumber = "Phone number cannot have all digits the same";
+  }
+
+  if(!isValidPassword(data.password)) {
+    errors.password = "Passoword must contain at least 8 characters, including uppercase, lowercase, number, and special character."
+  }
+
+  return errors
+
+}
