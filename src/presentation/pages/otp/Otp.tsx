@@ -85,7 +85,7 @@ const Otp = () => {
      
       if (register.fulfilled.match(response)) {
         console.log("verify otp response", response);
-        navigate("/");
+        navigate('/home')
       }else{
         toast.error(response.payload as string)
       }

@@ -6,30 +6,49 @@ import { FLUSH, PAUSE, PERSIST, persistReducer, PURGE, REGISTER, REHYDRATE } fro
 import persistStore from "redux-persist/es/persistStore";
 import storage from "redux-persist/lib/storage";
 
-const persistConfig = {
-  key: "root",
+// const persistConfig = {
+//   key: "root",
+//   storage,
+//   whitelist: ["user","admin","host"],
+// };
+
+const authPersistConfig = {
+  key: "auth",
   storage,
-  whitelist: ["auth","admin","host"],
+};
+
+const adminPersistConfig = {
+  key: "admin",
+  storage,
+};
+
+const hostPersistConfig = {
+  key: "host",
+  storage,
 };
 
 
+
 const appReducer = combineReducers({
-  auth: authReducer,
-  admin: adminReducer,
-  host: hostReducer,
+  auth: persistReducer(authPersistConfig, authReducer),
+  admin: persistReducer(adminPersistConfig, adminReducer),
+  host: persistReducer(hostPersistConfig, hostReducer),
 });
 
 const rootReducer = (state: ReturnType<typeof appReducer> | undefined, action: AnyAction) => {
   if(action.type === "auth/logout") {
-    state = undefined
+    storage.removeItem("persist:auth"); 
+    return appReducer({
+    ...state, auth: undefined
+  }, action)
   }
   return appReducer(state, action)
 }
 
-const persistedReducer = persistReducer(persistConfig, rootReducer)
+// const persistedReducer = persistReducer(persistConfig, rootReducer)
 
 export const store = configureStore({
-  reducer: persistedReducer,
+  reducer: rootReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {

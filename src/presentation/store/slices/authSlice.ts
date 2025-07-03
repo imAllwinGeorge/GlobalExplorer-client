@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { AuthAPI } from "../../../services/AuthAPI";
-import type { User } from "../../../shared/types/global";
+import type { Host, User } from "../../../shared/types/global";
 
 const authAPI = new AuthAPI();
 export const register = createAsyncThunk(
@@ -52,7 +52,7 @@ export const googleLogin = createAsyncThunk(
 )
 
 interface AuthState {
-  user: null | User | undefined;
+  user: null | User | Host | undefined;
   token: string | null | undefined;
   loading: boolean;
   error: string | null;

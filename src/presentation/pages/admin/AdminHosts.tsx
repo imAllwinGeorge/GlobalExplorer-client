@@ -1,21 +1,23 @@
 import { useEffect, useState } from "react";
-import ConfirmModal from "../../../components/ReusableComponents/ConfirmModal";
-import type { Host, User } from "../../../../shared/types/global";
-import { adminService } from "../../../../services/AdminService";
 import toast from "react-hot-toast";
+import { adminService } from "../../../services/AdminService";
+import type { Host } from "../../../shared/types/global";
+import ConfirmModal from "../../components/ReusableComponents/ConfirmModal";
+import { ChevronsRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 // import { toast } from 'react-toastify';
 
 
-const Users = () => {
-  const [users, setUsers] = useState<User[] | Host[]>([]);
+const AdminHosts = () => {
+  const [users, setUsers] = useState<Host[]>([]);
   const [isModalOpen, setIsModelOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<User | Host | null>(null)
+  const [selectedUser, setSelectedUser] = useState<Host | null>(null)
   const [triggerFetch, setTriggerFetch] = useState(false)
-
+  const navigate = useNavigate();
   useEffect(() => {
       const fetchUserData = async () => {
           try {
-              const response = await adminService.getAllUsers<User>("user");
+              const response = await adminService.getAllUsers<Host>("host");
               console.log("response fetchuserdata: ",response)
               if(response){
                   setUsers(response)
@@ -38,7 +40,7 @@ const Users = () => {
       const value = {
         isBlocked: !selectedUser.isBlocked
       }
-      const response = await adminService.updateStatus(selectedUser._id, value,"user");
+      const response = await adminService.updateStatus(selectedUser._id, value, "host");
       if(response.status === 200){
         setTriggerFetch(state => !state)
         toast.dismiss(toastId)
@@ -54,7 +56,7 @@ const Users = () => {
 
   return (
     <div className="users-container bg-white text-gray-800 p-8 rounded-xl shadow-lg">
-  <h1 className="text-2xl font-bold mb-6 text-yellow-700">User Details</h1>
+  <h1 className="text-2xl font-bold mb-6 text-yellow-700">Host Details</h1>
 
   <div className="overflow-x-auto rounded-lg shadow border border-gray-200">
     <table className="min-w-full bg-white">
@@ -65,7 +67,9 @@ const Users = () => {
           <th className="px-4 py-3 text-left text-sm font-semibold text-yellow-800">Last Name</th>
           <th className="px-4 py-3 text-left text-sm font-semibold text-yellow-800">Email</th>
           <th className="px-4 py-3 text-left text-sm font-semibold text-yellow-800">Phone</th>
+          <th className="px-4 py-3 text-left text-sm font-semibold text-yellow-800">Is verified</th>
           <th className="px-4 py-3 text-left text-sm font-semibold text-yellow-800">Action</th>
+          <th className="px-4 py-3 text-left text-sm font-semibold text-yellow-800">Details</th>
         </tr>
       </thead>
       <tbody>
@@ -79,6 +83,7 @@ const Users = () => {
             <td className="px-4 py-3">{user.lastName}</td>
             <td className="px-4 py-3">{user.email}</td>
             <td className="px-4 py-3">{user.phoneNumber}</td>
+            <td className="px-4 py-3">{user.isVerified}</td>
             <td className="px-4 py-3">
               <button
                 className={`px-4 py-1 rounded-md font-medium transition duration-150 ${
@@ -94,11 +99,21 @@ const Users = () => {
                 {user.isBlocked ? "Unblock" : "Block"}
               </button>
             </td>
+            <td>
+              <button
+                className={`px-4 py-1 rounded-md font-medium transition duration-150 "bg-white text-yellow-700 border border-yellow-600 hover:bg-yellow-600"`}
+                onClick={() => navigate("/admin/verify",{state:{id: user._id, role: user.role}})}
+              >
+                 <span><ChevronsRight /></span>
+              </button>
+            </td>
           </tr>
         ))}
       </tbody>
     </table>
   </div>
+
+  
 
   <ConfirmModal
     isOpen={isModalOpen}
@@ -117,4 +132,4 @@ const Users = () => {
   );
 };
 
-export default Users;
+export default AdminHosts;

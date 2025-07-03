@@ -1,14 +1,15 @@
 import axios from "axios";
 import toast from "react-hot-toast";
 import { persistor } from "../presentation/store";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-export const authAxiosInstace = axios.create({
-  baseURL: "http://localhost:3000/",
-  withCredentials: true,
+export const hostAxiosInstance = axios.create({
+    baseURL: `${API_BASE_URL}/host`,
+    withCredentials: true,
 });
 
 // ✅ Response Interceptor
-authAxiosInstace.interceptors.response.use(
+hostAxiosInstance.interceptors.response.use(
   response => response,
   error => {
     console.log("error axions interceptor")
@@ -26,7 +27,7 @@ authAxiosInstace.interceptors.response.use(
 
       // Redirect to login
       setTimeout(() => {
-        window.location.href = "/login";
+        window.location.href = "host/login";
       }, 2000); // or "/admin/login" or "/host/login"
     }
 

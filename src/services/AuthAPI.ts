@@ -1,6 +1,6 @@
 import type { AuthResponse, ResponseType } from "../shared/types/global";
 import { authAxiosInstace } from "../api/auth.axios";
-import type { SignupDTO } from "../shared/types/DTO";
+import type { LoginDTO, SignupDTO } from "../shared/types/DTO";
 import type { ErrorResponse } from "../shared/types/auth.type";
 
 // interface SignupDTO {
@@ -10,10 +10,7 @@ import type { ErrorResponse } from "../shared/types/auth.type";
 //   password: string;
 // }
 
-interface LoginDTO {
-  email: string;
-  password: string;
-}
+
 
 export class AuthAPI {
   async register(data: SignupDTO | FormData): Promise<ResponseType<AuthResponse>> {
@@ -122,7 +119,7 @@ export class AuthAPI {
       const response = await authAxiosInstace.post<AuthResponse>(
         "/api/verify-token"
       );
-      if (!response) throw new Error("something went wrong");
+      // if (!response) throw new Error("something went wrong");
       return response;
     } catch (error) {
       const message = (error as ErrorResponse).response?.data?.message ||
@@ -138,6 +135,17 @@ export class AuthAPI {
       if (error) {
         throw new Error("something went wrong please try again");
       }
+    }
+  }
+
+  async logout(role: string) {
+    try {
+      const response = await authAxiosInstace.post<AuthResponse>(`/api/logout/${role}`);
+      return response
+    } catch (error) {
+      const message = (error as ErrorResponse).response?.data?.message || 
+      "sonme thing went wrong!. Please try again";
+      throw new Error(message)
     }
   }
 }

@@ -41,7 +41,7 @@ const Login = () => {
     try {
       const response = await dispatch(login(data));
       if (login.fulfilled.match(response)) {
-        navigate("/");
+        navigate("/home");
       } else {
         toast.error(response.payload as string)
       }
@@ -67,7 +67,7 @@ const Login = () => {
       const user = JSON.parse(decodeURIComponent(userString));
       console.log(user);
       dispatch(setGoogleUser(user));
-      navigate("/");
+      navigate("/home");
     }
   }, [navigate, dispatch]);
   return (

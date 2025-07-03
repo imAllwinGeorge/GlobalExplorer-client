@@ -26,11 +26,11 @@ const PublicRoute = ({element}: PublicRouteProps) => {
     console.log("public routes :",session)
     if(session && session.role){
         const roleRedirects: Record<string,string> = {
-            user : "/",
+            user : "/home",
             admin: "/admin/adminhome",
             host: "/host/home",
         };
-        return <Navigate to={roleRedirects[session.role] || "/unauthrorized"} />
+        return <Navigate to={roleRedirects[session.role] || "/unauthorized"} replace />
     }
   return element
 }

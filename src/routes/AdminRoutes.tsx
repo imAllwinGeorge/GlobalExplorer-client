@@ -4,13 +4,21 @@ import AdminHomePage from '../presentation/pages/admin/AdminHomepage/AdminHomePa
 import ProtectedRoute from '../utils/protected/ProtectedRoute'
 import PublicRoute from '../utils/protected/PublicRoute'
 import Users from '../presentation/pages/admin/users/Users'
+import AdminLayout from '../presentation/components/layouts/AdminLayout'
+import AdminHosts from '../presentation/pages/admin/AdminHosts'
+import AdminHostDetails from '../presentation/pages/admin/AdminHostDetails'
 
 const AdminRoutes = () => {
   return (
     <Routes>
-        <Route path='/adminlogin' element={<PublicRoute element={<AdminLogin />} />} />
-        <Route path='/adminhome' element={<ProtectedRoute element={<AdminHomePage />} allowedRoles={['admin']} />} />
-        <Route path='/users' element={<Users />} />
+        <Route path='adminlogin' element={<PublicRoute element={<AdminLogin />} />} />
+        
+        <Route  element= {<ProtectedRoute element={<AdminLayout />} allowedRoles={["admin"]} />} >
+          <Route path='adminhome' element={<AdminHomePage />} />
+          <Route path='users' element={<Users />} />
+          <Route path='host' element={<AdminHosts />} />
+          <Route path='verify' element={<AdminHostDetails />} />
+        </Route>
     </Routes>
   )
 }

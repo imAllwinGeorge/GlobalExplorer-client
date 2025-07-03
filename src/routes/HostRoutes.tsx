@@ -12,11 +12,11 @@ const HostRoutes = () => {
   return (
     <>
     <Routes>
-        <Route path="/signup" element={<HostSignUp />} />
-        <Route path="/verify_otp" element={<HostOtp />} />
-        <Route path="/login" element={<PublicRoute element={<HostLogin />} />} />
+        <Route path="signup" element={<HostSignUp />} />
+        <Route path="verify_otp" element={<HostOtp />} />
+        <Route path="login" element={<PublicRoute element={<HostLogin />} />} />
         {/* <Route path="/home" element={<ProtectedRoute element={<HostHome />} allowedRoles={["host"]} />} /> */}
-        <Route path="/" element={<ProtectedRoute element={<HostLayout />} allowedRoles={["host"]} />}>
+        <Route  element={<ProtectedRoute element={<HostLayout />} allowedRoles={["host"]} />}>
           <Route path="home" element={<HostHome />} />
         </Route>
     </Routes>

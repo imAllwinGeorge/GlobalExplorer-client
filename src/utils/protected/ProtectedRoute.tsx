@@ -50,7 +50,7 @@ if(!role || !allowedRoles.includes(role)){
         admin: "/admin/adminlogin",
         host: "/host/login"
       };
-      const redirectRoute = loginRedirects[role as keyof typeof loginRedirects] || "/unauthrorized"
+      const redirectRoute = loginRedirects[inferredRole as keyof typeof loginRedirects] || "/unauthrorized"
       return <Navigate to={redirectRoute} />;
 }
 
