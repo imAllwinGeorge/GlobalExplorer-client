@@ -12,6 +12,11 @@ export interface LoginFormError {
   password?: string;
 }
 
+export interface AddCategoryError {
+  categoryName?: string;
+  description?: string
+}
+
 export type ErrorResponse = {
   response?: {
     data?: {

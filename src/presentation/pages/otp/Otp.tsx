@@ -39,6 +39,8 @@ const Otp = () => {
       // If no expiry time is stored, set default (optional)
       const newExpiry = Date.now() + 120000;
       localStorage.setItem("otp_expiry", newExpiry.toString());
+      setTimeLeft(120);
+      setIsActive(true);
     }
   }, []);
 
@@ -49,7 +51,10 @@ const Otp = () => {
       timer = setInterval(() => {
         setTimeLeft((prev) => {
           if (prev <= 1) {
-            if (timer !== null) clearInterval(timer);
+            if (timer !== null) {
+              clearInterval(timer);
+              localStorage.removeItem("otp_expiry");
+            }
             setIsActive(false);
             return 0;
           }
@@ -85,6 +90,7 @@ const Otp = () => {
      
       if (register.fulfilled.match(response)) {
         console.log("verify otp response", response);
+        localStorage.removeItem("otp_expiry")
         navigate('/home')
       }else{
         toast.error(response.payload as string)

@@ -7,6 +7,7 @@ import Users from '../presentation/pages/admin/users/Users'
 import AdminLayout from '../presentation/components/layouts/AdminLayout'
 import AdminHosts from '../presentation/pages/admin/AdminHosts'
 import AdminHostDetails from '../presentation/pages/admin/AdminHostDetails'
+import CategoryPage from '../presentation/pages/admin/CategoryPage'
 
 const AdminRoutes = () => {
   return (
@@ -18,6 +19,7 @@ const AdminRoutes = () => {
           <Route path='users' element={<Users />} />
           <Route path='host' element={<AdminHosts />} />
           <Route path='verify' element={<AdminHostDetails />} />
+          <Route path='services' element={<CategoryPage />} />
         </Route>
     </Routes>
   )

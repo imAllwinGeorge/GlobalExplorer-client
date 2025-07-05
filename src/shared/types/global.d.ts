@@ -37,8 +37,18 @@ export interface Host {
   updatedAt: Date,
 }
 
+export interface Category {
+  _id: string,
+  categoryName: string,
+  description: string,
+  isActive: string,
+  createdAt: string,
+  updatedAt: string,
+}
+
 export interface AuthResponse {
   user?: User | Host | null | undefined,
+  category?: Category
   token?: string | null | undefined;
   message?: string;
 }

@@ -49,5 +49,49 @@ export const adminService = {
       "something went wrong!. Please try again";
       throw new Error(message)
     }
-  }
+  },
+
+  addCategory: async (data: {categoryName: string; description: string}): Promise<ResponseType<AuthResponse>> => {
+    try {
+      const response = await adminAxiosInstnace.post<AuthResponse>("/add-category",{data});
+      return response;
+    } catch (error) {
+      const message = (error as ErrorResponse).response?.data?.message || 
+      "something went wrong!. Please try again"
+      throw new Error(message)
+    }
+  },
+
+  getCategories: async() => {
+    try {
+      const response = await adminAxiosInstnace.get("/get-category");
+      return response
+    } catch (error) {
+      const message = (error as ErrorResponse).response?.data?.message ||
+      "something went wrong!. Please try again"
+      throw new Error(message)
+    }
+  },
+
+  editCategory: async (data: {_id: string; value: {categoryName: string, description: string}}) => {
+    try {
+      const response = await adminAxiosInstnace.put("/edit-category",data);
+      return response
+    } catch (error) {
+      const message = (error as ErrorResponse).response?.data?.message  ||
+      "something went wrong! Please try again"
+      throw new Error(message)
+    }
+  },
+  
+  updateCategoryStatus:async (data: {_id: string; value: object}) => {
+    try {
+      const response = await adminAxiosInstnace.patch("/edit-category",data);
+      return response
+    } catch (error) {
+      const message = (error as ErrorResponse).response?.data?.message  ||
+      "something went wrong! Please try again"
+      throw new Error(message)
+    }
+  },
 };

@@ -14,14 +14,13 @@ export const adminAxiosInstnace = axios.create({
 adminAxiosInstnace.interceptors.response.use(
   response => response,
   error => {
-    console.log("error axions interceptor")
+    console.log("error axions interceptor",error)
     const msg = error?.response?.data?.message;
 
     if (
-      error.response?.status === 403 &&
-      msg === "You have been blocked please contact admin."
+      error.response?.status === 403 
     ) {
-      toast.error("You have been blocked. Logging out...");
+      toast.error(msg);
 
       // Optionally clear Redux state
       store.dispatch(adminLogout()); // Replace with correct role reducer
@@ -29,7 +28,7 @@ adminAxiosInstnace.interceptors.response.use(
 
       // Redirect to login
       setTimeout(() => {
-        window.location.href = "admin/adminlogin";
+        window.location.href = "/adminlogin";
       }, 2000); // or "/admin/login" or "/host/login"
     }
 
