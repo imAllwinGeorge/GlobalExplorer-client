@@ -8,11 +8,12 @@ import AdminLayout from '../presentation/components/layouts/AdminLayout'
 import AdminHosts from '../presentation/pages/admin/AdminHosts'
 import AdminHostDetails from '../presentation/pages/admin/AdminHostDetails'
 import CategoryPage from '../presentation/pages/admin/CategoryPage'
+import ActivityPage from '../presentation/pages/admin/ActivityPage'
 
 const AdminRoutes = () => {
   return (
     <Routes>
-        <Route path='adminlogin' element={<PublicRoute element={<AdminLogin />} />} />
+        <Route path='login' element={<PublicRoute element={<AdminLogin />} />} />
         
         <Route  element= {<ProtectedRoute element={<AdminLayout />} allowedRoles={["admin"]} />} >
           <Route path='adminhome' element={<AdminHomePage />} />
@@ -20,6 +21,7 @@ const AdminRoutes = () => {
           <Route path='host' element={<AdminHosts />} />
           <Route path='verify' element={<AdminHostDetails />} />
           <Route path='services' element={<CategoryPage />} />
+          <Route path='activities' element={<ActivityPage />} />
         </Route>
     </Routes>
   )

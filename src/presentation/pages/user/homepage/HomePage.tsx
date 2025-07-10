@@ -39,7 +39,7 @@ const HomePage = () => {
         } catch (error) {
           console.log(error);
           if(error instanceof Error){
-            toast.error(error.message)
+            // toast.error(error.message)
           }
         }
       }

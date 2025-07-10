@@ -11,16 +11,17 @@ export const userAxiosInstace = axios.create({
 
 // ✅ Response Interceptor
 userAxiosInstace.interceptors.response.use(
-  response => response,
+  response => {
+    console.log("path of the request",window.location.pathname)
+    return response},
   error => {
     console.log("error axions interceptor")
     const msg = error?.response?.data?.message;
 
     if (
-      error.response?.status === 403 &&
-      msg === "You have been blocked please contact admin."
+      error.response?.status === 403 || error.response.status === 401
     ) {
-      toast.error("You have been blocked. Logging out...");
+      toast.error(msg);
         localStorage.removeItem("persist:auth");
       // Optionally clear Redux state
       store.dispatch(logout()); // Replace with correct role reducer

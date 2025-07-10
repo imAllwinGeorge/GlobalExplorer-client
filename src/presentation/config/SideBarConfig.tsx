@@ -1,4 +1,5 @@
 import {
+  ActivityIcon,
     BadgeDollarSign,
   BookHeart,
   Filter,
@@ -100,6 +101,11 @@ export const SideBarItems = {
       title: "Activity Booking",
       path: "/host/bookings",
       icon: NotebookText,
+    },
+    {
+      title: "Activities",
+      path: "/host/activity",
+      icon: ActivityIcon,
     },
     {
       title: "My Chats",

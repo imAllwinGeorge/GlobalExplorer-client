@@ -1,7 +1,7 @@
 import type { AuthResponse, ResponseType } from "../shared/types/global";
-import { authAxiosInstace } from "../api/auth.axios";
 import type { LoginDTO, SignupDTO } from "../shared/types/DTO";
 import type { ErrorResponse } from "../shared/types/auth.type";
+import { axiosInstance } from "../api/axiosInstance";
 
 // interface SignupDTO {
 //   firstName: string;
@@ -15,8 +15,8 @@ import type { ErrorResponse } from "../shared/types/auth.type";
 export class AuthAPI {
   async register(data: SignupDTO | FormData): Promise<ResponseType<AuthResponse>> {
     try {
-      const response = await authAxiosInstace.post<AuthResponse>(
-        "/api/send-otp",
+      const response = await axiosInstance.post<AuthResponse>(
+        "/send-otp",
         data
       );
 
@@ -32,8 +32,8 @@ export class AuthAPI {
 
   async verify(otp: string): Promise<ResponseType<AuthResponse>> {
     try {
-      const response = await authAxiosInstace.post<AuthResponse>(
-        "/api/register",
+      const response = await axiosInstance.post<AuthResponse>(
+        "/register",
         {
           otp,
         }
@@ -51,8 +51,8 @@ export class AuthAPI {
 
   async verifyEmail(email: string, role: string): Promise<ResponseType<AuthResponse>> {
     try {
-      const response = await authAxiosInstace.post<AuthResponse>(
-        "/api/forgot-password",
+      const response = await axiosInstance.post<AuthResponse>(
+        "/forgot-password",
         { email, role }
       );
       
@@ -73,8 +73,8 @@ export class AuthAPI {
     password: string
   ): Promise<ResponseType<AuthResponse>> {
     try {
-      const response = await authAxiosInstace.patch<AuthResponse>(
-        `/api/reset-password/${role}/${id}/${token}`,
+      const response = await axiosInstance.patch<AuthResponse>(
+        `/reset-password/${role}/${id}/${token}`,
         { password }
       );
       return response;
@@ -90,7 +90,7 @@ export class AuthAPI {
 
   async resendOtp(): Promise<ResponseType<unknown>> {
     try {
-      const response = await authAxiosInstace.post("/api/resend-otp");
+      const response = await axiosInstance.post("/resend-otp");
       return response;
     } catch (error) {
       const message =
@@ -102,7 +102,7 @@ export class AuthAPI {
 
   async login(data: LoginDTO): Promise<ResponseType<AuthResponse>> {
     try {
-      const response = await authAxiosInstace.post<AuthResponse>("/api/login", {
+      const response = await axiosInstance.post<AuthResponse>("/login", {
         data,
       });
       return response;
@@ -116,8 +116,8 @@ export class AuthAPI {
 
   async verifyToken(): Promise<ResponseType<AuthResponse>> {
     try {
-      const response = await authAxiosInstace.post<AuthResponse>(
-        "/api/verify-token"
+      const response = await axiosInstance.post<AuthResponse>(
+        "/verify-token"
       );
       // if (!response) throw new Error("something went wrong");
       return response;
@@ -130,7 +130,7 @@ export class AuthAPI {
 
   async googleLogin(role: string) {
     try {
-      window.location.href = `http://localhost:3000/api/auth/google?role=${role}`;
+      window.location.href = `http://localhost:3000/auth/google?role=${role}`;
     } catch (error) {
       if (error) {
         throw new Error("something went wrong please try again");
@@ -140,9 +140,10 @@ export class AuthAPI {
 
   async logout(role: string) {
     try {
-      const response = await authAxiosInstace.post<AuthResponse>(`/api/logout/${role}`);
+      const response = await axiosInstance.post<AuthResponse>(`/logout/${role}`);
       return response
     } catch (error) {
+      console.log(error)
       const message = (error as ErrorResponse).response?.data?.message || 
       "sonme thing went wrong!. Please try again";
       throw new Error(message)

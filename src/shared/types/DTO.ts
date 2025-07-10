@@ -29,3 +29,36 @@ export interface HostSignupDTO {
   insurance: File | null,
   license: File | null,
 }
+
+export interface ActivityDTO {
+  activityName: string;
+  itenary: string;
+  maxCapacity: number;
+  categoryId: string;
+  pricePerHead: number;
+  userId: string;
+  street: string;
+  city: string;
+  district: string;
+  state: string;
+  postalCode: string;
+  country: string;
+  location: [number, number];
+  images: File[];
+  reportingPlace: string;
+  reportingTime: string;
+}
+
+
+export interface BlogDTO {
+  userId: string;
+  title: string;
+  author: string;
+  introduction: string;
+  sections: {
+    sectionTitle: string;
+    content: string;
+    image?: File | string;
+  }[];
+  image: File | string;
+}

@@ -9,6 +9,8 @@ import VerifyEmail from '../presentation/pages/user/forgotpassword/VerifyEmail'
 import ResetPassword from '../presentation/pages/user/changePasswod/ResetPassword'
 import UserLayout from '../presentation/components/layouts/UserLayout'
 import LandingPage from '../presentation/pages/LandingPage/LandingPage'
+import ActivityPageUser from '../presentation/pages/user/ActivityPageUser'
+import Blogs from '../presentation/pages/user/Blogs'
 
 const UserRoutes = () => {
   return (
@@ -21,6 +23,8 @@ const UserRoutes = () => {
         <Route path="verify_otp" element={<Otp />} />
         <Route path={'/'} element={<ProtectedRoute element={<UserLayout />} allowedRoles={['user']} />} >
           <Route path='home' element={<HomePage />} />
+          <Route path='explorations' element={<ActivityPageUser />} />
+          <Route path='blogs' element={<Blogs />} />
         </Route>
     </Routes>
   )

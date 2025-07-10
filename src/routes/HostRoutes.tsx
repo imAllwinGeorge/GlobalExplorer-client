@@ -6,6 +6,7 @@ import PublicRoute from "../utils/protected/PublicRoute"
 import ProtectedRoute from "../utils/protected/ProtectedRoute"
 import HostOtp from "../presentation/pages/host/otp/HostOtp"
 import HostLayout from "../presentation/components/layouts/HostLayout"
+import ActivityPage from "../presentation/pages/host/ActivityPage"
 
 
 const HostRoutes = () => {
@@ -18,6 +19,7 @@ const HostRoutes = () => {
         {/* <Route path="/home" element={<ProtectedRoute element={<HostHome />} allowedRoles={["host"]} />} /> */}
         <Route  element={<ProtectedRoute element={<HostLayout />} allowedRoles={["host"]} />}>
           <Route path="home" element={<HostHome />} />
+          <Route path="activity" element={<ActivityPage />} />
         </Route>
     </Routes>
     </>

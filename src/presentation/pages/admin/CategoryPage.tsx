@@ -1,136 +1,155 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { useEffect, useState } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import Input from "../../components/Input"
-import type { AddCategoryError } from "../../../shared/types/auth.type"
-import { isValidName } from "../../../shared/validation/validations"
-import { adminService } from "../../../services/AdminService"
-import type { Category } from "../../../shared/types/global"
-import ConfirmModal from "../../components/ReusableComponents/ConfirmModal"
-import toast from "react-hot-toast"
-import { Pencil, Plus, X } from "lucide-react"
+import type React from "react";
+import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import Input from "../../components/Input";
+import type { AddCategoryError } from "../../../shared/types/auth.type";
+import { isValidName } from "../../../shared/validation/validations";
+import { adminService } from "../../../services/AdminService";
+import type { Category } from "../../../shared/types/global";
+import ConfirmModal from "../../components/ReusableComponents/ConfirmModal";
+import toast from "react-hot-toast";
+import { Pencil, Plus, X } from "lucide-react";
+import Pagination from "../../components/common/Pagination";
 
 const CategoryPage = () => {
   const [data, setData] = useState({
     categoryName: "",
     description: "",
-  })
+  });
   const [editData, setEditData] = useState({
     categoryName: "",
-    description: " "
-  })
-  const [category, setCategory] = useState<Category[] | null>(null)
-  const [error, setError] = useState<AddCategoryError>({})
-  const [triggerFetch, setTriggerFetch] = useState(true)
-  const [isModalOpen, setIsModelOpen] = useState(false)
-  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null)
-  const [openEditModal, setOpenEditModal] = useState(false)
+    description: " ",
+  });
+  const [category, setCategory] = useState<Category[] | null>(null);
+  const [error, setError] = useState<AddCategoryError>({});
+  const [triggerFetch, setTriggerFetch] = useState(true);
+  const [isModalOpen, setIsModelOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(
+    null
+  );
+  const [openEditModal, setOpenEditModal] = useState(false);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
 
-  const handleChange = (key: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    setData({ ...data, [key]: e.target.value })
-  }
+  const handleChange =
+    (key: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
+      setData({ ...data, [key]: e.target.value });
+    };
 
-  const handleEditChange = (key: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEditData({...editData, [key]: e.target.value})
-  }
+  const handleEditChange =
+    (key: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
+      setEditData({ ...editData, [key]: e.target.value });
+    };
 
-  const submitForm = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    event.preventDefault()
-    const errors: AddCategoryError = {}
+  const submitForm = async (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    event.preventDefault();
+    const errors: AddCategoryError = {};
     if (!isValidName(data.categoryName)) {
-      errors.categoryName = "category Name can only contain alphabets"
+      errors.categoryName = "category Name can only contain alphabets";
     } else if (!data.description.trim()) {
-      errors.description = "This field cannot be empty"
+      errors.description = "This field cannot be empty";
     }
     if (Object.keys(errors).length > 0) {
-      return setError(errors)
+      return setError(errors);
     }
     try {
-      const response = await adminService.addCategory(data)
+      const response = await adminService.addCategory(data);
       if (response.status === 201) {
-        setTriggerFetch((prev) => !prev)
-        setData({ categoryName: "", description: "" })
-        setError({})
-        toast.success("Success. Category Added")
+        setTriggerFetch((prev) => !prev);
+        setData({ categoryName: "", description: "" });
+        setError({});
+        toast.success("Success. Category Added");
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
 
-  interface CategoryResponse {
-    category: Category[]
-  }
+
 
   const handleCategoryState = async () => {
-    if (!selectedCategory) return
-    const toastId = toast.loading("Loading....")
+    if (!selectedCategory) return;
+    const toastId = toast.loading("Loading....");
     try {
-      const response = await adminService.updateCategoryStatus(
-        {_id:selectedCategory?._id,
-        value: { isActive: !selectedCategory?.isActive }}
-        
-      )
+      const response = await adminService.updateCategoryStatus({
+        _id: selectedCategory?._id,
+        value: { isActive: !selectedCategory?.isActive },
+      });
       if (response.status === 200) {
-        toast.dismiss(toastId)
-        toast.success(`Category ${!selectedCategory.isActive ? "activated" : "deactivated"}`)
-        setSelectedCategory(null)
-        setTriggerFetch((prev) => !prev)
+        toast.dismiss(toastId);
+        toast.success(
+          `Category ${!selectedCategory.isActive ? "activated" : "deactivated"}`
+        );
+        setSelectedCategory(null);
+        setTriggerFetch((prev) => !prev);
       }
     } catch (error) {
       if (error instanceof Error) {
-        toast.error(error.message)
+        toast.error(error.message);
       }
     }
-  }
+  };
 
   const editCategory = async () => {
-    if (!editData || !selectedCategory) return
-    console.log("sghiwghwsghhsgjksdhgkhasklghjklasdhgjklvasdjklfgjklsdhgjkhasdkjfg",editData)
+    if (!editData || !selectedCategory) return;
+    console.log(
+      "sghiwghwsghhsgjksdhgkhasklghjklasdhgjklvasdjklfgjklsdhgjkhasdkjfg",
+      editData
+    );
     try {
-      const response = await adminService.editCategory({_id: selectedCategory._id, value: {categoryName: editData.categoryName, description: editData.description}})
+      const response = await adminService.editCategory({
+        _id: selectedCategory._id,
+        value: {
+          categoryName: editData.categoryName,
+          description: editData.description,
+        },
+      });
       if (response.status === 200) {
-        setTriggerFetch((prev) => !prev)
-        setOpenEditModal(false)
-        setData({ categoryName: "", description: "" })
-        setSelectedCategory(null)
-        toast.success("Category Edited successfully...")
+        setTriggerFetch((prev) => !prev);
+        setOpenEditModal(false);
+        setData({ categoryName: "", description: "" });
+        setSelectedCategory(null);
+        toast.success("Category Edited successfully...");
       }
     } catch (error) {
       if (error instanceof Error) {
-        toast.error(error.message)
+        toast.error(error.message);
       }
     }
-  }
+  };
 
   useEffect(() => {
     const fetchCategory = async () => {
       try {
-        const response = await adminService.getCategories()
+        const response = await adminService.getCategories(page, 5);
+        console.log(response)
         if (response.status === 200) {
-          const data = response.data as CategoryResponse
-          setCategory(data.category)
+          
+          setCategory(response.data.categories as Category[]);
+          setTotalPages(response.data.totalPages as number)
         }
       } catch (error) {
-        console.log(error)
-        if(error instanceof Error){
-          toast.error(error.message)
+        console.log(error);
+        if (error instanceof Error) {
+          toast.error(error.message);
         }
       }
-    }
-    fetchCategory()
-  }, [triggerFetch])
+    };
+    fetchCategory();
+  }, [triggerFetch, page]);
 
   useEffect(() => {
     if (selectedCategory && openEditModal) {
       setData({
         categoryName: selectedCategory.categoryName,
         description: selectedCategory.description,
-      })
+      });
     }
-  }, [selectedCategory, openEditModal])
+  }, [selectedCategory, openEditModal]);
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 lg:p-8">
@@ -158,7 +177,10 @@ const CategoryPage = () => {
                 transition={{ delay: 0.1 }}
                 className="space-y-2"
               >
-                <label htmlFor="categoryName" className="text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="categoryName"
+                  className="text-sm font-medium text-gray-700"
+                >
                   Category Name
                 </label>
                 <div className="relative">
@@ -192,7 +214,10 @@ const CategoryPage = () => {
                 transition={{ delay: 0.2 }}
                 className="space-y-2"
               >
-                <label htmlFor="description" className="text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="description"
+                  className="text-sm font-medium text-gray-700"
+                >
                   Description
                 </label>
                 <div className="relative">
@@ -252,12 +277,18 @@ const CategoryPage = () => {
             <table className="min-w-full">
               <thead className="bg-orange-50 border-b border-orange-100">
                 <tr>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-orange-800">#</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-orange-800">Category Name</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-orange-800">
+                    #
+                  </th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-orange-800">
+                    Category Name
+                  </th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-orange-800 hidden md:table-cell">
                     Description
                   </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-orange-800">Action</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-orange-800">
+                    Action
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -272,9 +303,15 @@ const CategoryPage = () => {
                         transition={{ delay: index * 0.1 }}
                         className="hover:bg-orange-50 transition-colors duration-200 border-b border-gray-100"
                       >
-                        <td className="px-6 py-4 text-gray-900 font-medium">{index + 1}</td>
-                        <td className="px-6 py-4 text-gray-900 font-medium">{cate.categoryName}</td>
-                        <td className="px-6 py-4 text-gray-600 hidden md:table-cell">{cate.description}</td>
+                        <td className="px-6 py-4 text-gray-900 font-medium">
+                          {index + 1}
+                        </td>
+                        <td className="px-6 py-4 text-gray-900 font-medium">
+                          {cate.categoryName}
+                        </td>
+                        <td className="px-6 py-4 text-gray-600 hidden md:table-cell">
+                          {cate.description}
+                        </td>
                         <td className="px-6 py-4">
                           <div className="flex flex-col sm:flex-row gap-2">
                             <motion.button
@@ -286,8 +323,8 @@ const CategoryPage = () => {
                                   : "bg-gradient-to-r from-orange-400 to-amber-500 text-white hover:from-orange-600 hover:to-amber-600"
                               }`}
                               onClick={() => {
-                                setIsModelOpen(true)
-                                setSelectedCategory(cate)
+                                setIsModelOpen(true);
+                                setSelectedCategory(cate);
                               }}
                             >
                               {cate.isActive ? "Deactivate" : "Activate"}
@@ -297,8 +334,8 @@ const CategoryPage = () => {
                               whileTap={{ scale: 0.95 }}
                               className="px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 bg-white text-orange-700 border-2 border-orange-500 hover:bg-orange-50 flex items-center justify-center"
                               onClick={() => {
-                                setSelectedCategory(cate)
-                                setOpenEditModal(true)
+                                setSelectedCategory(cate);
+                                setOpenEditModal(true);
                                 setEditData(cate);
                               }}
                             >
@@ -334,9 +371,9 @@ const CategoryPage = () => {
                 <h1 className="text-xl font-bold text-white">Edit Category</h1>
                 <button
                   onClick={() => {
-                    setOpenEditModal(false)
-                    setSelectedCategory(null)
-                    setData({ categoryName: "", description: "" })
+                    setOpenEditModal(false);
+                    setSelectedCategory(null);
+                    setData({ categoryName: "", description: "" });
                   }}
                   className="text-white hover:bg-white hover:bg-opacity-20 rounded-full p-1 transition-colors"
                 >
@@ -348,7 +385,10 @@ const CategoryPage = () => {
                 <form className="space-y-6">
                   {/* Category Name */}
                   <div className="space-y-2">
-                    <label htmlFor="editCategoryName" className="text-sm font-medium text-gray-700">
+                    <label
+                      htmlFor="editCategoryName"
+                      className="text-sm font-medium text-gray-700"
+                    >
                       Category Name
                     </label>
                     <div className="relative">
@@ -377,7 +417,10 @@ const CategoryPage = () => {
 
                   {/* Description */}
                   <div className="space-y-2">
-                    <label htmlFor="editDescription" className="text-sm font-medium text-gray-700">
+                    <label
+                      htmlFor="editDescription"
+                      className="text-sm font-medium text-gray-700"
+                    >
                       Description
                     </label>
                     <div className="relative">
@@ -411,9 +454,9 @@ const CategoryPage = () => {
                       whileTap={{ scale: 0.98 }}
                       type="button"
                       onClick={() => {
-                        setOpenEditModal(false)
-                        setSelectedCategory(null)
-                        setData({ categoryName: "", description: "" })
+                        setOpenEditModal(false);
+                        setSelectedCategory(null);
+                        setData({ categoryName: "", description: "" });
                       }}
                       className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded-lg transition-all duration-200"
                     >
@@ -441,7 +484,9 @@ const CategoryPage = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModelOpen(false)}
         onConfirm={handleCategoryState}
-        title={`${selectedCategory?.isActive ? "Deactivate" : "Activate"} Category`}
+        title={`${
+          selectedCategory?.isActive ? "Deactivate" : "Activate"
+        } Category`}
         message={`Are you sure you want to ${
           selectedCategory?.isActive ? "Deactivate" : "Activate"
         } ${selectedCategory?.categoryName}?`}
@@ -449,8 +494,15 @@ const CategoryPage = () => {
         cancelText="Cancel"
         variant="warning"
       />
-    </div>
-  )
-}
 
-export default CategoryPage
+      <Pagination
+        page={page}
+        totalPages={totalPages}
+        onPrev={() => setPage((prev) => Math.max(prev - 1, 1))}
+        onNext={() => setPage((prev) => Math.min(prev + 1, totalPages))}
+      />
+    </div>
+  );
+};
+
+export default CategoryPage;

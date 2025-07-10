@@ -55,7 +55,7 @@ const NavBar = ({ role }: NavBarPropsType) => {
           navigate("/host/login");
         } else if (role === "admin") {
           dispatch(adminLogout());
-          navigate("/admin/adminlogin");
+          navigate("/admin/login");
         }
       }
     } catch (error) {

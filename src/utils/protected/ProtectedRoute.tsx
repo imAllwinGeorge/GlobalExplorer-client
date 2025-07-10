@@ -2,6 +2,10 @@ import { type JSX } from 'react'
 import { useSelector } from 'react-redux';
 import { Navigate, useLocation } from 'react-router-dom';
 import { getAdminSession, getHostSession, getUserSession } from '../helpers/getActiveSession';
+import { store } from '../../presentation/store';
+import { hostLogout } from '../../presentation/store/slices/hostSlice';
+import { adminLogout } from '../../presentation/store/slices/adminSlice';
+import { logout } from '../../presentation/store/slices/authSlice';
 
 
 interface ProtectedRouteProps {
@@ -27,7 +31,7 @@ const ProtectedRoute = ({element, allowedRoles}: ProtectedRouteProps) => {
     if(!userSession && !adminSession && !hostSession) {
       const loginRedirects: Record<string, string> = {
         user: "/login",
-        admin: "/admin/adminlogin",
+        admin: "/admin/login",
         host: "/host/login",
       };
       return <Navigate to={loginRedirects[inferredRole]} />;
@@ -36,10 +40,18 @@ const ProtectedRoute = ({element, allowedRoles}: ProtectedRouteProps) => {
 let role;
 if(userSession && userSession.role === inferredRole){
   role = userSession.role
+  store.dispatch(hostLogout());
+  store.dispatch(adminLogout());
 }else if(adminSession && adminSession.role === inferredRole){
   role = adminSession.role
+  store.dispatch(hostLogout());
+  store.dispatch(logout());
+  localStorage.removeItem("persist:auth")
 }else if(hostSession && hostSession.role === inferredRole){
   role = hostSession.role
+  store.dispatch(logout());
+  localStorage.removeItem("perrsist:auth");
+  store.dispatch(adminLogout());
 }else {
   role = null
 }
@@ -47,7 +59,7 @@ if(userSession && userSession.role === inferredRole){
 if(!role || !allowedRoles.includes(role)){
   const loginRedirects: Record<string, string> = {
         user: "/login",
-        admin: "/admin/adminlogin",
+        admin: "/admin/login",
         host: "/host/login"
       };
       const redirectRoute = loginRedirects[inferredRole as keyof typeof loginRedirects] || "/unauthrorized"

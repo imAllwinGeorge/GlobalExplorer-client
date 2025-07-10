@@ -12,13 +12,15 @@ export const adminAxiosInstnace = axios.create({
 
 // ✅ Response Interceptor
 adminAxiosInstnace.interceptors.response.use(
-  response => response,
+  response => {
+    console.log("path of the request",window.location.pathname)
+    return response},
   error => {
     console.log("error axions interceptor",error)
     const msg = error?.response?.data?.message;
 
     if (
-      error.response?.status === 403 
+      error.response?.status === 403 || error.response?.status === 401
     ) {
       toast.error(msg);
 
@@ -28,7 +30,7 @@ adminAxiosInstnace.interceptors.response.use(
 
       // Redirect to login
       setTimeout(() => {
-        window.location.href = "/adminlogin";
+        window.location.href = "/admin/adminlogin";
       }, 2000); // or "/admin/login" or "/host/login"
     }
 

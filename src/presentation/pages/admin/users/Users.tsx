@@ -3,6 +3,7 @@ import ConfirmModal from "../../../components/ReusableComponents/ConfirmModal";
 import type { Host, User } from "../../../../shared/types/global";
 import { adminService } from "../../../../services/AdminService";
 import toast from "react-hot-toast";
+import Pagination from "../../../components/common/Pagination";
 // import { toast } from 'react-toastify';
 
 
@@ -11,14 +12,17 @@ const Users = () => {
   const [isModalOpen, setIsModelOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | Host | null>(null)
   const [triggerFetch, setTriggerFetch] = useState(false)
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
 
   useEffect(() => {
       const fetchUserData = async () => {
           try {
-              const response = await adminService.getAllUsers<User>("user");
+              const response = await adminService.getAllUsers<User>(page, 5,"user");
               console.log("response fetchuserdata: ",response)
               if(response){
-                  setUsers(response)
+                  setUsers(response.users);
+                  setTotalPages(response.totalPages)
                 //   toast(response)
               }
           } catch (error) {
@@ -29,7 +33,7 @@ const Users = () => {
           }
       }
       fetchUserData();
-  }, [triggerFetch])
+  }, [triggerFetch, page])
 
   const handleUserState = async () => {
     if(!selectedUser) return null
@@ -112,6 +116,8 @@ const Users = () => {
     cancelText="Cancel"
     variant="warning"
   />
+
+  <Pagination page={page} totalPages={totalPages} onPrev={() => setPage((prev) => Math.max(prev - 1, 1))} onNext={() => setPage((prev) => Math.min(prev + 1, totalPages))} />
 </div>
 
   );

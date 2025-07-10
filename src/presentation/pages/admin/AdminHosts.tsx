@@ -5,6 +5,7 @@ import type { Host } from "../../../shared/types/global";
 import ConfirmModal from "../../components/ReusableComponents/ConfirmModal";
 import { ChevronsRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import Pagination from "../../components/common/Pagination";
 // import { toast } from 'react-toastify';
 
 const AdminHosts = () => {
@@ -12,14 +13,17 @@ const AdminHosts = () => {
   const [isModalOpen, setIsModelOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<Host | null>(null);
   const [triggerFetch, setTriggerFetch] = useState(false);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   const navigate = useNavigate();
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await adminService.getAllUsers<Host>("host");
+        const response = await adminService.getAllUsers<Host>(page, 5,"host");
         console.log("response fetchuserdata: ", response);
         if (response) {
-          setUsers(response);
+          setUsers(response.users);
+          setTotalPages(response.totalPages);
           //   toast(response)
         }
       } catch (error) {
@@ -30,7 +34,7 @@ const AdminHosts = () => {
       }
     };
     fetchUserData();
-  }, [triggerFetch]);
+  }, [triggerFetch, page]);
 
   const handleUserState = async () => {
     if (!selectedUser) return null;
@@ -147,6 +151,13 @@ const AdminHosts = () => {
         confirmText="Confirm"
         cancelText="Cancel"
         variant="warning"
+      />
+
+      <Pagination
+        page={page}
+        totalPages={totalPages}
+        onPrev={() => setPage((prev) => Math.max(prev - 1, 1))}
+        onNext={() => setPage((prev) => Math.min(prev + 1, totalPages))}
       />
     </div>
   );
