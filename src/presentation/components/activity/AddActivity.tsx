@@ -11,6 +11,7 @@ import "leaflet/dist/leaflet.css";
 import type { LatLngExpression } from "leaflet";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../store";
+import toast from "react-hot-toast";
 
 // Placeholder function for getting coordinates from address
 const getLocationFromAddress = async (
@@ -44,11 +45,14 @@ interface Props {
 }
 
 type AddActivityProps = {
-  onClose: () => void
-}
+  onClose: () => void;
+};
 
-export default function AddActivity({onClose}: AddActivityProps) {
-  const user = useSelector((state: RootState) => state.host.host)
+const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+
+
+export default function AddActivity({ onClose }: AddActivityProps) {
+  const user = useSelector((state: RootState) => state.host.host);
   const [formData, setFormData] = useState<ActivityDTO>({
     activityName: "",
     itenary: "",
@@ -64,11 +68,13 @@ export default function AddActivity({onClose}: AddActivityProps) {
     country: "",
     location: [0, 0],
     images: [],
+    recurrenceDays: [],
     reportingPlace: "",
     reportingTime: "",
   });
-
   const [categories, setCategories] = useState<Category[] | null>(null);
+  const [selectedDays, setSelectedDays] = useState<string[]>([])
+
   const hostService = new HostService();
 
   const handleInputChange = (
@@ -130,37 +136,57 @@ export default function AddActivity({onClose}: AddActivityProps) {
     // Handle form submission here
     const data = new FormData();
 
-  // Append text fields
-  data.append("activityName", formData.activityName);
-  data.append("itenary", formData.itenary);
-  data.append("maxCapacity", formData.maxCapacity.toString());
-  data.append("categoryId", formData.categoryId);
-  data.append("pricePerHead", formData.pricePerHead.toString());
-  data.append("userId", formData.userId);
-  data.append("street", formData.street);
-  data.append("city", formData.city);
-  data.append("district", formData.district);
-  data.append("state", formData.state);
-  data.append("postalCode", formData.postalCode);
-  data.append("country", formData.country);
-  data.append("reportingPlace", formData.reportingPlace);
-  data.append("reportingTime", formData.reportingTime);
+    // Append text fields
+    data.append("activityName", formData.activityName);
+    data.append("itenary", formData.itenary);
+    data.append("maxCapacity", formData.maxCapacity.toString());
+    data.append("categoryId", formData.categoryId);
+    data.append("pricePerHead", formData.pricePerHead.toString());
+    data.append("userId", formData.userId);
+    data.append("street", formData.street);
+    data.append("city", formData.city);
+    data.append("district", formData.district);
+    data.append("state", formData.state);
+    data.append("postalCode", formData.postalCode);
+    data.append("country", formData.country);
+    data.append("reportingPlace", formData.reportingPlace);
+    data.append("reportingTime", formData.reportingTime);
+    
+    //Append selected Days
+    // selectedDays.forEach(day => {
+    //   data.append("recurrenceDays[]", day);
+    // })
+    data.append("recurrenceDays", JSON.stringify(selectedDays))
 
-  // Append location (as JSON or individual fields)
-  data.append("location", JSON.stringify(formData.location));
+    // Append location (as JSON or individual fields)
+    data.append("location", JSON.stringify(formData.location));
 
-  // Append images
-  formData.images.forEach((file) => {
-    data.append("images", file); // backend should use multer or similar
-  });
+    // Append images
+    formData.images.forEach((file) => {
+      data.append("images", file); // backend should use multer or similar
+    });
 
-  try {
-    const response = await hostService.addActivity(data); // Ensure this sends FormData
-    console.log("Success:", response.data);
-  } catch (error) {
-    console.error("Error:", error);
-  }
+    try {
+      const response = await hostService.addActivity(data); // Ensure this sends FormData
+      console.log("Success:", response.data);
+      if (response.status === 201) {
+        toast.success("Activity added successfully");
+        onClose?.();
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      }
+    }
   };
+
+  const toggleDay = (day: string) => {
+    const updated = selectedDays.includes(day)
+      ? selectedDays.filter(d => d !== day)
+      : [...selectedDays, day]
+    setSelectedDays(updated)
+    console.log(updated)
+  }
 
   useEffect(() => {
     const fetchCategory = async () => {
@@ -301,6 +327,23 @@ export default function AddActivity({onClose}: AddActivityProps) {
                       required
                     />
                   </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2">
+                  {daysOfWeek.map((day) => (
+                    <button
+                      key={day}
+                      type="button"
+                      onClick={() => toggleDay(day)}
+                      className={`py-2 px-3 rounded border ${
+                        selectedDays.includes(day)
+                          ? "bg-blue-500 text-white"
+                          : "bg-gray-100 text-gray-700"
+                      }`}
+                    >
+                      {day.slice(0, 3)}
+                    </button>
+                  ))}
                 </div>
 
                 <div>

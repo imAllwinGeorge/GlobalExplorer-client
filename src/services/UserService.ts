@@ -58,6 +58,17 @@ export class UserService {
     }
   }
 
+  async getActivityDetails(id: string): Promise<ResponseType<AuthResponse>> {
+    try {
+      const response = await axiosInstance.get<AuthResponse>(`/user/activity/get-details/${id}`);
+      return response
+    } catch (error) {
+      const message = (error as ErrorResponse).response?.data?.message ||
+      "Something went wrong! please try again"
+      throw new Error(message)
+    }
+  }
+
 }
 
 export const userService = new UserService();

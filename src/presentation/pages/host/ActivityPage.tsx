@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import AddActivity from "../../components/host/AddActivity";
-import AcitivityList from "../../components/host/AcitivityList";
+import AddActivity from "../../components/activity/AddActivity";
+import AcitivityList from "../../components/activity/AcitivityList";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../store";
 import { HostService } from "../../../services/HostService";
@@ -8,12 +8,18 @@ import type { Activity } from "../../../shared/types/global";
 import Pagination from "../../components/common/Pagination";
 import { Plus } from "lucide-react";
 import { Button } from "../../components/ui/button";
+import { useLocalStorage } from "../../hooks/useLocalStorage";
+import { LOCAL_STORAGE_KEYS } from "../../../shared/constants/localStoragekeys";
 
 const ActivityPage = () => {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [activities, setActivities] = useState<Activity[] | null>(null);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useLocalStorage(
+    LOCAL_STORAGE_KEYS.HOST_ACTIVITY_PAGE,
+    1
+  );
   const [totalPages, setTotalPages] = useState(1);
+  const [triggerFetch, setTriggerFetch] = useState(true);
   const user = useSelector((state: RootState) => state.host.host);
   const hostService = new HostService();
 
@@ -32,8 +38,15 @@ const ActivityPage = () => {
       }
     };
     fetchActivity();
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page]);
+  }, [page, triggerFetch]);
+
+  useEffect(() => {
+    return () => {
+      localStorage.removeItem(LOCAL_STORAGE_KEYS.HOST_ACTIVITY_PAGE);
+    };
+  }, []);
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header Section */}
@@ -67,7 +80,11 @@ const ActivityPage = () => {
         {/* Activity List */}
         {activities && (
           <div className="mb-8">
-            <AcitivityList activities={activities} role="host" />
+            <AcitivityList
+              activities={activities}
+              role="host"
+              refetch={() => setTriggerFetch((prev) => !prev)}
+            />
           </div>
         )}
 
@@ -106,7 +123,6 @@ const ActivityPage = () => {
         )}
       </div>
 
-      
       {/* Modal - Full Screen Overlay */}
       {isOpenModal && (
         <div className="fixed inset-0 z-[9999] bg-black/50 bg-opacity-50 overflow-y-auto">
@@ -117,8 +133,6 @@ const ActivityPage = () => {
           </div>
         </div>
       )}
-
-      
     </div>
   );
 };

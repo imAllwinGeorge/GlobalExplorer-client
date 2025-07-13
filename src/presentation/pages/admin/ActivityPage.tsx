@@ -2,12 +2,18 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { adminService } from "../../../services/AdminService";
 import type { Activity } from "../../../shared/types/global";
-import AcitivityList from "../../components/host/AcitivityList";
+import AcitivityList from "../../components/activity/AcitivityList";
 import Pagination from "../../components/common/Pagination";
+import { useLocalStorage } from "../../hooks/useLocalStorage";
+import { LOCAL_STORAGE_KEYS } from "../../../shared/constants/localStoragekeys";
 
 const ActivityPage = () => {
   const [activities, setActivities] = useState<Activity[] | null>(null);
-  const [page, setPage] = useState(1);
+  const [triggerFetch, setTriggerFetch] = useState(false);
+  const [page, setPage] = useLocalStorage(
+    LOCAL_STORAGE_KEYS.ADMIN_ACTIVITY_PAGE,
+    1
+  );
   const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
@@ -26,10 +32,22 @@ const ActivityPage = () => {
       }
     };
     fetchActivities();
-  }, [page]);
+  }, [page, triggerFetch]);
+
+  useEffect(() => {
+    return () => {
+      localStorage.removeItem(LOCAL_STORAGE_KEYS.ADMIN_ACTIVITY_PAGE);
+    };
+  }, []);
   return (
     <div>
-      {activities && <AcitivityList activities={activities} role="admin" />}
+      {activities && (
+        <AcitivityList
+          activities={activities}
+          role="admin"
+          refetch={() => setTriggerFetch((prev) => !prev)}
+        />
+      )}
       <Pagination
         page={page}
         totalPages={totalPages}

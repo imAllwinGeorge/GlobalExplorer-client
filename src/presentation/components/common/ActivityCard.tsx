@@ -64,7 +64,7 @@ export default function ActivityCard({
       initial="hidden"
       animate="visible"
       whileHover="hover"
-      className="w-full max-w-4xl m-4"
+      className="w-full max-w-6xl m-4"
     >
       <Card className="overflow-hidden border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
         <CardContent className="p-0">
@@ -190,7 +190,6 @@ export default function ActivityCard({
                     </Button>: <Button
                       className="w-full lg:w-auto bg-cyan-500 hover:bg-cyan-600 text-white px-8 py-3 text-lg font-semibold"
                       onClick={() => onViewDetails?.(activity)}
-                      disabled={!activity.isActive}
                     >
                       <Calendar className="w-4 h-4 mr-2" />
                       {buttonTitle}

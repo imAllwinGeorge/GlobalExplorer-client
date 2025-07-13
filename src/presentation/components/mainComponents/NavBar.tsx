@@ -164,7 +164,7 @@ const NavBar = ({ role }: NavBarPropsType) => {
   return (
     <>
       <motion.nav
-        className="w-full border-b border-gray-200/50 bg-white/80 backdrop-blur-xl sticky top-0 z-40"
+        className="w-full border-b border-gray-200/50 bg-white/80 backdrop-blur-xl sticky top-0 z-40 shadow"
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}

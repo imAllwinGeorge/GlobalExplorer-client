@@ -1,18 +1,21 @@
-import { useState } from "react";
 import { HostService } from "../../../services/HostService";
 import type { Activity } from "../../../shared/types/global";
 import ActivityCard from "../common/ActivityCard";
 import ActivityDetails from "./ActvityDetails";
 import ActivityEdit from "./ActivityEdit";
+import toast from "react-hot-toast";
+import { useLocalStorage } from "../../hooks/useLocalStorage";
+import { LOCAL_STORAGE_KEYS } from "../../../shared/constants/localStoragekeys";
 
 type ActivityListProps = {
   activities: Activity[];
   role: string;
+  refetch: () => void;
 };
 
-const AcitivityList = ({ activities, role }: ActivityListProps) => {
-  const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
-  const [editActivity, setEditActivity] = useState<Activity | null>(null);
+const AcitivityList = ({ activities, role, refetch }: ActivityListProps) => {
+  const [selectedActivity, setSelectedActivity] = useLocalStorage<Activity | null>(LOCAL_STORAGE_KEYS.SELECTED_ACTIVITY, null);
+  const [editActivity, setEditActivity] = useLocalStorage<Activity | null>(LOCAL_STORAGE_KEYS.EDIT_ACTIVITY, null);
   const hostService = new HostService();
 
   const handleEdit = (activity: Activity) => {
@@ -22,6 +25,11 @@ const AcitivityList = ({ activities, role }: ActivityListProps) => {
   const handleViewDetails = (activity: Activity) => {
     setSelectedActivity(activity);
   };
+
+  const onBack = () => {
+    setSelectedActivity(null)
+    refetch?.();
+  }
 
   const updateActivity = async (activity: Activity, images: File[]) => {
     const data = new FormData();
@@ -49,9 +57,15 @@ const AcitivityList = ({ activities, role }: ActivityListProps) => {
 
     try {
       const response = await hostService.editActivity(activity._id, data);
-      console.log("Activity updated:", response.data);
+      if(response.status === 200) {
+        toast.success("Activity Edited successfully.");
+        setEditActivity(null)
+        refetch();
+      }
     } catch (error) {
-      console.error("Failed to update activity:", error);
+      if(error instanceof Error) {
+        toast.error(error.message)
+      }
     }
   };
 
@@ -62,7 +76,7 @@ const AcitivityList = ({ activities, role }: ActivityListProps) => {
     <div className="container mx-auto px-4">
       {!showOverlay && (
         <div className="container mx-auto px-4">
-          <h1 className="text-3xl font-bold text-center mb-8">Activities</h1>
+          <h1 className="text-3xl font-bold text-gray-800 text-center mb-8 ">Activities</h1>
           <div className="space-y-6">
             {activities?.map((activity) => (
               <ActivityCard
@@ -87,7 +101,7 @@ const AcitivityList = ({ activities, role }: ActivityListProps) => {
             role={role}
             activity={selectedActivity}
             onEdit={handleEdit}
-            onBack={() => setSelectedActivity(null)}
+            onBack={onBack}
           />
         </div>
       )}

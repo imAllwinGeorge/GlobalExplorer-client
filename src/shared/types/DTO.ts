@@ -45,6 +45,7 @@ export interface ActivityDTO {
   country: string;
   location: [number, number];
   images: File[];
+  recurrenceDays: string[];
   reportingPlace: string;
   reportingTime: string;
 }

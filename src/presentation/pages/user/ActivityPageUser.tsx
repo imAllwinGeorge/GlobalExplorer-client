@@ -4,10 +4,14 @@ import toast from "react-hot-toast";
 import { userService } from "../../../services/UserService";
 import type { Activity } from "../../../shared/types/global";
 import Carousel from "../../components/common/Carousel";
+import ActivityCard from "../../components/common/ActivityCard";
+import { useNavigate } from "react-router-dom";
 const ActivityPageUser = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [activities, setActivities] = useState<Activity[] | null>(null);
+
+  const navigate = useNavigate();
 
   const handleCardClick = (activity: Activity) => {
     console.log("Card clicked:", activity.activityName);
@@ -42,15 +46,15 @@ const ActivityPageUser = () => {
         </div>
       )}
 
-      {/* <div className="container mx-auto px-4">
+      <div className="container mx-auto px-4">
         <h1 className="text-3xl font-bold text-center mb-8">Activities</h1>
         <div className="space-y-6">
           {activities?.map((activity) => (
             <ActivityCard
               key={activity._id}
               activity={activity}
-              onEdit={() => setOpenDetails(true)}
-              onViewDetails={() => setOpenDetails(true)}
+              onEdit={() => navigate("/activity-details", { state: activity._id})}
+              onViewDetails={() => navigate("/activity-details", { state: activity._id})}
               currencySymbol="$"
               exchangeRate={83.5}
               secondaryCurrency="INR"
@@ -58,7 +62,7 @@ const ActivityPageUser = () => {
             />
           ))}
         </div>
-      </div> */}
+      </div>
 
       
 

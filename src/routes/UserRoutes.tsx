@@ -11,6 +11,7 @@ import UserLayout from '../presentation/components/layouts/UserLayout'
 import LandingPage from '../presentation/pages/LandingPage/LandingPage'
 import ActivityPageUser from '../presentation/pages/user/ActivityPageUser'
 import Blogs from '../presentation/pages/user/Blogs'
+import ActivityDetailsUser from '../presentation/pages/user/ActivityDetailsUser'
 
 const UserRoutes = () => {
   return (
@@ -25,6 +26,7 @@ const UserRoutes = () => {
           <Route path='home' element={<HomePage />} />
           <Route path='explorations' element={<ActivityPageUser />} />
           <Route path='blogs' element={<Blogs />} />
+          <Route path='activity-details' element={<ActivityDetailsUser />} />
         </Route>
     </Routes>
   )

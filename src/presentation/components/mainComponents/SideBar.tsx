@@ -105,7 +105,7 @@ const SideBar = ({ role }: SideBarPropsType) => {
       {/* Mobile Toggle Button */}
       <motion.button
         onClick={() => setSidebarOpen(!sidebarOpen)}
-        className="fixed top-4 left-4 z-50 lg:hidden p-3 bg-white rounded-xl shadow-lg border border-gray-200 hover:shadow-xl transition-shadow duration-200"
+        className="fixed top-4 left-4 z-50 lg:hidden p-3 bg-white rounded-xl shadow-lg border border-gray-200 hover:shadow-xl transition-shadow duration-200 "
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
       >

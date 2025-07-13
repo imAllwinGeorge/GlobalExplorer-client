@@ -25,6 +25,7 @@ import {  useState } from "react";
 import { adminService } from "../../../services/AdminService";
 import { Switch } from "../../../components/ui/switch";
 import toast from "react-hot-toast";
+import ConfirmModal from "../ReusableComponents/ConfirmModal";
 
 interface ActivityViewProps {
   role: string;
@@ -40,6 +41,8 @@ export default function ActivityDetails({
   onBack,
 }: ActivityViewProps) {
   const [statusChange, setStatusChange] = useState(activity.isActive);
+  const [selectedActvity, setSelectedActivity] = useState<{activityId: string, status: boolean} | null>(null)
+  const [isModalOpen, setIsModelOpen] = useState(false);
 
   const formatDate = (date: Date | string | null | undefined) => {
     const parsedDate = typeof date === "string" ? new Date(date) : date;
@@ -82,13 +85,14 @@ export default function ActivityDetails({
     },
   };
 
-  const updateStatus = async (id: string, status: boolean) => {
+  const updateStatus = async () => {
+    if(!selectedActvity) return;
     try {
-      const response = await adminService.updateActivityStatus(id, {
-        isActive: status,
+      const response = await adminService.updateActivityStatus(selectedActvity?.activityId, {
+        isActive: selectedActvity?.status,
       });
       if (response.status === 200) {
-        setStatusChange(status);
+        setStatusChange(selectedActvity.status);
         
         toast.success("Activity Status Changed")
       }
@@ -134,8 +138,10 @@ export default function ActivityDetails({
                   <Switch
                     id="active-status"
                     checked={statusChange}
-                    onCheckedChange={(checked: boolean) =>
-                      updateStatus(activity._id, checked)
+                    onCheckedChange={(checked: boolean) =>{
+                      setSelectedActivity({activityId: activity._id, status: checked});
+                      setIsModelOpen(true)
+                    }
                     }
                   />
                   <label htmlFor="active-status">
@@ -364,6 +370,18 @@ export default function ActivityDetails({
           </div>
         </motion.div>
       </div>
+      <ConfirmModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModelOpen(false)}
+        onConfirm={updateStatus}
+        title={`${selectedActvity?.status ? "Unblock" : "Block"} User`}
+        message={`Are you sure you want to ${
+          selectedActvity?.status ? "Unblock" : "Block"
+        } This Activity?`}
+        confirmText="Confirm"
+        cancelText="Cancel"
+        variant="warning"
+      />
     </div>
   );
 }

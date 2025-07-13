@@ -1,5 +1,3 @@
-"use client";
-
 import type React from "react";
 
 import { useState } from "react";
@@ -29,6 +27,7 @@ import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
 import type { LatLngExpression } from "leaflet";
 import toast from "react-hot-toast";
 import { HostService } from "../../../services/HostService";
+import ConfirmModal from "../ReusableComponents/ConfirmModal";
 
 interface ActivityEditProps {
   activity: Activity;
@@ -80,6 +79,8 @@ export default function ActivityEdit({
   });
   const [images, setImages] = useState<File[]>([]);
   const [statusChange, setStatusChange] = useState(activity.isActive)
+  const [isModalOpen, setIsModelOpen] = useState(false)
+  const [selectedActivity, setSelectedActivity] = useState<{activityId: string, status: boolean} | null>(null)
   const hostService = new HostService();
 
   const handleInputChange = (
@@ -163,13 +164,14 @@ export default function ActivityEdit({
     }
   };
 
-  const updateStatus = async (id: string, status: boolean) => {
+  const updateStatus = async () => {
+    if(!selectedActivity) return
     try {
-      const response = await hostService.updateStatus(id, {isActive: status})
+      const response = await hostService.updateStatus(selectedActivity?.activityId, {isActive: selectedActivity?.status})
       if(response.status === 200){
         toast.success(response.data.message || "status changed successfull")
-        setStatusChange(status)
-        setFormData((prev) => ({...prev, isActive: status}))
+        setStatusChange(selectedActivity.status)
+        setFormData((prev) => ({...prev, isActive: selectedActivity.status}))
       }
     } catch (error) {
       if(error instanceof Error) {
@@ -210,9 +212,11 @@ export default function ActivityEdit({
               <Switch
                 id="active-status"
                 checked={statusChange}
-                onCheckedChange={(checked: boolean) =>
-                  updateStatus(activity._id, checked)
-                }
+                onCheckedChange={(checked: boolean) =>{
+                  setSelectedActivity({activityId:activity._id, status: checked});
+                  setIsModelOpen(true)
+                  // updateStatus(activity._id, checked)
+                }}
               />
               <label htmlFor="active-status">
                 {formData.isActive ? "Active" : "Inactive"}
@@ -247,7 +251,7 @@ export default function ActivityEdit({
                         required
                       />
                     </div>
-                    <div>
+                    {/* <div>
                       <label htmlFor="categoryId">Category ID *</label>
                       <Input
                         id="categoryId"
@@ -257,7 +261,7 @@ export default function ActivityEdit({
                         }
                         required
                       />
-                    </div>
+                    </div> */}
                   </div>
 
                   <div>
@@ -630,6 +634,18 @@ export default function ActivityEdit({
           </motion.div>
         </form>
       </div>
+      <ConfirmModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModelOpen(false)}
+        onConfirm={updateStatus}
+        title={`${selectedActivity?.status ? "Unblock" : "Block"} Activity`}
+        message={`Are you sure you want to ${
+          selectedActivity?.status ? "Unblock" : "Block"
+        } This Activity?`}
+        confirmText="Confirm"
+        cancelText="Cancel"
+        variant="warning"
+      />
     </div>
   );
 }
