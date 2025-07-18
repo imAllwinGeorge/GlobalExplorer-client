@@ -32,6 +32,7 @@ const AcitivityList = ({ activities, role, refetch }: ActivityListProps) => {
   }
 
   const updateActivity = async (activity: Activity, images: File[]) => {
+    activity.location.coordinates.reverse();
     const data = new FormData();
 
     data.append("activityName", activity.activityName);
@@ -50,6 +51,7 @@ const AcitivityList = ({ activities, role, refetch }: ActivityListProps) => {
     data.append("reportingTime", activity.reportingTime);
     data.append("existingImage", JSON.stringify(activity.images));
     data.append("location", JSON.stringify(activity.location));
+    data.append("recurrenceDays", JSON.stringify(activity.recurrenceDays))
 
     images.forEach((file) => {
       data.append("images", file);

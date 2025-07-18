@@ -9,7 +9,7 @@ import type { BlogPost } from "../../../../shared/types/global"
 
 interface BlogCardProps {
   blog: BlogPost
-  onReadMore?: (blog: BlogPost) => void
+  onReadMore: (blog: BlogPost) => void
   className?: string
 }
 
@@ -200,6 +200,7 @@ export default function BlogCard({ blog, onReadMore, className = "" }: BlogCardP
           </div>
         </CardContent>
       </Card>
+      
     </motion.div>
   )
 }

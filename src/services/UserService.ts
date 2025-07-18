@@ -25,9 +25,9 @@ export class UserService {
     }
   };
 
-  async getAllActivities(page: number, limit: number): Promise<ResponseType<AuthResponse>> {
+  async getAllActivities(page: number, limit: number, filter: object = {}): Promise<ResponseType<AuthResponse>> {
     try {
-      const response = await this.http.get<AuthResponse>(`/user/get-activities?page=${page}&limit=${limit}`)
+      const response = await this.http.get<AuthResponse>(`/user/get-activities?page=${page}&limit=${limit}`, filter)
       return response
     } catch (error) {
       const message = (error as ErrorResponse).response?.data?.message ||
@@ -65,6 +65,45 @@ export class UserService {
     } catch (error) {
       const message = (error as ErrorResponse).response?.data?.message ||
       "Something went wrong! please try again"
+      throw new Error(message)
+    }
+  }
+
+  async BookActivit (data: object): Promise<ResponseType<AuthResponse>> {
+    try {
+      const response = await axiosInstance.post<AuthResponse>('/user/activity/booking',{data});
+      return response
+    } catch (error) {
+      const message = (error as ErrorResponse).response?.data?.message ||
+      "Something went wrong! Please try again"
+      throw new Error(message)
+    }
+  }
+
+  async getCategories (): Promise<ResponseType<AuthResponse>>{
+    try {
+      const response = await axiosInstance.get<AuthResponse>('/user/get-categories');
+      return response
+    } catch (error) {
+      const message = (error as ErrorResponse).response?.data?.message ||
+      "Something went wrong! Please try again."
+      throw new Error(message)
+    }
+  }
+
+  async filterSearch(page: number, limit: number, filters: object): Promise<ResponseType<AuthResponse>> {
+    try {
+      const response = await axiosInstance.get<AuthResponse>(`/user/activity/filter`, {
+        params: {
+          page,
+          limit,
+          ...filters,
+        },
+      } );
+      return response
+    } catch (error) {
+      const message = (error as ErrorResponse).response?.data?.message ||
+      "Something went wrong! Please try again"
       throw new Error(message)
     }
   }

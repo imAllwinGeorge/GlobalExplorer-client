@@ -16,6 +16,7 @@ const ActivityPageUser = () => {
   const handleCardClick = (activity: Activity) => {
     console.log("Card clicked:", activity.activityName);
     // Handle card click - navigate to details page, etc.
+    navigate("/activity-details", { state: activity._id });
   };
 
   useEffect(() => {
@@ -46,15 +47,19 @@ const ActivityPageUser = () => {
         </div>
       )}
 
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-8 md:px-10 lg:px-14">
         <h1 className="text-3xl font-bold text-center mb-8">Activities</h1>
-        <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {activities?.map((activity) => (
             <ActivityCard
               key={activity._id}
               activity={activity}
-              onEdit={() => navigate("/activity-details", { state: activity._id})}
-              onViewDetails={() => navigate("/activity-details", { state: activity._id})}
+              onEdit={() =>
+                navigate("/activity-details", { state: activity._id })
+              }
+              onViewDetails={() =>
+                navigate("/activity-details", { state: activity._id })
+              }
               currencySymbol="$"
               exchangeRate={83.5}
               secondaryCurrency="INR"
@@ -63,8 +68,6 @@ const ActivityPageUser = () => {
           ))}
         </div>
       </div>
-
-      
 
       <Pagination
         page={page}

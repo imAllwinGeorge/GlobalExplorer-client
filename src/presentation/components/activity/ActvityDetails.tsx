@@ -279,8 +279,8 @@ export default function ActivityDetails({
                       Coordinates
                     </label>
                     <p className="text-gray-900">
-                      Latitude: {activity.location[0]}, Longitude:{" "}
-                      {activity.location[1]}
+                      Latitude: {activity.location.coordinates[1]}, Longitude:{" "}
+                      {activity.location.coordinates[0]}
                     </p>
                   </div>
                 </CardContent>

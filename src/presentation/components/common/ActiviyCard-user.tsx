@@ -5,6 +5,7 @@ import { easeOut, motion } from "framer-motion"
 import type { Activity } from "../../../shared/types/global"
 import { Card, CardContent } from "../../../components/ui/card"
 import { Badge } from "../../../components/ui/badge"
+import { MapPin, Users } from "lucide-react"
 
 interface UserActivityCardProps {
   activity: Activity
@@ -21,7 +22,7 @@ export default function ActivtyCardUser({
   // currencySymbol = "₹",
   // exchangeRate = 83.5,
 //   secondaryCurrency = "INR",
-  discountPercentage = 20,
+  // discountPercentage = 20,
 }: UserActivityCardProps) {
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("en-IN").format(price)
@@ -36,11 +37,11 @@ export default function ActivtyCardUser({
   // }
 
   // Mock duration calculation - you can replace this with actual duration from your data
-  const getDuration = () => {
-    // This is a placeholder - replace with actual duration logic
-    const durations = ["2H", "3H", "6H", "1D", "2D", "3N/4D", "6D/5N", "7N/8D"]
-    return durations[Math.floor(Math.random() * durations.length)]
-  }
+  // const getDuration = () => {
+  //   // This is a placeholder - replace with actual duration logic
+  //   const durations = ["2H", "3H", "6H", "1D", "2D", "3N/4D", "6D/5N", "7N/8D"]
+  //   return durations[Math.floor(Math.random() * durations.length)]
+  // }
 
   // Mock rating - replace with actual rating from your data
   // const getRating = () => {
@@ -136,16 +137,16 @@ const contentVariants = {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-black/10" />
 
                 {/* Duration Badge */}
-                <Badge className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm text-gray-800 text-xs font-semibold px-3 py-1.5 rounded-full shadow-md border-0">
+                {/* <Badge className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm text-gray-800 text-xs font-semibold px-3 py-1.5 rounded-full shadow-md border-0">
                   <span className="flex items-center gap-1">⏱️ {getDuration()}</span>
-                </Badge>
+                </Badge> */}
 
                 {/* Discount Badge */}
-                {discountPercentage > 0 && (
+                {/* {discountPercentage > 0 && (
                   <Badge className="absolute top-4 right-4 bg-red-500 text-white text-xs font-bold px-2.5 py-1.5 rounded-full shadow-md">
                     -{discountPercentage}%
                   </Badge>
-                )}
+                )} */}
 
                 {/* Unavailable Overlay */}
                 {!activity.isActive && (
@@ -170,7 +171,7 @@ const contentVariants = {
             <motion.div variants={contentVariants} className="p-5 sm:p-6 space-y-4">
               {/* Title */}
               <motion.h3
-                className="text-lg sm:text-xl font-bold text-gray-900 line-clamp-2 min-h-[3.5rem] leading-tight"
+                className="text-lg sm:text-xl font-bold text-gray-900 line-clamp-2 min-h-[1 rem] leading-tight"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3, duration: 0.4 }}
@@ -203,30 +204,42 @@ const contentVariants = {
               >
                 {/* Original Price */}
                 <div className="flex items-center space-x-2">
-                  <span className="text-sm text-gray-500 line-through">
+                  <span className="text-2xl font-bold text-gray-500 ">
                     ₹
                     {formatPrice(activity.pricePerHead)}
                   </span>
                   <span className="text-sm text-gray-600 font-medium">per person</span>
                 </div>
 
-                {/* Discounted Price
-                <div className="flex items-baseline space-x-2">
-                  <span className="text-2xl sm:text-3xl font-bold text-gray-900">
-                    {activity.currencySymbol}
-                    {formatPrice(activity.discountedPrice)}
-                  </span>
-                  <span className="text-base text-gray-600 font-medium">/ person</span>
-                </div> */}
+                {/* Max capacity */}
+                <div className="flex items-center text-gray-600 text-sm">
+                    <MapPin className="w-4 h-4 mr-1" />
+                    <span>
+                      {activity.city}, {activity.state}, {activity.country}
+                    </span>
+                  </div>
               </motion.div>
+
+              {/* Activity Details */}
+                <motion.div
+                  className="space-y-2"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  <div className="flex items-center text-sm text-gray-600">
+                    <Users className="w-4 h-4 mr-2" />
+                    <span>Max Capacity: {activity.maxCapacity} people</span>
+                  </div>
+                </motion.div>
 
               {/* Action hint */}
               <motion.div
-                className="pt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                className="opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                 initial={{ opacity: 0 }}
-                animate={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
               >
-                <div className="text-center">
+                <div className="text-center ">
                   <span className="text-sm text-blue-600 font-medium">Click to view details →</span>
                 </div>
               </motion.div>

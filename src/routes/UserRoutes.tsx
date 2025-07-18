@@ -12,6 +12,8 @@ import LandingPage from '../presentation/pages/LandingPage/LandingPage'
 import ActivityPageUser from '../presentation/pages/user/ActivityPageUser'
 import Blogs from '../presentation/pages/user/Blogs'
 import ActivityDetailsUser from '../presentation/pages/user/ActivityDetailsUser'
+import FilterPage from '../presentation/pages/user/Filter-page'
+import OrderSuccess from '../presentation/pages/user/OrderSuccess'
 
 const UserRoutes = () => {
   return (
@@ -27,6 +29,8 @@ const UserRoutes = () => {
           <Route path='explorations' element={<ActivityPageUser />} />
           <Route path='blogs' element={<Blogs />} />
           <Route path='activity-details' element={<ActivityDetailsUser />} />
+          <Route path='filter' element={<FilterPage />} />
+          <Route path='order-success' element={<OrderSuccess/>} />
         </Route>
     </Routes>
   )

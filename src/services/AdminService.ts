@@ -97,7 +97,7 @@ export const adminService = {
 
   getActivities: async (page = 1, limit = 3): Promise<ResponseType<AuthResponse>> => {
     try {
-      const response = await axiosInstance.get<AuthResponse>(`/admin/get-activities?page=${page}&limit=${limit}`)
+      const response = await axiosInstance.get<AuthResponse>(`/admin/get-activities?page=${page}&limit=${limit}`,)
       return response
     } catch (error) {
       const message = (error as ErrorResponse).response?.data?.message ||

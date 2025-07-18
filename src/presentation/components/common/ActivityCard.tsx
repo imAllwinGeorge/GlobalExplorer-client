@@ -70,7 +70,7 @@ export default function ActivityCard({
         <CardContent className="p-0">
           <div className="flex flex-col lg:flex-row">
             {/* Image Section */}
-            <div className="lg:w-2/5 relative overflow-hidden ml-3">
+            <div className="lg:w-4/5 relative overflow-hidden ml-3">
               <motion.div variants={imageVariants} className="w-full h-full relative">
                 <img
                   src={`${import.meta.env.VITE_IMG_URL}${activity.images[0]}`}

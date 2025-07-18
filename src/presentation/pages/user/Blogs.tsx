@@ -9,6 +9,9 @@ import { Button } from "../../components/ui/button";
 import { PlusCircle } from "lucide-react";
 import toast from "react-hot-toast";
 import Pagination from "../../components/common/Pagination";
+import { useLocalStorage } from "../../hooks/useLocalStorage";
+import { LOCAL_STORAGE_KEYS } from "../../../shared/constants/localStoragekeys";
+import BlogRead from "../../components/common/Blog/Read-Blog";
 
 const Blogs = () => {
   const [openModal, setOpenModal] = useState(false);
@@ -16,15 +19,23 @@ const Blogs = () => {
   const [blogs, setBlogs] = useState<BlogPost[] | null>(null);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [triggerFetch, setTriggerFetch] = useState(true)
+  const [selectedBlog, setSelectedBlog] = useLocalStorage<BlogPost | null>(
+    LOCAL_STORAGE_KEYS.SELECTED_BLOG,
+    null
+  );
 
   const handleSave = async (formData: FormData) => {
     try {
       const response = await userService.createBlog(formData);
-      if (response.status === 200) {
+      if (response.status === 201) {
         console.log(response);
+        setOpenModal(false);
+        setTriggerFetch(prev => !prev)
       }
     } catch (error) {
       console.log(error);
+      
     }
   };
 
@@ -34,7 +45,7 @@ const Blogs = () => {
         const response = await userService.getBlogs(page, 9);
         if (response.status === 200) {
           setBlogs(response.data.blogs as BlogPost[]);
-          setTotalPages(response.data.totalPages as number)
+          setTotalPages(response.data.totalPages as number);
         }
       } catch (error) {
         console.log(error);
@@ -44,7 +55,7 @@ const Blogs = () => {
       }
     };
     fetchBlogs();
-  }, [page]);
+  }, [page, triggerFetch]);
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header Section */}
@@ -78,7 +89,11 @@ const Blogs = () => {
         {blogs && (
           <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
             {blogs.map((blog, index) => (
-              <BlogCard key={`${blog._id}-${index}`} blog={blog} />
+              <BlogCard
+                key={`${blog._id}-${index}`}
+                blog={blog}
+                onReadMore={() => setSelectedBlog(blog)}
+              />
             ))}
           </div>
         )}
@@ -92,6 +107,15 @@ const Blogs = () => {
             userId={user?._id || ""}
             submitData={handleSave}
             // onClose={() => setOpenModal(false)}
+          />
+        </div>
+      )}
+
+      {selectedBlog && (
+        <div className="fixed inset-0 z-[999] bg-white overflow-auto">
+          <BlogRead
+            blogPost={selectedBlog}
+            onBack={() => setSelectedBlog(null)}
           />
         </div>
       )}

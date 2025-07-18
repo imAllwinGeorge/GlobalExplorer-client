@@ -32,7 +32,7 @@ const getLocationFromAddress = async (
     // console.log(result);
     const { lat, lng } = result.results[0].geometry;
     // setPosition([lat, lng])
-
+console.log(lat,lng)
     return [lat, lng];
   } catch (error) {
     console.error("Error getting location:", error);
@@ -66,7 +66,9 @@ export default function AddActivity({ onClose }: AddActivityProps) {
     state: "",
     postalCode: "",
     country: "",
-    location: [0, 0],
+    location: {
+      coordinates: [0, 0],
+    },
     images: [],
     recurrenceDays: [],
     reportingPlace: "",
@@ -105,7 +107,9 @@ export default function AddActivity({ onClose }: AddActivityProps) {
         const coordinates = await getLocationFromAddress(address);
         setFormData((prev) => ({
           ...prev,
-          location: coordinates,
+          location: {
+            ...prev.location,coordinates: coordinates
+          },
         }));
       } catch (error) {
         console.error("Failed to get location:", error);
@@ -132,6 +136,7 @@ export default function AddActivity({ onClose }: AddActivityProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    formData.location.coordinates.reverse();
     console.log("Activity Data:", formData);
     // Handle form submission here
     const data = new FormData();
@@ -213,7 +218,9 @@ export default function AddActivity({ onClose }: AddActivityProps) {
           // setPosition([pos.coords.latitude, pos.coords.longitude])
           setFormData((prev) => ({
             ...prev,
-            location: [pos.coords.latitude, pos.coords.longitude],
+            location: {
+              ...prev.location, coordinates: [pos.coords.latitude, pos.coords.longitude]
+            },
           }));
         },
         (err) => {
@@ -473,17 +480,17 @@ export default function AddActivity({ onClose }: AddActivityProps) {
 
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <MapContainer
-                    center={formData.location}
+                    center={formData.location.coordinates}
                     zoom={13}
                     scrollWheelZoom={false}
                     style={{ height: "300px", width: "100%" }}
                   >
-                    <ChangeView center={formData.location} />
+                    <ChangeView center={formData.location.coordinates} />
                     <TileLayer
                       attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                       url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     />
-                    <Marker position={formData.location}>
+                    <Marker position={formData.location.coordinates}>
                       <Popup>
                         A pretty CSS3 popup. <br /> Easily customizable.
                       </Popup>

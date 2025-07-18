@@ -12,6 +12,7 @@ import {
 import { Badge } from "../../../../components/ui/badge";
 import Input from "../../Input";
 import { Textarea } from "../../../../components/ui/textarea";
+import toast from "react-hot-toast";
 
 interface BlogSection {
   sectionTitle: string;
@@ -113,6 +114,11 @@ export default function BlogWriter({
 
   const saveBlog = () => {
     console.log("Saving blog post:", blogPost);
+
+    if(Object.values(blogPost.sections).length <= 0 || !blogPost.sections[0].sectionTitle.trim() || !blogPost.sections[0].content.trim){
+      return toast.error("please fill the form properly.")
+    }
+  
     // Here you would typically send the data to your backend
     const formData = new FormData();
     // Send basic fields separately instead of as JSON string

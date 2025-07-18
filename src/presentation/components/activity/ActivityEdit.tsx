@@ -73,10 +73,15 @@ export default function ActivityEdit({
   onCancel,
   isLoading = false,
 }: ActivityEditProps) {
+  console.log(activity)
   const [formData, setFormData] = useState<Activity>({
-    ...activity,
-    updatedAt: new Date(),
-  });
+  ...activity,
+  location: {
+    ...activity.location, coordinates: ([...activity.location.coordinates]).reverse() as [number,number]
+  },
+  updatedAt: new Date(),
+});
+console.log(formData)
   const [images, setImages] = useState<File[]>([]);
   const [statusChange, setStatusChange] = useState(activity.isActive)
   const [isModalOpen, setIsModelOpen] = useState(false)
@@ -97,11 +102,13 @@ export default function ActivityEdit({
   };
 
   const handleLocationChange = (index: 0 | 1, value: string) => {
-    const newLocation = [...formData.location] as [number, number];
+    const newLocation = [...formData.location.coordinates] as [number, number];
     newLocation[index] = Number.parseFloat(value) || 0;
     setFormData((prev) => ({
       ...prev,
-      location: newLocation,
+      location: {
+        ...prev.location,coordinates:  newLocation
+      },
     }));
   };
 
@@ -156,7 +163,9 @@ export default function ActivityEdit({
         const coordinates = await getLocationFromAddress(address);
         setFormData((prev) => ({
           ...prev,
-          location: coordinates,
+          location: {
+            ...prev.location, coordinates: coordinates
+          },
         }));
       } catch (error) {
         console.error("Failed to get location:", error);
@@ -414,17 +423,17 @@ export default function ActivityEdit({
                     </div>
                     <div className="w-full bg-gray-50 p-4 rounded-lg">
                       <MapContainer
-                        center={formData.location}
+                        center={formData.location.coordinates}
                         zoom={13}
                         scrollWheelZoom={false}
                         style={{ height: "300px", width: "200%" }}
                       >
-                        <ChangeView center={formData.location} />
+                        <ChangeView center={formData.location.coordinates} />
                         <TileLayer
                           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                         />
-                        <Marker position={formData.location}>
+                        <Marker position={formData.location.coordinates}>
                           <Popup>
                             A pretty CSS3 popup. <br /> Easily customizable.
                           </Popup>
@@ -442,7 +451,7 @@ export default function ActivityEdit({
                         id="latitude"
                         type="number"
                         step="any"
-                        value={formData.location[0]}
+                        value={formData.location.coordinates[0]}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                           handleLocationChange(0, e.target.value)
                         }
@@ -454,7 +463,7 @@ export default function ActivityEdit({
                         id="longitude"
                         type="number"
                         step="any"
-                        value={formData.location[1]}
+                        value={formData.location.coordinates[1]}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                           handleLocationChange(1, e.target.value)
                         }

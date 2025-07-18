@@ -29,8 +29,13 @@ import { Badge } from "../../../components/ui/badge";
 // import { Switch } from "../../../components/ui/switch"
 import { Avatar, AvatarFallback } from "../../../components/ui/avatar";
 import { AvatarImage } from "@radix-ui/react-avatar";
-import type { Activity } from "../../../shared/types/global";
-import { useLocation } from "react-router-dom";
+import type {
+  Activity,
+  AuthResponse,
+  Booking,
+  ResponseType,
+} from "../../../shared/types/global";
+import { useLocation, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { userService } from "../../../services/UserService";
 import {
@@ -43,6 +48,23 @@ import {
   subMonths,
   isSameDay,
 } from "date-fns";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../store";
+import { axiosInstance } from "../../../api/axiosInstance";
+
+interface RazorpayResponse {
+  amount: number;
+  currency: string;
+  id: string;
+}
+
+interface RazorpayVerifyResponse {
+  razorpay_payment_id: string;
+  razorpay_order_id: string;
+  razorpay_signature: string;
+}
+
+type Availability = { date: string; availableSeats: number };
 
 export default function ActivityDetailsUser() {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
@@ -53,8 +75,11 @@ export default function ActivityDetailsUser() {
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [count, setCount] = useState(1);
+  const [razorpayAccountId, setRazorpayAccountId] = useState("");
   // const [statusChange, setStatusChange] = useState(activity.isActive)
   const location = useLocation();
+  const user = useSelector((state: RootState) => state.auth.user);
+  const navigate = useNavigate();
 
   const formatDate = (date: Date | string | null | undefined) => {
     const parsedDate = typeof date === "string" ? new Date(date) : date;
@@ -116,6 +141,126 @@ export default function ActivityDetailsUser() {
     },
   };
 
+  // const handleBooking = async () => {
+  //   if (!activity) return;
+  //   const data = {
+  //     userId: user?._id,
+  //     activityId: activity?._id,
+  //     date: selectedDate,
+  //     participantCount: count,
+  //     pricePerParticipant: activity?.pricePerHead,
+  //     activityTitle: activity?.activityName,
+  //     paymentId: "686f66f374574b1a51ed47f0",
+  //     paymentStatus: "pending",
+  //     bookingStatus: "pending",
+  //     hostId: activity?.userId,
+  //     razorpayAccountId,
+  //   };
+  //   console.log("booking data   :", data);
+
+  //   try {
+  //     const response = await userService.BookActivit(data);
+  //     if (response.status === 201) {
+  //       toast.success("activityBooking success");
+  //     }
+  //   } catch (error) {
+  //     if (error instanceof Error) {
+  //       toast.error(error.message);
+  //     }
+  //   }
+  // };
+
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
+  // if (!window.Razorpay) {
+  //   toast.error("Razorpay SDK not loaded");
+  //   return;
+  // } else {
+  //   toast.success("kshasgdbjsn");
+  // }
+
+  const initiateCheckout = async () => {
+    if (!activity || !selectedDate || !user) {
+      toast.error("Please complete all booking details");
+      return;
+    }
+
+    const originalDate = new Date(selectedDate);
+    const millisecondInOneDay = 24 * 60 * 60 * 100;
+    const expiryDate = new Date(originalDate.getTime() - millisecondInOneDay);
+
+    const razorpayData = {
+      amount: activity.pricePerHead * count,
+      currency: "INR",
+      activityId: activity._id,
+      activityTitle: activity.activityName,
+      participantCount: count,
+      userId: user._id,
+      hostId: activity.userId,
+      holdUntilDate: expiryDate,
+      date: selectedDate,
+      razorpayAccountId,
+      pricePerParticipant: activity.pricePerHead,
+    };
+    console.log(razorpayData);
+    try {
+      const res = await axiosInstance.post(
+        "/user/activity/booking",
+        razorpayData
+      );
+      const data = res.data as RazorpayResponse;
+      console.log(res);
+      const options: RazorpayOptions = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+        amount: data.amount,
+        currency: data.currency,
+        name: activity.activityName,
+        order_id: data.id,
+        handler: async (response: RazorpayVerifyResponse) => {
+          try {
+            const verifyRes: ResponseType<AuthResponse> =
+              await axiosInstance.post("/user/payment/verify", {
+                ...response,
+                ...razorpayData,
+              });
+            console.log(verifyRes);
+            if (verifyRes.status === 201) {
+              toast.success("Booking successful!");
+              navigate("/order-success", {
+                state: verifyRes.data.booking as Booking,
+              });
+            }
+          } catch (err) {
+            console.log(err);
+            toast.error("Payment verification failed");
+          }
+        },
+        prefill: {
+          name: user.firstName,
+          email: user.email,
+        },
+        theme: {
+          color: "#6366f1",
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } catch (error) {
+      console.log(error);
+      toast.error("Payment initiation failed");
+    }
+  };
+
   useEffect(() => {
     const fetchActivity = async () => {
       try {
@@ -123,17 +268,19 @@ export default function ActivityDetailsUser() {
         console.log(response);
         if (response.status === 200) {
           setActivity(response.data.activity as Activity);
-          const mockAvailabilityData = [
-            { date: "2025-07-12", availableSeats: 10 },
-            { date: "2025-07-13", availableSeats: 8 },
-            { date: "2025-07-14", availableSeats: 1 },
-            { date: "2025-07-15", availableSeats: 5 },
-            { date: "2025-07-16", availableSeats: 12 },
-            { date: "2025-07-17", availableSeats: 7 },
-            { date: "2025-07-18", availableSeats: 3 },
-          ];
+          setRazorpayAccountId(response.data.razorpayAccountId as string);
+          // const mockAvailabilityData = [
+          //   { date: "2025-07-12", availableSeats: 10 },
+          //   { date: "2025-07-13", availableSeats: 8 },
+          //   { date: "2025-07-14", availableSeats: 1 },
+          //   { date: "2025-07-15", availableSeats: 5 },
+          //   { date: "2025-07-16", availableSeats: 12 },
+          //   { date: "2025-07-17", availableSeats: 7 },
+          //   { date: "2025-07-18", availableSeats: 3 },
+          // ];
+          console.log(response);
           const map: Record<string, number> = {};
-          mockAvailabilityData.forEach(
+          (response.data.availability as Availability[]).forEach(
             (d: { date: string; availableSeats: number }) => {
               map[d.date] = d.availableSeats;
             }
@@ -171,7 +318,7 @@ export default function ActivityDetailsUser() {
   const handleDateClick = (date: Date) => {
     const dateStr = format(date, "yyyy-MM-dd");
     const seats = availability[dateStr] ?? 0;
-
+    setCount(1);
     if (seats > 0) {
       setSelectedDate(date);
     }
@@ -683,13 +830,7 @@ export default function ActivityDetailsUser() {
                             setCount((prev) =>
                               Math.min(
                                 prev + 1,
-                                availability[
-                                  format(selectedDate, "yyyy-MM-dd")
-                                ] < 5
-                                  ? availability[
-                                      format(selectedDate, "yyyy-MM-dd")
-                                    ]
-                                  : 5
+                                availability[format(selectedDate, "yyyy-MM-dd")]
                               )
                             )
                           }
@@ -699,8 +840,13 @@ export default function ActivityDetailsUser() {
                         </button>
                       </div>
                     </div>
-
-                    <Button className="w-full mt-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 rounded-lg">
+                    <h1>
+                      Total Payable Amount : ₹ {count * activity.pricePerHead}
+                    </h1>
+                    <Button
+                      className="w-full mt-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 rounded-lg"
+                      onClick={initiateCheckout}
+                    >
                       Book for {format(selectedDate, "MMM d, yyyy")}
                     </Button>
                   </>

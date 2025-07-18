@@ -60,7 +60,11 @@ export interface Activity {
   state: string;
   postalCode: string;
   country: string;
-  location: [number, number];
+  recurrenceDays: [string];
+  location: {
+    type?: string;
+    coordinates: [number, number];
+  };
   images: (string | File)[];
   reportingPlace: string;
   reportingTime: string;
@@ -90,7 +94,32 @@ export interface BlogSection {
 }
 
 
-
+export interface Booking {
+  _id: string;
+  userId: string;
+  activityId: string;
+  activityTitle: string;
+  date: Date;
+  participantCount: number;
+  pricePerParticipant: number;
+  paymentStatus: "pending" | "paid" | "failed" | "refunded";
+  razorpayPaymentId?: string;
+  razporpayOrderId?: string;
+  razorpaySignatue?: string;
+  bookingStatus: "pending" | "cancelled" | "completed";
+  hostId: string;
+  isCancelled: boolean;
+  cancellationReason?: string;
+  isRefunded: boolean;
+  refundId?: string;
+  refundAmount?: number;
+  refundStatus?: "initialized" | "completed" | "failed";
+  razorpayTransferId?: string;
+  isReleasedId: boolean;
+  holdUntilDate: Date;
+  updatedAt: Date;
+  createdAt: Date;
+}
 
 export interface AuthResponse {
   user?: User | Host | null | undefined,
@@ -101,6 +130,9 @@ export interface AuthResponse {
   blog?: BlogPost,
   activity?: Activity
   totalPages?: number,
+  razorpayAccountId?: string,
+  availability?: {date: string, availableSeats: number}[]
+  booking?: Booking,
   token?: string | null | undefined;
   message?: string;
 }

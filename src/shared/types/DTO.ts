@@ -43,7 +43,10 @@ export interface ActivityDTO {
   state: string;
   postalCode: string;
   country: string;
-  location: [number, number];
+  location: {
+    type?: string;
+    coordinates: [number,number];
+  };
   images: File[];
   recurrenceDays: string[];
   reportingPlace: string;
