@@ -1,6 +1,6 @@
 import { axiosInstance } from "../api/axiosInstance";
 import type { ErrorResponse } from "../shared/types/auth.type";
-import type { AuthResponse, ResponseType } from "../shared/types/global";
+import type { AuthResponse, Booking, ResponseType } from "../shared/types/global";
 
 export class UserService {
   private http: typeof axiosInstance;
@@ -58,6 +58,17 @@ export class UserService {
     }
   }
 
+  async getMyBlogs(id: string, page: number, limit: number): Promise<ResponseType<AuthResponse>> {
+    try {
+      const response = await axiosInstance.get<AuthResponse>(`/user/blog/get-myblogs?id=${id}&page=${page}&limit=${limit}`);
+      return response;
+    } catch (error) {
+      const message = (error as ErrorResponse).response?.data?.message ||
+      "Something went wrong! Please try again"
+      throw new Error(message)
+    }
+  }
+
   async getActivityDetails(id: string): Promise<ResponseType<AuthResponse>> {
     try {
       const response = await axiosInstance.get<AuthResponse>(`/user/activity/get-details/${id}`);
@@ -104,6 +115,42 @@ export class UserService {
     } catch (error) {
       const message = (error as ErrorResponse).response?.data?.message ||
       "Something went wrong! Please try again"
+      throw new Error(message)
+    }
+  }
+
+  async editProfile(id: string, data: object): Promise<ResponseType<AuthResponse>> {
+    try {
+      const response = await axiosInstance.post<AuthResponse>(`/user/update-profile/${id}`, data)
+      return response
+    } catch (error) {
+      console.log(error)
+      const message = (error as ErrorResponse).response?.data?.message ||
+      "Something went frong! Please try again."
+      throw new Error(message)
+    }
+  }
+
+  async getBookedActivity (id: string, page: number, limit: number): Promise<ResponseType<AuthResponse>> {
+    try {
+      console.log(id)
+      const response = await axiosInstance.get<AuthResponse>(`/user/get-bookings?id=${id}&page=${page}&limit=${limit}`);
+      return response
+    } catch (error) {
+      console.log(error);
+      const message = (error as ErrorResponse).response?.data?.message ||
+      "Something went wrong! Please try again"
+      throw new Error(message)
+    }
+  }
+
+  async cancelBooking(bookedActivity: Booking, message: string): Promise<ResponseType<AuthResponse>> {
+    try {
+      const response = await axiosInstance.patch<AuthResponse>(`/user/cancel-booking?id=${bookedActivity._id}&message=${message}`);
+      return response;
+    } catch (error) {
+      const message = (error as ErrorResponse).response?.data?.message ||
+      "Something went wrong! Please try again."
       throw new Error(message)
     }
   }

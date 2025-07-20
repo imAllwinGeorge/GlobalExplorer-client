@@ -6,9 +6,11 @@ import {
   Globe,
   HeartHandshake,
   Home,
+  IdCardIcon,
   LayoutDashboard,
   MessageCircleMore,
   Notebook,
+  NotebookPen,
   NotebookText,
   ShieldUser,
   User,
@@ -53,7 +55,23 @@ export const navitems = {
 };
 
 export const SideBarItems = {
-    user: [],
+    user: [
+      {
+        title: "My Profile",
+        path: "/profile",
+        icon: User,
+      },
+      {
+        title: "My Bookings",
+        path: "/bookings",
+        icon: NotebookPen,
+      },
+      {
+        title: "My Blogs",
+        path: "/my-blogs",
+        icon: IdCardIcon,
+      }
+    ],
     admin: [
     {
         title: "Dashboard",

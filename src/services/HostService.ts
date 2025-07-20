@@ -71,4 +71,16 @@ export class HostService {
       throw new Error(message)
     }
   }
+
+  async editProfile(id: string, data: object): Promise<ResponseType<AuthResponse>> {
+    try {
+      const response = await axiosInstance.post<AuthResponse>(`/host/update-profile/${id}`, data)
+      return response
+    } catch (error) {
+      console.log(error)
+      const message = (error as ErrorResponse).response?.data?.message ||
+      "Something went frong! Please try again."
+      throw new Error(message)
+    }
+  }
 }

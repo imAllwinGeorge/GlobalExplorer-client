@@ -10,10 +10,10 @@ import { axiosInstance } from "../api/axiosInstance";
 //   password: string;
 // }
 
-
-
 export class AuthAPI {
-  async register(data: SignupDTO | FormData): Promise<ResponseType<AuthResponse>> {
+  async register(
+    data: SignupDTO | FormData
+  ): Promise<ResponseType<AuthResponse>> {
     try {
       const response = await axiosInstance.post<AuthResponse>(
         "/send-otp",
@@ -32,12 +32,9 @@ export class AuthAPI {
 
   async verify(otp: string): Promise<ResponseType<AuthResponse>> {
     try {
-      const response = await axiosInstance.post<AuthResponse>(
-        "/register",
-        {
-          otp,
-        }
-      );
+      const response = await axiosInstance.post<AuthResponse>("/register", {
+        otp,
+      });
       return response;
     } catch (error) {
       console.log("please checkthis error: ", error);
@@ -49,13 +46,16 @@ export class AuthAPI {
     }
   }
 
-  async verifyEmail(email: string, role: string): Promise<ResponseType<AuthResponse>> {
+  async verifyEmail(
+    email: string,
+    role: string
+  ): Promise<ResponseType<AuthResponse>> {
     try {
       const response = await axiosInstance.post<AuthResponse>(
         "/forgot-password",
         { email, role }
       );
-      
+
       return response;
     } catch (error) {
       const message =
@@ -83,7 +83,7 @@ export class AuthAPI {
       const message =
         (error as ErrorResponse).response?.data?.message ||
         "something went wrong!. Please try again";
-        
+
       throw new Error(message);
     }
   }
@@ -107,8 +107,9 @@ export class AuthAPI {
       });
       return response;
     } catch (error) {
-      console.log("login",error)
-      const message = (error as ErrorResponse).response?.data?.message ||
+      console.log("login", error);
+      const message =
+        (error as ErrorResponse).response?.data?.message ||
         "something went wrong!. Please try again";
       throw new Error(message);
     }
@@ -116,13 +117,12 @@ export class AuthAPI {
 
   async verifyToken(): Promise<ResponseType<AuthResponse>> {
     try {
-      const response = await axiosInstance.post<AuthResponse>(
-        "/verify-token"
-      );
+      const response = await axiosInstance.post<AuthResponse>("/verify-token");
       // if (!response) throw new Error("something went wrong");
       return response;
     } catch (error) {
-      const message = (error as ErrorResponse).response?.data?.message ||
+      const message =
+        (error as ErrorResponse).response?.data?.message ||
         "something went wrong!. Please try again";
       throw new Error(message);
     }
@@ -130,7 +130,7 @@ export class AuthAPI {
 
   async googleLogin(role: string) {
     try {
-      window.location.href = `http://localhost:3000/auth/google?role=${role}`;
+      window.location.href = `${import.meta.env.VITE_API_BASE_URL}/auth/google?role=${role}`;
     } catch (error) {
       if (error) {
         throw new Error("something went wrong please try again");
@@ -140,13 +140,31 @@ export class AuthAPI {
 
   async logout(role: string) {
     try {
-      const response = await axiosInstance.post<AuthResponse>(`/logout/${role}`);
+      const response = await axiosInstance.post<AuthResponse>(
+        `/logout/${role}`
+      );
+      return response;
+    } catch (error) {
+      console.log(error);
+      const message =
+        (error as ErrorResponse).response?.data?.message ||
+        "sonme thing went wrong!. Please try again";
+      throw new Error(message);
+    }
+  }
+  async getUserProfile(id: string, role: string): Promise<ResponseType<AuthResponse>> {
+    try {
+      const response = await axiosInstance.get<AuthResponse>(`/get-profile?role=${role}&id=${id}`);
       return response
     } catch (error) {
       console.log(error)
       const message = (error as ErrorResponse).response?.data?.message || 
-      "sonme thing went wrong!. Please try again";
+      "some thing went wrong!. Please try again";
       throw new Error(message)
     }
   }
+
+ 
 }
+
+export const authService = new AuthAPI();
