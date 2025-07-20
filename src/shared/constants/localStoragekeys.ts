@@ -14,5 +14,6 @@ export const LOCAL_STORAGE_KEYS = {
   USER_FILTER_PAGE: "user_filter_page",
   FILTER_SELECTED_ACTIVITY: "filter_selected_activity",
   FILTERS: "filters",
-  SELECTED_BLOG: "selected_blog"
+  SELECTED_BLOG: "selected_blog",
+  MY_BOOKING_PAGE: "my_booking_page",
 };

@@ -133,6 +133,7 @@ export interface AuthResponse {
   razorpayAccountId?: string,
   availability?: {date: string, availableSeats: number}[]
   booking?: Booking,
+  bookings?: Booking[],
   token?: string | null | undefined;
   message?: string;
 }

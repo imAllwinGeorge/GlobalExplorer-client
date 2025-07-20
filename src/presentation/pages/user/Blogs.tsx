@@ -35,9 +35,28 @@ const Blogs = () => {
       }
     } catch (error) {
       console.log(error);
+      if(error instanceof Error) {
+        toast.error(error.message)
+      }
       
     }
   };
+
+  const myBlogs = async () => {
+    if(!user) return;
+    try {
+      const response = await userService.getMyBlogs(user?._id, page, 9);
+      console.log(response)
+      if(response.status === 200) {
+        setBlogs(response.data.blogs as BlogPost[]);
+        setTotalPages(response.data.totalPages as number);
+      }
+    } catch (error) {
+      if(error instanceof Error){
+        toast.error(error.message)
+      }
+    }
+  }
 
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -71,13 +90,21 @@ const Blogs = () => {
               </p>
             </div>
             {user && (
+              <>
+              <Button
+                onClick={myBlogs}
+                className="bg-orange-500 hover:bg-orange-600 text-white px-4 sm:px-6 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors w-full sm:w-auto"
+              >
+                <PlusCircle className="w-5 h-5" />
+                My Blogs
+              </Button>
               <Button
                 onClick={() => setOpenModal(true)}
                 className="bg-orange-500 hover:bg-orange-600 text-white px-4 sm:px-6 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors w-full sm:w-auto"
               >
                 <PlusCircle className="w-5 h-5" />
                 Write Blog
-              </Button>
+              </Button></>
             )}
           </div>
         </div>
