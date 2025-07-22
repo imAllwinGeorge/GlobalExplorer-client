@@ -83,4 +83,17 @@ export class HostService {
       throw new Error(message)
     }
   }
+
+  async activityBookings(id: string, page: number, limit: number): Promise<ResponseType<AuthResponse>> {
+    try {
+      const response = await axiosInstance.get<AuthResponse>(`/host/get-bookings?id=${id}&page=${page}&limit=${limit}`);
+      return response;
+    } catch (error) {
+      const message = (error as ErrorResponse).response?.data?.message ||
+      "Something went wrong! please try again."
+      throw new Error(message);
+    }
+  }
 }
+
+export const hostService = new HostService();

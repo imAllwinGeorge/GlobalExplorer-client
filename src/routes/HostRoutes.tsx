@@ -8,6 +8,7 @@ import HostOtp from "../presentation/pages/host/otp/HostOtp"
 import HostLayout from "../presentation/components/layouts/HostLayout"
 import ActivityPage from "../presentation/pages/host/ActivityPage"
 import Profile from "../presentation/pages/host/Profile"
+import BookingPage from "../presentation/pages/host/BookingPage"
 
 
 const HostRoutes = () => {
@@ -22,6 +23,7 @@ const HostRoutes = () => {
           <Route path="home" element={<HostHome />} />
           <Route path="activity" element={<ActivityPage />} />
           <Route path="profile" element={<Profile />} />
+          <Route path="bookings" element={<BookingPage />} />
         </Route>
     </Routes>
     </>

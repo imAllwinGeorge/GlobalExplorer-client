@@ -142,7 +142,9 @@ const Blogs = () => {
         <div className="fixed inset-0 z-[999] bg-white overflow-auto">
           <BlogRead
             blogPost={selectedBlog}
-            onBack={() => setSelectedBlog(null)}
+            onBack={() => {setSelectedBlog(null)
+              setTriggerFetch(prev => !prev)
+            }}
           />
         </div>
       )}

@@ -12,7 +12,6 @@ import {
 import { Badge } from "../../../../components/ui/badge";
 import Input from "../../Input";
 import { Textarea } from "../../../../components/ui/textarea";
-import toast from "react-hot-toast";
 
 interface BlogSection {
   sectionTitle: string;
@@ -51,6 +50,18 @@ export default function BlogWriter({
   const [isPreview, setIsPreview] = useState(false);
   const fileInputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
   const coverImageRef = useRef<HTMLInputElement | null>(null);
+  const [errors, setErrors] = useState<{
+    title?: string;
+    author?: string;
+    introduction?: string;
+    image?: string;
+    sectionlength?: string;
+    sections?: {
+      sectionTitle?: string;
+      content?: string;
+      image?: string;
+    }[];
+  }>({});
 
   const addNewSection = () => {
     const newSection: BlogSection = {
@@ -112,13 +123,72 @@ export default function BlogWriter({
     );
   };
 
+  const validate = () => {
+    const newErrors: typeof errors = {};
+
+    if (!blogPost.title.trim()) {
+      newErrors.title = "Title is required";
+    }
+    if (!blogPost.introduction.trim()) {
+      newErrors.introduction = "Introduction is required";
+    }
+    if (!blogPost.author.trim()) {
+      newErrors.author = "Please provide author name.";
+    }
+    if (!blogPost.image) {
+      newErrors.image = "Please upload a cover image.";
+    }
+
+    if (blogPost.sections.length <= 0) {
+      newErrors.sectionlength = "Atleast one section required.";
+    }
+
+    const sectionErrors: {
+      sectionTitle?: string;
+      content?: string;
+      image?: string;
+    }[] = [];
+
+    blogPost.sections.forEach((section, index) => {
+      const secError: {
+        sectionTitle?: string;
+        content?: string;
+        image?: string;
+      } = {};
+
+      if (!section.sectionTitle.trim()) {
+        secError.sectionTitle = "Please provide a section title";
+      }
+      if (!section.content.trim()) {
+        secError.content = "This field cannot be empty";
+      }
+      if (!section.image) {
+        secError.image = "Please upload an image.";
+      }
+
+      // Push only if any errors present
+      if (Object.keys(secError).length > 0) {
+        sectionErrors[index] = secError;
+      }
+    });
+
+    if (sectionErrors.length > 0) {
+      newErrors.sections = sectionErrors;
+    }
+
+    return newErrors;
+  };
+
   const saveBlog = () => {
     console.log("Saving blog post:", blogPost);
 
-    if(Object.values(blogPost.sections).length <= 0 || !blogPost.sections[0].sectionTitle.trim() || !blogPost.sections[0].content.trim){
-      return toast.error("please fill the form properly.")
+    const newErrors = validate();
+
+    if (newErrors) {
+      setErrors(newErrors);
+      return;
     }
-  
+
     // Here you would typically send the data to your backend
     const formData = new FormData();
     // Send basic fields separately instead of as JSON string
@@ -210,12 +280,12 @@ export default function BlogWriter({
                 )}
                 {blogPost.image && (
                   <div className="mb-4">
-                      <img
-                        src={getImageUrl(blogPost.image) || "/placeholder.svg"}
-                        alt={blogPost.title}
-                        className="w-full max-w-2xl mx-auto rounded-lg shadow-md"
-                      />
-                    </div>
+                    <img
+                      src={getImageUrl(blogPost.image) || "/placeholder.svg"}
+                      alt={blogPost.title}
+                      className="w-full max-w-2xl mx-auto rounded-lg shadow-md"
+                    />
+                  </div>
                 )}
               </div>
               {/* Table of Contents */}
@@ -320,6 +390,9 @@ export default function BlogWriter({
                 }
                 className="text-lg"
               />
+              {errors.title && (
+                <span className="text-red-500">{errors.title}</span>
+              )}
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -333,6 +406,9 @@ export default function BlogWriter({
                     setBlogPost((prev) => ({ ...prev, author: e.target.value }))
                   }
                 />
+                {errors.author && (
+                  <span className="text-red-500">{errors.author}</span>
+                )}
               </div>
             </div>
             <div>
@@ -350,6 +426,9 @@ export default function BlogWriter({
                 }
                 rows={3}
               />
+              {errors.introduction && (
+                <span className="text-red-500">{errors.introduction}</span>
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium mb-2">
@@ -371,6 +450,9 @@ export default function BlogWriter({
                   ref={coverImageRef}
                   className="hidden"
                 />
+                {errors.image && (
+                  <span className="text-red-500">{errors.image}</span>
+                )}
                 <Button
                   onClick={() => coverImageRef.current?.click()}
                   variant="outline"
@@ -398,6 +480,9 @@ export default function BlogWriter({
                 )}
               </div>
             </div>
+            {errors.sectionlength && (
+              <span className="text-red-500">{errors.sectionlength}</span>
+            )}
           </CardContent>
         </Card>
         {/* Table of Contents Preview */}
@@ -454,6 +539,11 @@ export default function BlogWriter({
                       updateSection(index, "sectionTitle", e.target.value)
                     }
                   />
+                  {errors.sections?.[index]?.sectionTitle && (
+                    <span className="text-red-500">
+                      {errors.sections[index].sectionTitle}
+                    </span>
+                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-2">
@@ -467,6 +557,11 @@ export default function BlogWriter({
                     }
                     rows={6}
                   />
+                  {errors.sections?.[index]?.content && (
+                    <span className="text-red-500">
+                      {errors.sections[index].content}
+                    </span>
+                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-2">
@@ -482,6 +577,11 @@ export default function BlogWriter({
                       }}
                       className="hidden"
                     />
+                    {errors.sections?.[index]?.image && (
+                      <span className="text-red-500">
+                        {errors.sections[index].image}
+                      </span>
+                    )}
                     <Button
                       onClick={() => fileInputRefs.current[index]?.click()}
                       variant="outline"

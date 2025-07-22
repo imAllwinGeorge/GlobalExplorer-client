@@ -2,37 +2,29 @@
 import { Button } from "../../ui/button";
 import { Card, CardContent } from "../../../../components/ui/card";
 import { Type } from "lucide-react";
-
-interface BlogSection {
-  sectionTitle: string;
-  content: string;
-  image?: File | string;
-}
-
-interface BlogDTO {
-  userId: string;
-  title: string;
-  author: string;
-  introduction: string;
-  sections: BlogSection[];
-  image: File | string;
-}
+import { useSelector } from "react-redux";
+import type { RootState } from "../../../store";
+import BlogEdit from "./Edit-Blog";
+import type { BlogPost } from "../../../../shared/types/global";
+import { useState } from "react";
 
 interface BlogReadProps {
-  blogPost: BlogDTO;
+  blogPost: BlogPost;
   onBack: () => void;
 }
 
 export default function BlogRead({ blogPost, onBack }: BlogReadProps) {
-//   const generateTableOfContents = () => {
-//     return blogPost.sections.filter((section) => section.sectionTitle.trim() !== "");
-//   };
+  const user = useSelector((state: RootState) => state.auth.user);
+  const [editBlog, setEditBlog] = useState(false);
+  //   const generateTableOfContents = () => {
+  //     return blogPost.sections.filter((section) => section.sectionTitle.trim() !== "");
+  //   };
 
-//   const getImageUrl = (image: File | string | undefined) => {
-//     if (!image) return "/placeholder.svg";
-//     if (typeof image === "string") return image;
-//     return URL.createObjectURL(image);
-//   };
+  //   const getImageUrl = (image: File | string | undefined) => {
+  //     if (!image) return "/placeholder.svg";
+  //     if (typeof image === "string") return image;
+  //     return URL.createObjectURL(image);
+  //   };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -40,11 +32,16 @@ export default function BlogRead({ blogPost, onBack }: BlogReadProps) {
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold">Blog Preview</h1>
           <div className="flex gap-2">
+            {user?._id === blogPost.userId && (
+              <Button onClick={() => setEditBlog(true)} variant="outline">
+                <Type className="w-4 h-4 mr-2" />
+                Edit
+              </Button>
+            )}
             <Button onClick={onBack} variant="outline">
               <Type className="w-4 h-4 mr-2" />
               Back
             </Button>
-            
           </div>
         </div>
 
@@ -97,7 +94,10 @@ export default function BlogRead({ blogPost, onBack }: BlogReadProps) {
                 {section.content && (
                   <div className="prose max-w-none mb-4">
                     {section.content.split("\n").map((paragraph, idx) => (
-                      <p key={idx} className="mb-4 text-gray-700 leading-relaxed">
+                      <p
+                        key={idx}
+                        className="mb-4 text-gray-700 leading-relaxed"
+                      >
                         {paragraph}
                       </p>
                     ))}
@@ -117,6 +117,13 @@ export default function BlogRead({ blogPost, onBack }: BlogReadProps) {
           </CardContent>
         </Card>
       </div>
+      {editBlog && (
+        <BlogEdit
+          blogPost={blogPost}
+          onSave={onBack}
+          onCancel={() => setEditBlog(false)}
+        />
+      )}
     </div>
   );
 }

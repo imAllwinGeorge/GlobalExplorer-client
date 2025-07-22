@@ -48,6 +48,63 @@ type AddActivityProps = {
   onClose: () => void;
 };
 
+type ActivityErrors = {
+  activityName?: string;
+  itenary?: string;
+  maxCapacity?: string;
+  categoryId?: string;
+  pricePerHead?: string;
+  userId?: string;
+  street?: string;
+  city?: string;
+  district?: string;
+  state?: string;
+  postalCode?: string;
+  country?: string;
+  reportingPlace?: string;
+  reportingTime?: string;
+  location?: {
+    coordinates?: string;
+  };
+  images?: string;
+  recurrenceDays?: string;
+};
+
+const validateActivityForm = (data: ActivityDTO): ActivityErrors => {
+  const errors: ActivityErrors = {};
+
+  if (!data.activityName.trim()) errors.activityName = "Please provide a valid Activity Name";
+  if (data.itenary.trim().split(/\s+/).length <= 20) errors.itenary = "Please provide valid itenary. Itenary should atleast 20 words";
+
+  if (data.maxCapacity <= 0) errors.maxCapacity = "Max capacity must be greater than 0";
+  if (!data.categoryId) errors.categoryId = "";
+  if (data.pricePerHead <= 0) errors.pricePerHead = "Price per head must be greater than 0";
+
+  if (!data.street.trim()) errors.street = "Street is required";
+  if (!data.city.trim()) errors.city = "city is required";
+  if (!data.district.trim()) errors.district = "District is required";
+  if (!data.state.trim()) errors.state = "State is required";
+  if (!data.postalCode.trim()) errors.postalCode = "Postal Code is required";
+  if (!data.country.trim()) errors.country = "Country is required";
+
+  if (!data.reportingPlace.trim()) errors.reportingPlace = "Please mention a reporting place";
+  if (!data.reportingTime.trim()) errors.reportingTime = "Select a reporting time";
+
+  
+
+  if (!data.images || data.images.length === 0) {
+    errors.images = "At least one image is required";
+  }
+
+  if (!data.recurrenceDays || data.recurrenceDays.length === 0) {
+    errors.recurrenceDays = "At least one recurrence day must be selected";
+  }
+
+  return errors;
+};
+
+
+
 const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 
 
@@ -74,6 +131,7 @@ export default function AddActivity({ onClose }: AddActivityProps) {
     reportingPlace: "",
     reportingTime: "",
   });
+  const [errors, setErrors] = useState<ActivityErrors>();
   const [categories, setCategories] = useState<Category[] | null>(null);
   const [selectedDays, setSelectedDays] = useState<string[]>([])
 
@@ -139,6 +197,13 @@ export default function AddActivity({ onClose }: AddActivityProps) {
     formData.location.coordinates.reverse();
     console.log("Activity Data:", formData);
     // Handle form submission here
+
+    const newErrors = validateActivityForm(formData);
+
+    if(Object.keys(newErrors).length > 0){
+      setErrors(newErrors);
+      return;
+    }
     const data = new FormData();
 
     // Append text fields
@@ -276,8 +341,8 @@ export default function AddActivity({ onClose }: AddActivityProps) {
                       onChange={handleInputChange}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
                       placeholder="Enter activity name"
-                      required
                     />
+                      {errors?.activityName && <span className="text-red-500" >{errors.activityName}</span>}
                   </div>
 
                   <div>
@@ -290,7 +355,7 @@ export default function AddActivity({ onClose }: AddActivityProps) {
                       value={formData.categoryId}
                       onChange={handleInputChange}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
-                      required
+                  
                     >
                       <option value="">Select category</option>
                       {categories &&
@@ -300,6 +365,7 @@ export default function AddActivity({ onClose }: AddActivityProps) {
                           </option>
                         ))}
                     </select>
+                    {errors?.categoryId && <span className="text-red-500" >{errors.categoryId}</span>}
                   </div>
 
                   <div>
@@ -313,9 +379,8 @@ export default function AddActivity({ onClose }: AddActivityProps) {
                       onChange={handleInputChange}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
                       placeholder="Maximum participants"
-                      min="1"
-                      required
                     />
+                    {errors?.maxCapacity && <span className="text-red-500" >{errors.maxCapacity}</span>}
                   </div>
 
                   <div>
@@ -331,8 +396,8 @@ export default function AddActivity({ onClose }: AddActivityProps) {
                       placeholder="Price in USD"
                       min="0"
                       step="0.01"
-                      required
                     />
+                    {errors?.pricePerHead && <span className="text-red-500" >{errors.pricePerHead}</span>}
                   </div>
                 </div>
 
@@ -351,6 +416,7 @@ export default function AddActivity({ onClose }: AddActivityProps) {
                       {day.slice(0, 3)}
                     </button>
                   ))}
+                  {errors?.recurrenceDays && <span className="text-red-500" >{errors.activityName}</span>}
                 </div>
 
                 <div>
@@ -364,8 +430,8 @@ export default function AddActivity({ onClose }: AddActivityProps) {
                     rows={4}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
                     placeholder="Describe the activity itinerary..."
-                    required
                   />
+                  {errors?.itenary && <span className="text-red-500" >{errors.itenary}</span>}
                 </div>
               </motion.section>
 
@@ -393,8 +459,8 @@ export default function AddActivity({ onClose }: AddActivityProps) {
                       onBlur={handleAddressChange}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
                       placeholder="Street address"
-                      required
                     />
+                    {errors?.street && <span className="text-red-500" >{errors.street}</span>}
                   </div>
 
                   <div>
@@ -409,8 +475,8 @@ export default function AddActivity({ onClose }: AddActivityProps) {
                       onBlur={handleAddressChange}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
                       placeholder="City"
-                      required
                     />
+                    {errors?.city && <span className="text-red-500" >{errors.city}</span>}
                   </div>
 
                   <div>
@@ -425,8 +491,8 @@ export default function AddActivity({ onClose }: AddActivityProps) {
                       onBlur={handleAddressChange}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
                       placeholder="District"
-                      required
                     />
+                    {errors?.district && <span className="text-red-500" >{errors.district}</span>}
                   </div>
 
                   <div>
@@ -441,8 +507,8 @@ export default function AddActivity({ onClose }: AddActivityProps) {
                       onBlur={handleAddressChange}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
                       placeholder="State"
-                      required
                     />
+                    {errors?.state && <span className="text-red-500" >{errors.state}</span>}
                   </div>
 
                   <div>
@@ -457,8 +523,8 @@ export default function AddActivity({ onClose }: AddActivityProps) {
                       onBlur={handleAddressChange}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
                       placeholder="Postal code"
-                      required
                     />
+                    {errors?.postalCode && <span className="text-red-500" >{errors.postalCode}</span>}
                   </div>
 
                   <div>
@@ -473,8 +539,8 @@ export default function AddActivity({ onClose }: AddActivityProps) {
                       onBlur={handleAddressChange}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
                       placeholder="Country"
-                      required
                     />
+                    {errors?.country && <span className="text-red-500" >{errors.country}</span>}
                   </div>
                 </div>
 
@@ -522,8 +588,8 @@ export default function AddActivity({ onClose }: AddActivityProps) {
                       onChange={handleInputChange}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
                       placeholder="Where participants should meet"
-                      required
                     />
+                    {errors?.reportingPlace && <span className="text-red-500" >{errors.reportingPlace}</span>}
                   </div>
 
                   <div>
@@ -536,8 +602,8 @@ export default function AddActivity({ onClose }: AddActivityProps) {
                       value={formData.reportingTime}
                       onChange={handleInputChange}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
-                      required
                     />
+                    {errors?.reportingTime && <span className="text-red-500" >{errors.reportingTime}</span>}
                   </div>
                 </div>
               </motion.section>
@@ -564,6 +630,7 @@ export default function AddActivity({ onClose }: AddActivityProps) {
                     onChange={handleImageUpload}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
                   />
+                  {errors?.images && <span className="text-red-500" >{errors.images}</span>}
                 </div>
 
                 {formData.images.length > 0 && (

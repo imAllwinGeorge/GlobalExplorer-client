@@ -69,6 +69,17 @@ export class UserService {
     }
   }
 
+  async editBlog(id: string, data: FormData): Promise<ResponseType<AuthResponse>> {
+    try {
+      const response = await axiosInstance.put<AuthResponse>(`/user/blog/edit-blog/${id}`, data);
+      return response;
+    } catch (error) {
+      const message = (error as ErrorResponse).response?.data?.message ||
+      "Something went wrong! Please try again.";
+      throw new Error(message)
+    }
+  }
+
   async getActivityDetails(id: string): Promise<ResponseType<AuthResponse>> {
     try {
       const response = await axiosInstance.get<AuthResponse>(`/user/activity/get-details/${id}`);

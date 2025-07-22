@@ -67,25 +67,89 @@ const getLocationFromAddress = async (
   }
 };
 
+type ActivityErrors = {
+  activityName?: string;
+  itenary?: string;
+  maxCapacity?: string;
+  categoryId?: string;
+  pricePerHead?: string;
+  userId?: string;
+  street?: string;
+  city?: string;
+  district?: string;
+  state?: string;
+  postalCode?: string;
+  country?: string;
+  reportingPlace?: string;
+  reportingTime?: string;
+  location?: {
+    coordinates?: string;
+  };
+  images?: string;
+  recurrenceDays?: string;
+};
+
+const validateActivityForm = (data: Activity): ActivityErrors => {
+  const errors: ActivityErrors = {};
+
+  if (!data.activityName.trim())
+    errors.activityName = "Please provide a valid Activity Name";
+  if (data.itenary.trim().split(/\s+/).length <= 20)
+    errors.itenary =
+      "Please provide valid itenary. Itenary should atleast 20 words";
+
+  if (data.maxCapacity <= 0)
+    errors.maxCapacity = "Max capacity must be greater than 0";
+  if (!data.categoryId) errors.categoryId = "";
+  if (data.pricePerHead <= 0)
+    errors.pricePerHead = "Price per head must be greater than 0";
+
+  if (!data.street.trim()) errors.street = "Street is required";
+  if (!data.city.trim()) errors.city = "city is required";
+  if (!data.district.trim()) errors.district = "District is required";
+  if (!data.state.trim()) errors.state = "State is required";
+  if (!data.postalCode.trim()) errors.postalCode = "Postal Code is required";
+  if (!data.country.trim()) errors.country = "Country is required";
+
+  if (!data.reportingPlace.trim())
+    errors.reportingPlace = "Please mention a reporting place";
+  if (!data.reportingTime.trim())
+    errors.reportingTime = "Select a reporting time";
+
+  if (!data.images || data.images.length === 0) {
+    errors.images = "At least one image is required";
+  }
+
+  return errors;
+};
+
 export default function ActivityEdit({
   activity,
   onSave,
   onCancel,
   isLoading = false,
 }: ActivityEditProps) {
-  console.log(activity)
+  console.log(activity);
   const [formData, setFormData] = useState<Activity>({
-  ...activity,
-  location: {
-    ...activity.location, coordinates: ([...activity.location.coordinates]).reverse() as [number,number]
-  },
-  updatedAt: new Date(),
-});
-console.log(formData)
+    ...activity,
+    location: {
+      ...activity.location,
+      coordinates: [...activity.location.coordinates].reverse() as [
+        number,
+        number
+      ],
+    },
+    updatedAt: new Date(),
+  });
+  console.log(formData);
   const [images, setImages] = useState<File[]>([]);
-  const [statusChange, setStatusChange] = useState(activity.isActive)
-  const [isModalOpen, setIsModelOpen] = useState(false)
-  const [selectedActivity, setSelectedActivity] = useState<{activityId: string, status: boolean} | null>(null)
+  const [statusChange, setStatusChange] = useState(activity.isActive);
+  const [isModalOpen, setIsModelOpen] = useState(false);
+  const [selectedActivity, setSelectedActivity] = useState<{
+    activityId: string;
+    status: boolean;
+  } | null>(null);
+  const [errors, setErrors] = useState<ActivityErrors>();
   const hostService = new HostService();
 
   const handleInputChange = (
@@ -107,7 +171,8 @@ console.log(formData)
     setFormData((prev) => ({
       ...prev,
       location: {
-        ...prev.location,coordinates:  newLocation
+        ...prev.location,
+        coordinates: newLocation,
       },
     }));
   };
@@ -121,6 +186,14 @@ console.log(formData)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    const newErrors = validateActivityForm(formData);
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
     onSave?.(formData, images);
   };
 
@@ -164,7 +237,8 @@ console.log(formData)
         setFormData((prev) => ({
           ...prev,
           location: {
-            ...prev.location, coordinates: coordinates
+            ...prev.location,
+            coordinates: coordinates,
           },
         }));
       } catch (error) {
@@ -174,20 +248,23 @@ console.log(formData)
   };
 
   const updateStatus = async () => {
-    if(!selectedActivity) return
+    if (!selectedActivity) return;
     try {
-      const response = await hostService.updateStatus(selectedActivity?.activityId, {isActive: selectedActivity?.status})
-      if(response.status === 200){
-        toast.success(response.data.message || "status changed successfull")
-        setStatusChange(selectedActivity.status)
-        setFormData((prev) => ({...prev, isActive: selectedActivity.status}))
+      const response = await hostService.updateStatus(
+        selectedActivity?.activityId,
+        { isActive: selectedActivity?.status }
+      );
+      if (response.status === 200) {
+        toast.success(response.data.message || "status changed successfull");
+        setStatusChange(selectedActivity.status);
+        setFormData((prev) => ({ ...prev, isActive: selectedActivity.status }));
       }
     } catch (error) {
-      if(error instanceof Error) {
-        toast.error(error.message)
+      if (error instanceof Error) {
+        toast.error(error.message);
       }
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 py-6">
@@ -221,9 +298,12 @@ console.log(formData)
               <Switch
                 id="active-status"
                 checked={statusChange}
-                onCheckedChange={(checked: boolean) =>{
-                  setSelectedActivity({activityId:activity._id, status: checked});
-                  setIsModelOpen(true)
+                onCheckedChange={(checked: boolean) => {
+                  setSelectedActivity({
+                    activityId: activity._id,
+                    status: checked,
+                  });
+                  setIsModelOpen(true);
                   // updateStatus(activity._id, checked)
                 }}
               />
@@ -257,8 +337,12 @@ console.log(formData)
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                           handleInputChange("activityName", e.target.value)
                         }
-                        required
                       />
+                      {errors?.activityName && (
+                        <span className="text-red-500">
+                          {errors.activityName}
+                        </span>
+                      )}
                     </div>
                     {/* <div>
                       <label htmlFor="categoryId">Category ID *</label>
@@ -284,6 +368,9 @@ console.log(formData)
                       rows={4}
                       placeholder="Describe the activity, what's included, and what guests can expect..."
                     />
+                    {errors?.itenary && (
+                      <span className="text-red-500">{errors.itenary}</span>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -316,8 +403,12 @@ console.log(formData)
                             Number.parseFloat(e.target.value) || 0
                           )
                         }
-                        required
                       />
+                      {errors?.pricePerHead && (
+                        <span className="text-red-500">
+                          {errors.pricePerHead}
+                        </span>
+                      )}
                     </div>
                     <div>
                       <label htmlFor="maxCapacity">Maximum Capacity *</label>
@@ -332,8 +423,12 @@ console.log(formData)
                             Number.parseInt(e.target.value) || 1
                           )
                         }
-                        required
                       />
+                      {errors?.maxCapacity && (
+                        <span className="text-red-500">
+                          {errors.maxCapacity}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </CardContent>
@@ -360,8 +455,10 @@ console.log(formData)
                           handleInputChange("street", e.target.value)
                         }
                         onBlur={handleAddressChange}
-                        required
                       />
+                      {errors?.street && (
+                        <span className="text-red-500">{errors.street}</span>
+                      )}
                     </div>
                     <div>
                       <label htmlFor="city">City *</label>
@@ -372,8 +469,10 @@ console.log(formData)
                           handleInputChange("city", e.target.value)
                         }
                         onBlur={handleAddressChange}
-                        required
                       />
+                      {errors?.city && (
+                        <span className="text-red-500">{errors.city}</span>
+                      )}
                     </div>
                     <div>
                       <label htmlFor="district">District</label>
@@ -385,6 +484,9 @@ console.log(formData)
                         }
                         onBlur={handleAddressChange}
                       />
+                      {errors?.district && (
+                        <span className="text-red-500">{errors.district}</span>
+                      )}
                     </div>
                     <div>
                       <label htmlFor="state">State *</label>
@@ -395,8 +497,10 @@ console.log(formData)
                           handleInputChange("state", e.target.value)
                         }
                         onBlur={handleAddressChange}
-                        required
                       />
+                      {errors?.state && (
+                        <span className="text-red-500">{errors.state}</span>
+                      )}
                     </div>
                     <div>
                       <label htmlFor="postalCode">Postal Code</label>
@@ -408,6 +512,11 @@ console.log(formData)
                         }
                         onBlur={handleAddressChange}
                       />
+                      {errors?.postalCode && (
+                        <span className="text-red-500">
+                          {errors.postalCode}
+                        </span>
+                      )}
                     </div>
                     <div>
                       <label htmlFor="country">Country *</label>
@@ -418,8 +527,10 @@ console.log(formData)
                           handleInputChange("country", e.target.value)
                         }
                         onBlur={handleAddressChange}
-                        required
                       />
+                      {errors?.country && (
+                        <span className="text-red-500">{errors.country}</span>
+                      )}
                     </div>
                     <div className="w-full bg-gray-50 p-4 rounded-lg">
                       <MapContainer
@@ -493,8 +604,12 @@ console.log(formData)
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                           handleInputChange("reportingPlace", e.target.value)
                         }
-                        required
                       />
+                      {errors?.reportingPlace && (
+                        <span className="text-red-500">
+                          {errors.reportingPlace}
+                        </span>
+                      )}
                     </div>
                     <div>
                       <label htmlFor="reportingTime">Reporting Time *</label>
@@ -505,8 +620,12 @@ console.log(formData)
                           handleInputChange("reportingTime", e.target.value)
                         }
                         placeholder="e.g., 2:00 PM"
-                        required
                       />
+                      {errors?.reportingPlace && (
+                        <span className="text-red-500">
+                          {errors.reportingPlace}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </CardContent>
@@ -521,6 +640,9 @@ console.log(formData)
                     <ImageIcon className="w-5 h-5" />
                     Activity Images
                   </CardTitle>
+                  {errors?.images && (
+                    <span className="text-red-500">{errors.images}</span>
+                  )}
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {/* Existing Images */}
