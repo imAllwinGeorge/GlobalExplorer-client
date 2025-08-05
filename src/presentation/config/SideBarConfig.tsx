@@ -67,15 +67,15 @@ export const SideBarItems = {
         icon: NotebookPen,
       },
       {
-        title: "My Blogs",
-        path: "/my-blogs",
+        title: "My Chat",
+        path: "/chat",
         icon: IdCardIcon,
       }
     ],
     admin: [
     {
         title: "Dashboard",
-        path: "/admin/dashboard",
+        path: "/admin/home",
         icon: LayoutDashboard
     },
     {
@@ -110,6 +110,11 @@ export const SideBarItems = {
     },
   ],
   host: [
+    {
+      title: "Dashboard",
+      path: "/host/home",
+      icon: Notebook,
+    },
     {
       title: "Profile",
       path: "/host/profile",

@@ -211,14 +211,14 @@ export default function ActivityDetailsUser() {
       razorpayAccountId,
       pricePerParticipant: activity.pricePerHead,
     };
-    console.log(razorpayData);
+    console.log("razorpay data: ", razorpayData);
     try {
       const res = await axiosInstance.post(
         "/user/activity/booking",
         razorpayData
       );
       const data = res.data as RazorpayResponse;
-      console.log(res);
+      console.log("razorpay response  : ", res);
       const options: RazorpayOptions = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
         amount: data.amount,
@@ -226,10 +226,12 @@ export default function ActivityDetailsUser() {
         name: activity.activityName,
         order_id: data.id,
         handler: async (response: RazorpayVerifyResponse) => {
+          console.log("handler response:   ", response);
           try {
             const verifyRes: ResponseType<AuthResponse> =
               await axiosInstance.post("/user/payment/verify", {
                 ...response,
+                ...data,
                 ...razorpayData,
               });
             console.log(verifyRes);

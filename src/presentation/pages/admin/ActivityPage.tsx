@@ -5,7 +5,7 @@ import type { Activity } from "../../../shared/types/global";
 import AcitivityList from "../../components/activity/AcitivityList";
 import Pagination from "../../components/common/Pagination";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
-import { LOCAL_STORAGE_KEYS } from "../../../shared/constants/localStoragekeys";
+import { LOCAL_STORAGE_KEYS } from "../../../shared/constants/constants";
 
 const ActivityPage = () => {
   const [activities, setActivities] = useState<Activity[] | null>(null);

@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Filter, X } from "lucide-react";
 import Pagination from "../../components/common/Pagination";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
-import { LOCAL_STORAGE_KEYS } from "../../../shared/constants/localStoragekeys";
+import { LOCAL_STORAGE_KEYS } from "../../../shared/constants/constants";
 import type { Activity, Category } from "../../../shared/types/global";
 import toast from "react-hot-toast";
 import { userService } from "../../../services/UserService";
@@ -126,7 +126,7 @@ export default function FilterPage({
     async function fetchActivities() {
       try {
         setIsLoading(true);
-        console.log(filters)
+        console.log(filters);
         const response = await userService.filterSearch(page, 9, filters);
         if (response.status === 200) {
           setActivities(response.data.activities as Activity[]);
@@ -170,11 +170,11 @@ export default function FilterPage({
         (err) => {
           console.error("Geolocation error:", err.message);
         },
-    {
-      enableHighAccuracy: true,  // ✅ Request high accuracy (uses GPS when available)
-      timeout: 10000,            // ✅ Wait up to 10 seconds
-      maximumAge: 0              // ✅ Don't use cached position
-    }
+        {
+          enableHighAccuracy: true, // ✅ Request high accuracy (uses GPS when available)
+          timeout: 10000, // ✅ Wait up to 10 seconds
+          maximumAge: 0, // ✅ Don't use cached position
+        }
       );
     } else {
       console.warn("Geolocation not supported");

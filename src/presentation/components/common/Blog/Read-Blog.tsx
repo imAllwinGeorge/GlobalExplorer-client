@@ -1,4 +1,3 @@
-// import { Badge } from "../../../../components/ui/badge";
 import { Button } from "../../ui/button";
 import { Card, CardContent } from "../../../../components/ui/card";
 import { Type } from "lucide-react";
@@ -7,6 +6,9 @@ import type { RootState } from "../../../store";
 import BlogEdit from "./Edit-Blog";
 import type { BlogPost } from "../../../../shared/types/global";
 import { useState } from "react";
+import toast from "react-hot-toast";
+import { userService } from "../../../../services/UserService";
+import ConfirmModal from "../../ReusableComponents/ConfirmModal";
 
 interface BlogReadProps {
   blogPost: BlogPost;
@@ -15,17 +17,42 @@ interface BlogReadProps {
 
 export default function BlogRead({ blogPost, onBack }: BlogReadProps) {
   const user = useSelector((state: RootState) => state.auth.user);
+  const [isOpen, setIsOpen] = useState(false);
   const [editBlog, setEditBlog] = useState(false);
-  //   const generateTableOfContents = () => {
-  //     return blogPost.sections.filter((section) => section.sectionTitle.trim() !== "");
-  //   };
 
-  //   const getImageUrl = (image: File | string | undefined) => {
-  //     if (!image) return "/placeholder.svg";
-  //     if (typeof image === "string") return image;
-  //     return URL.createObjectURL(image);
-  //   };
+  const deleteBlog = async (id: string) => {
+    try {
+      const response = await userService.deleteBlog(id);
+      if (response.status === 200) {
+        toast.success("Blog deleted");
+        onBack();
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      }
+    }
+  };
 
+  // 🔁 Toggle between blog preview and edit page
+  if (editBlog) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4 py-10">
+        <div className="w-full max-w-4xl">
+          <BlogEdit
+            blogPost={blogPost}
+            onSave={() => {
+              setEditBlog(false);
+              onBack(); // or refetch updated blog
+            }}
+            onCancel={() => setEditBlog(false)}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  // 📰 Blog preview
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto p-6">
@@ -33,10 +60,16 @@ export default function BlogRead({ blogPost, onBack }: BlogReadProps) {
           <h1 className="text-2xl font-bold">Blog Preview</h1>
           <div className="flex gap-2">
             {user?._id === blogPost.userId && (
-              <Button onClick={() => setEditBlog(true)} variant="outline">
-                <Type className="w-4 h-4 mr-2" />
-                Edit
-              </Button>
+              <>
+                <Button onClick={() => setEditBlog(true)} variant="outline">
+                  <Type className="w-4 h-4 mr-2" />
+                  Edit
+                </Button>
+                <Button onClick={() => setIsOpen(true)} variant="outline">
+                  <Type className="w-4 h-4 mr-2" />
+                  Delete
+                </Button>
+              </>
             )}
             <Button onClick={onBack} variant="outline">
               <Type className="w-4 h-4 mr-2" />
@@ -45,7 +78,7 @@ export default function BlogRead({ blogPost, onBack }: BlogReadProps) {
           </div>
         </div>
 
-        <Card className="bg-white">
+        <Card className="bg-white shadow-md">
           <CardContent className="p-8">
             <div className="text-center mb-8">
               <h1 className="text-4xl font-bold mb-4">
@@ -66,23 +99,6 @@ export default function BlogRead({ blogPost, onBack }: BlogReadProps) {
                 </div>
               )}
             </div>
-
-            {/* {generateTableOfContents().length > 0 && (
-              <div className="mb-8 p-4 bg-orange-50 rounded-lg border-l-4 border-orange-400">
-                <h3 className="font-bold text-orange-800 mb-3">
-                  Table of Contents <Badge variant="secondary" className="ml-2">Show</Badge>
-                </h3>
-                <ul className="space-y-1">
-                  {generateTableOfContents().map((section, index) => (
-                    <li key={index}>
-                      <a href={`#${index}`} className="text-blue-600 hover:underline">
-                        {section.sectionTitle}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )} */}
 
             {blogPost.sections.map((section, index) => (
               <div key={index} id={index.toString()} className="mb-8">
@@ -117,13 +133,14 @@ export default function BlogRead({ blogPost, onBack }: BlogReadProps) {
           </CardContent>
         </Card>
       </div>
-      {editBlog && (
-        <BlogEdit
-          blogPost={blogPost}
-          onSave={onBack}
-          onCancel={() => setEditBlog(false)}
-        />
-      )}
+
+      <ConfirmModal
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        onConfirm={() => deleteBlog(blogPost._id)}
+        title="Delete Blog"
+        message="Do you want to delete this Blog?"
+      />
     </div>
   );
 }

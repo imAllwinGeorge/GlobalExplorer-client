@@ -196,8 +196,9 @@ export default function BlogEdit({
 
   const handleSave = async () => {
     const newErrors = validate();
-    if (newErrors) {
+    if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
+      return 
     }
     const data = new FormData();
 

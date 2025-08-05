@@ -17,3 +17,16 @@ export const LOCAL_STORAGE_KEYS = {
   SELECTED_BLOG: "selected_blog",
   MY_BOOKING_PAGE: "my_booking_page",
 };
+
+
+export const DIRECT_CHAT_EVENTS = {
+  SEND_MESSAGE: "direct-chat:send-message",
+  RECEIVE_MESSAGE: "direct-chat:receive-message",
+  READ_MESSAGE: "direct-chat:read-message",
+  MARK_AS_READ: "direct-chat:mark-as-read",
+};
+
+export const NOTIFICATION_EVENT = {
+  SEND_NOTIFICATION: "send:notification",
+  READ_NOTIFICATION: "read:notification"
+}

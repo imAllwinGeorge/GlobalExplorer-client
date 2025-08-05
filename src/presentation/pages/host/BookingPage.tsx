@@ -7,7 +7,7 @@ import { useSelector } from "react-redux";
 import type { RootState } from "../../store";
 import type { Booking } from "../../../shared/types/global";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
-import { LOCAL_STORAGE_KEYS } from "../../../shared/constants/localStoragekeys";
+import { LOCAL_STORAGE_KEYS } from "../../../shared/constants/constants";
 import { userService } from "../../../services/UserService";
 import ReusableTable from "../../components/ReusableComponents/ReusableTable";
 import Pagination from "../../components/common/Pagination";
@@ -50,11 +50,7 @@ const BookingPage = () => {
     const fetchBookingDetails = async () => {
       try {
         setLoading(true);
-        const response = await hostService.activityBookings(
-          user?._id,
-          page,
-          9
-        );
+        const response = await hostService.activityBookings(user?._id, page, 9);
         if (response.status === 200) {
           console.log(response, user._id);
           setData(response.data.bookings);

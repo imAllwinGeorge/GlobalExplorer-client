@@ -184,9 +184,9 @@ export default function BlogWriter({
 
     const newErrors = validate();
 
-    if (newErrors) {
-      setErrors(newErrors);
-      return;
+    if(Object.keys(newErrors).length > 0){
+      setErrors(newErrors)
+      return
     }
 
     // Here you would typically send the data to your backend

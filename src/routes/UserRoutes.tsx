@@ -16,6 +16,7 @@ import FilterPage from '../presentation/pages/user/Filter-page'
 import OrderSuccess from '../presentation/pages/user/OrderSuccess'
 import Profile from '../presentation/pages/user/Profile'
 import MyBookings from '../presentation/pages/user/MyBookings'
+import ChatPage from '../presentation/pages/user/Chat-Page'
 
 const UserRoutes = () => {
   return (
@@ -35,6 +36,7 @@ const UserRoutes = () => {
           <Route path='order-success' element={<OrderSuccess/>} />
           <Route path='profile' element={<Profile />} />
           <Route path='bookings' element={<MyBookings />}/>
+          <Route path='chat' element={<ChatPage/>} />
         </Route>
     </Routes>
   )

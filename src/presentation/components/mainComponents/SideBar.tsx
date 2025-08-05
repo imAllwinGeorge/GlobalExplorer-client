@@ -1,59 +1,58 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { X, Menu } from "lucide-react"
-import { SideBarItems } from "../../config/SideBarConfig"
-import { useLocation } from "react-router-dom"
-import { Link } from "react-router-dom"
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { X, Menu } from "lucide-react";
+import { SideBarItems } from "../../config/SideBarConfig";
+import { useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 interface SideBarPropsType {
-  role: "user" | "host" | "admin"
+  role: "user" | "host" | "admin";
 }
 
 const SideBar = ({ role }: SideBarPropsType) => {
-  const items = SideBarItems[role as "user" | "host" | "admin"]
-  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const items = SideBarItems[role as "user" | "host" | "admin"];
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
-  const pathname = location.pathname
+  const pathname = location.pathname;
 
   // Close sidebar on route change (mobile)
   useEffect(() => {
-    setSidebarOpen(false)
-  }, [pathname])
+    setSidebarOpen(false);
+  }, [pathname]);
 
   // Prevent body scroll when mobile sidebar is open
   useEffect(() => {
     if (sidebarOpen) {
-      document.body.style.overflow = "hidden"
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = "unset"
+      document.body.style.overflow = "unset";
     }
 
     return () => {
-      document.body.style.overflow = "unset"
-    }
-  }, [sidebarOpen])
+      document.body.style.overflow = "unset";
+    };
+  }, [sidebarOpen]);
 
- const sidebarVariants = {
-  open: {
-    x: 0,
-    transition: {
-      type: "spring" as const,
-      stiffness: 300,
-      damping: 30,
+  const sidebarVariants = {
+    open: {
+      x: 0,
+      transition: {
+        type: "spring" as const,
+        stiffness: 300,
+        damping: 30,
+      },
     },
-  },
-  closed: {
-    x: "-100%",
-    transition: {
-      type: "spring" as const,
-      stiffness: 300,
-      damping: 30,
+    closed: {
+      x: "-100%",
+      transition: {
+        type: "spring" as const,
+        stiffness: 300,
+        damping: 30,
+      },
     },
-  },
-};
-
+  };
 
   const overlayVariants = {
     open: {
@@ -64,14 +63,14 @@ const SideBar = ({ role }: SideBarPropsType) => {
       opacity: 0,
       transition: { duration: 0.3 },
     },
-  }
+  };
 
   const itemVariants = {
     open: {
       opacity: 1,
       y: 0,
       transition: {
-        type: "spring"as const,
+        type: "spring" as const,
         stiffness: 300,
         damping: 24,
       },
@@ -83,7 +82,7 @@ const SideBar = ({ role }: SideBarPropsType) => {
         duration: 0.2,
       },
     },
-  }
+  };
 
   const containerVariants = {
     open: {
@@ -98,7 +97,7 @@ const SideBar = ({ role }: SideBarPropsType) => {
         staggerDirection: -1,
       },
     },
-  }
+  };
 
   return (
     <>
@@ -109,8 +108,15 @@ const SideBar = ({ role }: SideBarPropsType) => {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
       >
-        <motion.div animate={{ rotate: sidebarOpen ? 180 : 0 }} transition={{ duration: 0.3 }}>
-          {sidebarOpen ? <X className="w-5 h-5 text-gray-700" /> : <Menu className="w-5 h-5 text-gray-700" />}
+        <motion.div
+          animate={{ rotate: sidebarOpen ? 180 : 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          {sidebarOpen ? (
+            <X className="w-5 h-5 text-gray-700" />
+          ) : (
+            <Menu className="w-5 h-5 text-gray-700" />
+          )}
         </motion.div>
       </motion.button>
 
@@ -145,14 +151,21 @@ const SideBar = ({ role }: SideBarPropsType) => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 }}
                 >
-                  <h2 className="text-xl font-bold text-gray-800 capitalize">{role} Dashboard</h2>
+                  <h2 className="text-xl font-bold text-gray-800 capitalize">
+                    {role} Dashboard
+                  </h2>
                   <div className="w-12 h-1 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full mt-2" />
                 </motion.div>
 
-                <motion.nav className="space-y-2" variants={containerVariants} initial="closed" animate="open">
+                <motion.nav
+                  className="space-y-2"
+                  variants={containerVariants}
+                  initial="closed"
+                  animate="open"
+                >
                   {items.map((item, index) => {
-                    const Icon = item.icon
-                    const isActive = pathname === item.path
+                    const Icon = item.icon;
+                    const isActive = pathname === item.path;
 
                     return (
                       <motion.div key={index} variants={itemVariants}>
@@ -166,16 +179,21 @@ const SideBar = ({ role }: SideBarPropsType) => {
                         >
                           <Icon
                             className={`w-5 h-5 transition-transform duration-200 ${
-                              isActive ? "text-white" : "text-gray-500 group-hover:text-gray-700"
+                              isActive
+                                ? "text-white"
+                                : "text-gray-500 group-hover:text-gray-700"
                             } group-hover:scale-110`}
                           />
                           <span className="font-medium">{item.title}</span>
                           {isActive && (
-                            <motion.div className="ml-auto w-2 h-2 bg-white rounded-full" layoutId="activeIndicator" />
+                            <motion.div
+                              className="ml-auto w-2 h-2 bg-white rounded-full"
+                              layoutId="activeIndicator"
+                            />
                           )}
                         </Link>
                       </motion.div>
-                    )
+                    );
                   })}
                 </motion.nav>
               </div>
@@ -193,7 +211,9 @@ const SideBar = ({ role }: SideBarPropsType) => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <h2 className="text-2xl font-bold text-gray-800 capitalize">{role} Dashboard</h2>
+            <h2 className="text-2xl font-bold text-gray-800 capitalize">
+              {role} Dashboard
+            </h2>
             <div className="w-16 h-1 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full mt-3" />
           </motion.div>
 
@@ -204,8 +224,8 @@ const SideBar = ({ role }: SideBarPropsType) => {
             transition={{ duration: 0.6, delay: 0.2 }}
           >
             {items.map((item, index) => {
-              const Icon = item.icon
-              const isActive = pathname === item.path
+              const Icon = item.icon;
+              const isActive = pathname === item.path;
 
               return (
                 <motion.div
@@ -232,7 +252,9 @@ const SideBar = ({ role }: SideBarPropsType) => {
 
                     <Icon
                       className={`w-6 h-6 transition-all duration-300 relative z-10 ${
-                        isActive ? "text-white" : "text-gray-500 group-hover:text-amber-600"
+                        isActive
+                          ? "text-white"
+                          : "text-gray-500 group-hover:text-amber-600"
                       } group-hover:scale-110`}
                     />
 
@@ -246,7 +268,11 @@ const SideBar = ({ role }: SideBarPropsType) => {
                         layoutId="desktopActiveIndicator"
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
-                        transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 500,
+                          damping: 30,
+                        }}
                       />
                     )}
 
@@ -258,7 +284,7 @@ const SideBar = ({ role }: SideBarPropsType) => {
                     />
                   </Link>
                 </motion.div>
-              )
+              );
             })}
           </motion.nav>
 
@@ -277,7 +303,7 @@ const SideBar = ({ role }: SideBarPropsType) => {
         </div>
       </aside>
     </>
-  )
-}
+  );
+};
 
-export default SideBar
+export default SideBar;

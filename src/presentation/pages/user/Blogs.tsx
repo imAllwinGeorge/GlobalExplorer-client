@@ -10,7 +10,7 @@ import { PlusCircle } from "lucide-react";
 import toast from "react-hot-toast";
 import Pagination from "../../components/common/Pagination";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
-import { LOCAL_STORAGE_KEYS } from "../../../shared/constants/localStoragekeys";
+import { LOCAL_STORAGE_KEYS } from "../../../shared/constants/constants";
 import BlogRead from "../../components/common/Blog/Read-Blog";
 
 const Blogs = () => {
@@ -19,7 +19,8 @@ const Blogs = () => {
   const [blogs, setBlogs] = useState<BlogPost[] | null>(null);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [triggerFetch, setTriggerFetch] = useState(true)
+  const [triggerFetch, setTriggerFetch] = useState(true);
+  const [blogsView, setBlogsView] = useState(true);
   const [selectedBlog, setSelectedBlog] = useLocalStorage<BlogPost | null>(
     LOCAL_STORAGE_KEYS.SELECTED_BLOG,
     null
@@ -31,32 +32,31 @@ const Blogs = () => {
       if (response.status === 201) {
         console.log(response);
         setOpenModal(false);
-        setTriggerFetch(prev => !prev)
+        setTriggerFetch((prev) => !prev);
       }
     } catch (error) {
       console.log(error);
-      if(error instanceof Error) {
-        toast.error(error.message)
+      if (error instanceof Error) {
+        toast.error(error.message);
       }
-      
     }
   };
 
   const myBlogs = async () => {
-    if(!user) return;
+    if (!user) return;
     try {
       const response = await userService.getMyBlogs(user?._id, page, 9);
-      console.log(response)
-      if(response.status === 200) {
+      console.log(response);
+      if (response.status === 200) {
         setBlogs(response.data.blogs as BlogPost[]);
         setTotalPages(response.data.totalPages as number);
       }
     } catch (error) {
-      if(error instanceof Error){
-        toast.error(error.message)
+      if (error instanceof Error) {
+        toast.error(error.message);
       }
     }
-  }
+  };
 
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -91,20 +91,37 @@ const Blogs = () => {
             </div>
             {user && (
               <>
-              <Button
-                onClick={myBlogs}
-                className="bg-orange-500 hover:bg-orange-600 text-white px-4 sm:px-6 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors w-full sm:w-auto"
-              >
-                <PlusCircle className="w-5 h-5" />
-                My Blogs
-              </Button>
-              <Button
-                onClick={() => setOpenModal(true)}
-                className="bg-orange-500 hover:bg-orange-600 text-white px-4 sm:px-6 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors w-full sm:w-auto"
-              >
-                <PlusCircle className="w-5 h-5" />
-                Write Blog
-              </Button></>
+                {blogsView ? (
+                  <Button
+                    onClick={() => {
+                      myBlogs();
+                      setBlogsView(false);
+                    }}
+                    className="bg-orange-500 hover:bg-orange-600 text-white px-4 sm:px-6 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors w-full sm:w-auto"
+                  >
+                    <PlusCircle className="w-5 h-5" />
+                    My Blogs
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={() => {
+                      setTriggerFetch((prev) => !prev);
+                      setBlogsView(true);
+                    }}
+                    className="bg-orange-500 hover:bg-orange-600 text-white px-4 sm:px-6 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors w-full sm:w-auto"
+                  >
+                    <PlusCircle className="w-5 h-5" />
+                    See All Blogs
+                  </Button>
+                )}
+                <Button
+                  onClick={() => setOpenModal(true)}
+                  className="bg-orange-500 hover:bg-orange-600 text-white px-4 sm:px-6 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors w-full sm:w-auto"
+                >
+                  <PlusCircle className="w-5 h-5" />
+                  Write Blog
+                </Button>
+              </>
             )}
           </div>
         </div>
@@ -142,8 +159,9 @@ const Blogs = () => {
         <div className="fixed inset-0 z-[999] bg-white overflow-auto">
           <BlogRead
             blogPost={selectedBlog}
-            onBack={() => {setSelectedBlog(null)
-              setTriggerFetch(prev => !prev)
+            onBack={() => {
+              setSelectedBlog(null);
+              setTriggerFetch((prev) => !prev);
             }}
           />
         </div>

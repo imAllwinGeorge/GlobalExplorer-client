@@ -115,5 +115,16 @@ export const adminService = {
         "Something went Wrong! Please try again."
         throw new Error(message)
       }
+    },
+
+    dashboardData: async (): Promise<ResponseType<AuthResponse>> => {
+      try {
+        const response = axiosInstance.get<AuthResponse>("/admin/dashboard");
+        return response
+      } catch (error) {
+        const message = (error as ErrorResponse).response?.data?.message ||
+        " Something went wrong!. Please try again"
+        throw new Error(message)
+      }
     }
 };

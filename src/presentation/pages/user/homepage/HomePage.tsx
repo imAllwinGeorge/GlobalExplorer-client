@@ -43,7 +43,7 @@ const HomePage = () => {
           }
         }
       }
-       fetchUser("68408d0750fe22eaac47d496", "role");
+       fetchUser("68408d0750fe22eaac47d496", "user");
     },[])
   return (
     <div>

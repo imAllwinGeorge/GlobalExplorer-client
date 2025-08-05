@@ -94,6 +94,39 @@ export class HostService {
       throw new Error(message);
     }
   }
+
+  async dashboardData(id: string): Promise<ResponseType<AuthResponse>> {
+    try {
+      const response = await axiosInstance.get<AuthResponse>(`/host/dashboard/${id}`);
+      return response;
+    } catch (error) {
+      const message = (error as ErrorResponse).response?.data?.message ||
+      "Something went wrong! please try again."
+      throw new Error(message);
+    }
+  }
+
+  async getConverSations(id: string): Promise<ResponseType<AuthResponse>> {
+    try {
+      const response = await axiosInstance.get<AuthResponse>(`/host/chat/get-conversation/${id}`);
+      return response;
+    } catch (error) {
+      const message = (error as ErrorResponse).response?.data?.message ||
+      "Something went wrong!. Please try agian.";
+      throw new Error(message);
+    }
+  }
+
+  async MarkReadMessage (conversationId: string, userId: string): Promise<ResponseType<AuthResponse>> {
+    try {
+      const response = await axiosInstance.patch<AuthResponse>(`/host/mark-read-message/${conversationId}/${userId}`);
+      return response
+    } catch (error) {
+      const message = (error as ErrorResponse).response?.data?.message ||
+      "Something went wrong!. Please try again";
+      throw new Error(message)
+    }
+  }
 }
 
 export const hostService = new HostService();

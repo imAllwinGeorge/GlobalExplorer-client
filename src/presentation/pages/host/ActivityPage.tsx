@@ -9,7 +9,7 @@ import Pagination from "../../components/common/Pagination";
 import { Plus } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
-import { LOCAL_STORAGE_KEYS } from "../../../shared/constants/localStoragekeys";
+import { LOCAL_STORAGE_KEYS } from "../../../shared/constants/constants";
 
 const ActivityPage = () => {
   const [isOpenModal, setIsOpenModal] = useState(false);
@@ -128,7 +128,12 @@ const ActivityPage = () => {
         <div className="fixed inset-0 z-[9999] bg-black/50 bg-opacity-50 overflow-y-auto">
           <div className="min-h-screen flex items-center justify-center p-4">
             <div className="bg-white rounded-lg shadow-lg w-full max-w-3xl">
-              <AddActivity onClose={() => setIsOpenModal(false)} />
+              <AddActivity
+                onClose={() => {
+                  setIsOpenModal(false);
+                  setTriggerFetch((prev) => !prev);
+                }}
+              />
             </div>
           </div>
         </div>

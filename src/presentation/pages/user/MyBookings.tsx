@@ -7,7 +7,7 @@ import { useSelector } from "react-redux";
 import type { RootState } from "../../store";
 import type { Booking } from "../../../shared/types/global";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
-import { LOCAL_STORAGE_KEYS } from "../../../shared/constants/localStoragekeys";
+import { LOCAL_STORAGE_KEYS } from "../../../shared/constants/constants";
 import { userService } from "../../../services/UserService";
 import ReusableTable from "../../components/ReusableComponents/ReusableTable";
 import Pagination from "../../components/common/Pagination";
@@ -96,6 +96,7 @@ const MyBookings = () => {
         toast.success("Booking cancellation requested");
       }
     } catch (error) {
+      console.log("cancel booking error : ", error);
       if (error instanceof Error) {
         toast.error(error.message);
       }

@@ -5,7 +5,7 @@ import ActivityDetails from "./ActvityDetails";
 import ActivityEdit from "./ActivityEdit";
 import toast from "react-hot-toast";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
-import { LOCAL_STORAGE_KEYS } from "../../../shared/constants/localStoragekeys";
+import { LOCAL_STORAGE_KEYS } from "../../../shared/constants/constants";
 
 type ActivityListProps = {
   activities: Activity[];
@@ -14,8 +14,15 @@ type ActivityListProps = {
 };
 
 const AcitivityList = ({ activities, role, refetch }: ActivityListProps) => {
-  const [selectedActivity, setSelectedActivity] = useLocalStorage<Activity | null>(LOCAL_STORAGE_KEYS.SELECTED_ACTIVITY, null);
-  const [editActivity, setEditActivity] = useLocalStorage<Activity | null>(LOCAL_STORAGE_KEYS.EDIT_ACTIVITY, null);
+  const [selectedActivity, setSelectedActivity] =
+    useLocalStorage<Activity | null>(
+      LOCAL_STORAGE_KEYS.SELECTED_ACTIVITY,
+      null
+    );
+  const [editActivity, setEditActivity] = useLocalStorage<Activity | null>(
+    LOCAL_STORAGE_KEYS.EDIT_ACTIVITY,
+    null
+  );
   const hostService = new HostService();
 
   const handleEdit = (activity: Activity) => {
@@ -27,9 +34,9 @@ const AcitivityList = ({ activities, role, refetch }: ActivityListProps) => {
   };
 
   const onBack = () => {
-    setSelectedActivity(null)
+    setSelectedActivity(null);
     refetch?.();
-  }
+  };
 
   const updateActivity = async (activity: Activity, images: File[]) => {
     activity.location.coordinates.reverse();
@@ -51,7 +58,7 @@ const AcitivityList = ({ activities, role, refetch }: ActivityListProps) => {
     data.append("reportingTime", activity.reportingTime);
     data.append("existingImage", JSON.stringify(activity.images));
     data.append("location", JSON.stringify(activity.location));
-    data.append("recurrenceDays", JSON.stringify(activity.recurrenceDays))
+    data.append("recurrenceDays", JSON.stringify(activity.recurrenceDays));
 
     images.forEach((file) => {
       data.append("images", file);
@@ -59,14 +66,14 @@ const AcitivityList = ({ activities, role, refetch }: ActivityListProps) => {
 
     try {
       const response = await hostService.editActivity(activity._id, data);
-      if(response.status === 200) {
+      if (response.status === 200) {
         toast.success("Activity Edited successfully.");
-        setEditActivity(null)
+        setEditActivity(null);
         refetch();
       }
     } catch (error) {
-      if(error instanceof Error) {
-        toast.error(error.message)
+      if (error instanceof Error) {
+        toast.error(error.message);
       }
     }
   };
@@ -78,7 +85,9 @@ const AcitivityList = ({ activities, role, refetch }: ActivityListProps) => {
     <div className="container mx-auto px-4">
       {!showOverlay && (
         <div className="container mx-auto px-4">
-          <h1 className="text-3xl font-bold text-gray-800 text-center mb-8 ">Activities</h1>
+          <h1 className="text-3xl font-bold text-gray-800 text-center mb-8 ">
+            Activities
+          </h1>
           <div className="space-y-6">
             {activities?.map((activity) => (
               <ActivityCard

@@ -70,14 +70,14 @@ type ActivityErrors = {
   recurrenceDays?: string;
 };
 
-const validateActivityForm = (data: ActivityDTO): ActivityErrors => {
+const validateActivityForm = (data: ActivityDTO, selectedDays: string[]): ActivityErrors => {
   const errors: ActivityErrors = {};
 
   if (!data.activityName.trim()) errors.activityName = "Please provide a valid Activity Name";
   if (data.itenary.trim().split(/\s+/).length <= 20) errors.itenary = "Please provide valid itenary. Itenary should atleast 20 words";
 
   if (data.maxCapacity <= 0) errors.maxCapacity = "Max capacity must be greater than 0";
-  if (!data.categoryId) errors.categoryId = "";
+  if (!data.categoryId) errors.categoryId = "Please a select a category";
   if (data.pricePerHead <= 0) errors.pricePerHead = "Price per head must be greater than 0";
 
   if (!data.street.trim()) errors.street = "Street is required";
@@ -96,7 +96,7 @@ const validateActivityForm = (data: ActivityDTO): ActivityErrors => {
     errors.images = "At least one image is required";
   }
 
-  if (!data.recurrenceDays || data.recurrenceDays.length === 0) {
+  if (!selectedDays || selectedDays.length === 0) {
     errors.recurrenceDays = "At least one recurrence day must be selected";
   }
 
@@ -198,12 +198,14 @@ export default function AddActivity({ onClose }: AddActivityProps) {
     console.log("Activity Data:", formData);
     // Handle form submission here
 
-    const newErrors = validateActivityForm(formData);
+    const newErrors = validateActivityForm(formData, selectedDays);
 
     if(Object.keys(newErrors).length > 0){
       setErrors(newErrors);
+      console.log("osdgboasg", newErrors)
       return;
     }
+    console.log("kghikshgvkjs")
     const data = new FormData();
 
     // Append text fields
@@ -237,11 +239,12 @@ export default function AddActivity({ onClose }: AddActivityProps) {
     });
 
     try {
+      console.log("gwsgs")
       const response = await hostService.addActivity(data); // Ensure this sends FormData
       console.log("Success:", response.data);
       if (response.status === 201) {
         toast.success("Activity added successfully");
-        onClose?.();
+        onClose();
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -267,7 +270,9 @@ export default function AddActivity({ onClose }: AddActivityProps) {
           console.log(response);
         }
       } catch (error) {
-        console.log(error);
+        if(error instanceof Error) {
+          toast.error(error.message)
+        }
       }
     };
     fetchCategory();

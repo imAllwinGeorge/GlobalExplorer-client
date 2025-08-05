@@ -1,15 +1,20 @@
-import { Menu, X, LogOut, UserIcon } from "lucide-react"
-import { useState, useEffect } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { useLocation, useNavigate } from "react-router-dom"
-import { useAppDispatch, useAppSelector } from "../../hooks/useAppHooks"
-import { logout } from "../../store/slices/authSlice"
-import { navitems } from "../../config/SideBarConfig"
-import { hostLogout } from "../../store/slices/hostSlice"
-import { adminLogout } from "../../store/slices/adminSlice"
-import toast from "react-hot-toast"
-import { AuthAPI } from "../../../services/AuthAPI"
-import { Link } from "react-router-dom"
+import { Menu, X, LogOut, UserIcon, Bell } from "lucide-react";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../../hooks/useAppHooks";
+import { logout } from "../../store/slices/authSlice";
+import { navitems } from "../../config/SideBarConfig";
+import { hostLogout } from "../../store/slices/hostSlice";
+import { adminLogout } from "../../store/slices/adminSlice";
+import toast from "react-hot-toast";
+import { AuthAPI } from "../../../services/AuthAPI";
+import { Link } from "react-router-dom";
+import { userService } from "../../../services/UserService";
+import type { Notification } from "../../../shared/types/global";
+import { useSocket } from "../../../contexts/SocketContext";
+import { NOTIFICATION_EVENT } from "../../../shared/constants/constants";
+import NotificationMessages from "../notification/NotificationMessage";
 
 // // Mock user type for demonstration
 // interface User {
@@ -19,15 +24,18 @@ import { Link } from "react-router-dom"
 // }
 
 type NavBarPropsType = {
-  role: "user" | "admin" | "host"
-}
+  role: "user" | "admin" | "host";
+};
 
 const NavBar = ({ role }: NavBarPropsType) => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const location = useLocation()
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [isOpenNoti, setIsOpenNoti] = useState(false);
+  const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const pathname = location.pathname;
+  const socket = useSocket();
 
   const authAPI = new AuthAPI();
 
@@ -68,21 +76,21 @@ const NavBar = ({ role }: NavBarPropsType) => {
 
   // Close mobile menu on route change
   useEffect(() => {
-    setIsMenuOpen(false)
-  }, [pathname])
+    setIsMenuOpen(false);
+  }, [pathname]);
 
   // Prevent body scroll when mobile menu is open
   useEffect(() => {
     if (isMenuOpen) {
-      document.body.style.overflow = "hidden"
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = "unset"
+      document.body.style.overflow = "unset";
     }
 
     return () => {
-      document.body.style.overflow = "unset"
-    }
-  }, [isMenuOpen])
+      document.body.style.overflow = "unset";
+    };
+  }, [isMenuOpen]);
 
   // const handleLogout = async () => {
   //   try {
@@ -96,25 +104,24 @@ const NavBar = ({ role }: NavBarPropsType) => {
   //   }
   // }
 
- const menuVariants = {
-  open: {
-    x: 0,
-    transition: {
-      type: "spring" as const,
-      stiffness: 300,
-      damping: 30,
+  const menuVariants = {
+    open: {
+      x: 0,
+      transition: {
+        type: "spring" as const,
+        stiffness: 300,
+        damping: 30,
+      },
     },
-  },
-  closed: {
-    x: "-100%",
-    transition: {
-      type: "spring" as const,
-      stiffness: 300,
-      damping: 30,
+    closed: {
+      x: "-100%",
+      transition: {
+        type: "spring" as const,
+        stiffness: 300,
+        damping: 30,
+      },
     },
-  },
-};
-
+  };
 
   const overlayVariants = {
     open: {
@@ -125,7 +132,7 @@ const NavBar = ({ role }: NavBarPropsType) => {
       opacity: 0,
       transition: { duration: 0.3 },
     },
-  }
+  };
 
   const itemVariants = {
     open: {
@@ -144,7 +151,7 @@ const NavBar = ({ role }: NavBarPropsType) => {
         duration: 0.2,
       },
     },
-  }
+  };
 
   const containerVariants = {
     open: {
@@ -159,7 +166,51 @@ const NavBar = ({ role }: NavBarPropsType) => {
         staggerDirection: -1,
       },
     },
-  }
+  };
+
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on(NOTIFICATION_EVENT.SEND_NOTIFICATION, (data) => {
+      console.log("recieved notification: ", data);
+      setNotifications((prev) => [...prev, data]);
+    });
+
+    socket.on(NOTIFICATION_EVENT.READ_NOTIFICATION, (data) => {
+      console.log("received notification result:", data);
+      setNotifications((prev) =>
+        prev.map((noti) =>
+          noti._id === data._id ? data : noti
+        )
+      );
+    });
+
+    return () => {
+      socket.off(NOTIFICATION_EVENT.SEND_NOTIFICATION);
+      socket.off(NOTIFICATION_EVENT.READ_NOTIFICATION);
+    };
+  }, [socket]);
+
+  useEffect(() => {
+    const fetchNotification = async () => {
+      try {
+        if (!user) return;
+        const response = await userService.fetchNotification(user._id);
+        if (response.status === 200) {
+          console.log("navbar notification response : ", response);
+          setNotifications(
+            response.data.notifications as unknown as Notification[]
+          );
+        }
+      } catch (error) {
+        console.log(error);
+        if (error instanceof Error) {
+          toast.error(error.message);
+        }
+      }
+    };
+    setTimeout(() => fetchNotification(), 500)
+  }, [user]);
 
   return (
     <>
@@ -181,8 +232,15 @@ const NavBar = ({ role }: NavBarPropsType) => {
                 whileTap={{ scale: 0.95 }}
               >
                 <span className="sr-only">Open main menu</span>
-                <motion.div animate={{ rotate: isMenuOpen ? 180 : 0 }} transition={{ duration: 0.3 }}>
-                  {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                <motion.div
+                  animate={{ rotate: isMenuOpen ? 180 : 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {isMenuOpen ? (
+                    <X className="h-6 w-6" />
+                  ) : (
+                    <Menu className="h-6 w-6" />
+                  )}
                 </motion.div>
               </motion.button>
             </div>
@@ -217,17 +275,23 @@ const NavBar = ({ role }: NavBarPropsType) => {
                 transition={{ duration: 0.6, delay: 0.2 }}
               >
                 {items.map((item, index) => {
-                  const isActive = pathname === item.path
+                  const isActive = pathname === item.path;
                   return (
                     <motion.div
                       key={index}
                       whileHover={{ y: -2 }}
-                      transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 400,
+                        damping: 10,
+                      }}
                     >
                       <Link
                         to={item.path}
                         className={`relative px-3 py-2 text-sm font-medium transition-colors duration-200 ${
-                          isActive ? "text-blue-600" : "text-gray-600 hover:text-blue-600"
+                          isActive
+                            ? "text-blue-600"
+                            : "text-gray-600 hover:text-blue-600"
                         }`}
                       >
                         {item.title}
@@ -237,12 +301,16 @@ const NavBar = ({ role }: NavBarPropsType) => {
                             layoutId="activeTab"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
-                            transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                            transition={{
+                              type: "spring",
+                              stiffness: 500,
+                              damping: 30,
+                            }}
                           />
                         )}
                       </Link>
                     </motion.div>
-                  )
+                  );
                 })}
               </motion.div>
             </div>
@@ -256,6 +324,24 @@ const NavBar = ({ role }: NavBarPropsType) => {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.6, delay: 0.4 }}
                 >
+                  <div className="relative w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded flex items-center justify-center">
+                    <button onClick={() => setIsOpenNoti((prev) => !prev)}>
+                      <Bell
+                        className="w-10 h-10 p-1 text-white"
+                        fill="white"
+                        strokeWidth={0}
+                      />
+                    </button>
+                    {notifications.filter((noti) => noti.isRead === false)
+                      .length > 0 && (
+                      <span className="absolute -top-2 -right-2 bg-blue-500 text-white text-[10px] rounded-full px-1.5 py-[1px] min-w-[18px] text-center">
+                        {
+                          notifications.filter((noti) => noti.isRead === false)
+                            .length
+                        }
+                      </span>
+                    )}
+                  </div>
                   <div className="flex items-center space-x-2 px-3 py-2 rounded-xl bg-gray-50">
                     <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
                       <UserIcon className="w-4 h-4 text-white" />
@@ -291,15 +377,35 @@ const NavBar = ({ role }: NavBarPropsType) => {
             {/* Mobile Logout Button - Right Side */}
             <div className="flex md:hidden">
               {user && (
-                <motion.button
-                  onClick={handleLogout}
-                  className="p-2 rounded-xl bg-red-50 text-red-600 hover:bg-red-100 transition-colors duration-200"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  title="Logout"
-                >
-                  <LogOut className="w-5 h-5" />
-                </motion.button>
+                <>
+                  <div className="relative w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded flex items-center justify-center">
+                    <button onClick={() => setIsOpenNoti((prev) => !prev)}>
+                      <Bell
+                        className="w-8 h-8 p-1 text-white"
+                        fill="white"
+                        strokeWidth={0}
+                      />
+                    </button>
+                    {notifications.filter((noti) => noti.isRead === false)
+                      .length > 0 && (
+                      <span className="absolute -top-2 -right-2 bg-blue-500 text-white text-[10px] rounded-full px-1.5 py-[1px] min-w-[18px] text-center">
+                        {
+                          notifications.filter((noti) => noti.isRead === false)
+                            .length
+                        }
+                      </span>
+                    )}
+                  </div>
+                  <motion.button
+                    onClick={handleLogout}
+                    className="p-2 rounded-xl bg-red-50 text-red-600 hover:bg-red-100 transition-colors duration-200"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    title="Logout"
+                  >
+                    <LogOut className="w-5 h-5" />
+                  </motion.button>
+                </>
               )}
             </div>
           </div>
@@ -365,15 +471,22 @@ const NavBar = ({ role }: NavBarPropsType) => {
                     </div>
                     <div>
                       <p className="font-semibold text-gray-800">{`${user.firstName} ${user.lastName}`}</p>
-                      <p className="text-sm text-gray-600 capitalize">{role} Account</p>
+                      <p className="text-sm text-gray-600 capitalize">
+                        {role} Account
+                      </p>
                     </div>
                   </motion.div>
                 )}
 
                 {/* Navigation Links */}
-                <motion.nav className="space-y-2" variants={containerVariants} initial="closed" animate="open">
+                <motion.nav
+                  className="space-y-2"
+                  variants={containerVariants}
+                  initial="closed"
+                  animate="open"
+                >
                   {items.map((item, index) => {
-                    const isActive = pathname === item.path
+                    const isActive = pathname === item.path;
                     return (
                       <motion.div key={index} variants={itemVariants}>
                         <Link
@@ -394,7 +507,7 @@ const NavBar = ({ role }: NavBarPropsType) => {
                           )}
                         </Link>
                       </motion.div>
-                    )
+                    );
                   })}
                 </motion.nav>
 
@@ -428,9 +541,11 @@ const NavBar = ({ role }: NavBarPropsType) => {
           </motion.div>
         )}
       </AnimatePresence>
+      {isOpenNoti && (
+        <NotificationMessages notifications={notifications} receiverId={user?._id as string} />
+      )}
     </>
-  )
-}
+  );
+};
 
-export default NavBar
-
+export default NavBar;
