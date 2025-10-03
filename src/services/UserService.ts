@@ -1,3 +1,4 @@
+import type { ReviewDTO } from "@/shared/types/DTO";
 import { axiosInstance } from "../api/axiosInstance";
 import type { ErrorResponse } from "../shared/types/auth.type";
 import type { AuthResponse, Booking, ResponseType } from "../shared/types/global";
@@ -228,6 +229,17 @@ export class UserService {
     } catch (error) {
       const message = (error as ErrorResponse).response?.data?.message ||
       "Something went wrong!. Please try again."
+      throw new Error(message)
+    }
+  }
+
+  async writeReview (review: ReviewDTO): Promise<ResponseType<AuthResponse>> {
+    try {
+      const response = await axiosInstance.post<AuthResponse>(`/user/review/write-review`, {review});
+      return response
+    } catch (error) {
+      const message = (error as ErrorResponse).response?.data?.message ||
+      " Something went wrong!. Please try again!."
       throw new Error(message)
     }
   }

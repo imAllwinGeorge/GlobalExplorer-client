@@ -170,6 +170,17 @@ export interface Dashboard {
     pricePerHead: number,
   }
 }
+
+export interface Review {
+  _id: string;
+  entityId: string;
+  userId: string;
+  title: string;
+  comment: string;
+  rating: number;
+  createdAt: string;
+  updatedAt: string;
+}
  
 export interface AuthResponse {
   user?: User | Host | null | undefined,
@@ -195,6 +206,7 @@ export interface AuthResponse {
   activityCount?:number,
   bookingCount?: number,
   dashboardData?: Dashboard[],
+  review?: Review,
   token?: string | null | undefined;
   message?: string;
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
@@ -22,6 +22,8 @@ import toast from "react-hot-toast";
 import { userService } from "../../../services/UserService";
 import { DIRECT_CHAT_EVENTS } from "../../../shared/constants/constants";
 import { useSocket } from "../../../contexts/SocketContext";
+import Picker from 'emoji-picker-react';
+import { useNavigate } from "react-router-dom";
 
 interface ChatPageProps {
   users: ConversationResponse[];
@@ -39,12 +41,15 @@ export default function ChatPage({
   updateLastMessage,
 }: ChatPageProps) {
   const socket = useSocket();
+  const [showPicker, setShowPicker] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [showSidebar, setShowSidebar] = useState(true);
   const [searchedUsers, setSearchedUsers] = useState<SearchUsers[]>([]);
+  const messageEndRef = useRef<HTMLDivElement | null>(null);
+  const navigate = useNavigate();
   const filteredUsers = users.filter((user) =>
     user.firstName.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -129,6 +134,12 @@ export default function ChatPage({
     return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
   };
 
+  function scroll () {
+    if(messageEndRef.current){
+      messageEndRef.current.scrollIntoView({behavior: "smooth", block: "end"})
+    }
+  }
+
   useEffect(() => {
     const handler = setTimeout(async () => {
       if (!searchQuery.trim()) return;
@@ -156,6 +167,7 @@ export default function ChatPage({
       console.log("Message received:", data);
       setMessages((prev) => [...prev, data.message]);
       updateLastMessage(data.conversation);
+      scroll();
     });
 
     return () => {
@@ -169,6 +181,7 @@ export default function ChatPage({
     socket.on(DIRECT_CHAT_EVENTS.SEND_MESSAGE, (data) => {
       setMessages((prev) => [...prev, data.message]);
       updateLastMessage(data.conversation);
+      scroll();
     });
 
     return () => {
@@ -177,7 +190,7 @@ export default function ChatPage({
   }, [socket, updateLastMessage]);
 
   return (
-    <div className="flex h-screen bg-white">
+    <div className="flex h-screen ">
       {/* Sidebar - Users List */}
       <motion.div
         className={`${
@@ -297,7 +310,7 @@ export default function ChatPage({
         {selectedUser ? (
           <>
             {/* Chat Header */}
-            <div className="p-4 border-b border-gray-200 bg-white">
+            <div className=" flex flex-col shrink-0 p-4 border-b border-gray-200 bg-white">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                   <Button
@@ -331,7 +344,7 @@ export default function ChatPage({
                   <Button variant="ghost" size="sm">
                     <Phone className="w-4 h-4" />
                   </Button>
-                  <Button variant="ghost" size="sm">
+                  <Button variant="ghost" size="sm" onClick={() => navigate("/video", { state:{userId: selectedUserId}})} >
                     <Video className="w-4 h-4" />
                   </Button>
                   <Button variant="ghost" size="sm">
@@ -342,7 +355,7 @@ export default function ChatPage({
             </div>
 
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            <div className="flex-1 overflow-y-auto p-4 space-y-4 ">
               <AnimatePresence>
                 {messages.map((message: Message) => (
                   <motion.div
@@ -378,12 +391,13 @@ export default function ChatPage({
                   </motion.div>
                 ))}
               </AnimatePresence>
+              <div ref={messageEndRef} />
             </div>
-
+                {showPicker && ( <Picker lazyLoadEmojis={true} width={"70%"} onEmojiClick={(emojiObject) => setNewMessage((prev) => prev+emojiObject.emoji)} />)}
             {/* Message Input */}
-            <div className="p-4 border-t border-gray-200 bg-white">
+            <div className=" shrink-0 p-4 border-t border-gray-200 bg-white ">
               <div className="flex items-center space-x-2">
-                <Button variant="ghost" size="sm">
+                <Button variant="ghost" size="sm" onClick={() => setShowPicker(prev => !prev)}>
                   <Smile className="w-4 h-4" />
                 </Button>
                 <Input

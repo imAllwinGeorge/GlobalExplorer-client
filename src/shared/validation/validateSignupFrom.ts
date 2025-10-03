@@ -39,8 +39,12 @@ export const validateSignupForm = (data: SignupDTO) => {
 export const validateHostSignupForm = (data: HostSignupDTO) => {
   const errors: HostSignupFormErrors = {};
 
-  if(!isValidName(data.name)) {
-    errors.name = "Name can only contain letters";
+  if(!isValidName(data.firstName)) {
+    errors.firstName = "Name can only contain letters";
+  }
+
+  if(!isValidName(data.lastName)){
+    errors.lastName = "Name can only contain letters"
   }
 
   if(!isValidEmail(data.email)) {

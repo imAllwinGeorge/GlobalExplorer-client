@@ -1,7 +1,7 @@
 "use client";
 import type React from "react";
 import { useState, useRef, useEffect } from "react";
-import { Plus, Upload, X, Eye, Save, Type, List } from "lucide-react";
+import { Plus, Upload, X, Save, Type, List } from "lucide-react";
 import { Button } from "../../ui/button";
 import {
   Card,
@@ -11,7 +11,11 @@ import {
 } from "../../../../components/ui/card";
 import { Badge } from "../../../../components/ui/badge";
 import Input from "../../Input";
-import { Textarea } from "../../../../components/ui/textarea";
+import { SimpleEditor } from "../../../../components/tiptap-templates/simple/simple-editor";
+
+import { EditorContent, useEditor } from '@tiptap/react'
+import StarterKit from '@tiptap/starter-kit'
+import '@/styles/_style.scss'
 
 interface BlogSection {
   sectionTitle: string;
@@ -62,6 +66,20 @@ export default function BlogWriter({
       image?: string;
     }[];
   }>({});
+  // const [ richTextSample, setRichTextSample] = useState<null | string>(null);
+  const editor = useEditor({
+    shouldRerenderOnTransaction: false,
+    content:   ``,
+    extensions: [StarterKit],
+  });
+
+  useEffect(() => {
+    const allContent = `${blogPost.introduction || ""}
+    ${blogPost.sections.map((section) => section).join(" ") || ""}`
+    // editor.commands.setContent(blogPost.sections.map((section) => section.content))
+    editor.commands.setContent(allContent)
+  }, [blogPost, editor])
+
 
   const addNewSection = () => {
     const newSection: BlogSection = {
@@ -184,9 +202,9 @@ export default function BlogWriter({
 
     const newErrors = validate();
 
-    if(Object.keys(newErrors).length > 0){
-      setErrors(newErrors)
-      return
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
     }
 
     // Here you would typically send the data to your backend
@@ -273,6 +291,7 @@ export default function BlogWriter({
                 <h1 className="text-4xl font-bold mb-4">
                   {blogPost.title || "Your Blog Title"}
                 </h1>
+                <EditorContent editor={editor} />
                 {blogPost.introduction && (
                   <p className="text-lg text-gray-700 leading-relaxed max-w-3xl mx-auto">
                     {blogPost.introduction}
@@ -321,6 +340,8 @@ export default function BlogWriter({
                   )}
                   {section.content && (
                     <div className="prose max-w-none mb-4">
+                      {editor.commands.setContent(section.content)}
+                      <EditorContent editor={editor} />
                       {section.content.split("\n").map((paragraph, index) => (
                         <p
                           key={index}
@@ -356,10 +377,10 @@ export default function BlogWriter({
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold">Create New Blog Post</h1>
           <div className="flex gap-2">
-            <Button onClick={() => setIsPreview(true)} variant="outline">
+            {/* <Button onClick={() => setIsPreview(true)} variant="outline">
               <Eye className="w-4 h-4 mr-2" />
               Preview
-            </Button>
+            </Button> */}
             <Button
               onClick={saveBlog}
               className="bg-green-600 hover:bg-green-700"
@@ -415,7 +436,7 @@ export default function BlogWriter({
               <label className="block text-sm font-medium mb-2">
                 Introduction
               </label>
-              <Textarea
+              {/* <Textarea
                 placeholder="Write a brief introduction to your blog post..."
                 value={blogPost.introduction}
                 onChange={(e) =>
@@ -425,7 +446,18 @@ export default function BlogWriter({
                   }))
                 }
                 rows={3}
+              /> */}
+              <div className="border-0 rounded-xl outline-[1px] bg-secondary">
+                <SimpleEditor
+                setNewPostRichText={(string) =>
+                {
+                  setBlogPost((prev) => ({
+                    ...prev, introduction: string
+                  }))
+                }
+                }
               />
+              </div>
               {errors.introduction && (
                 <span className="text-red-500">{errors.introduction}</span>
               )}
@@ -549,14 +581,19 @@ export default function BlogWriter({
                   <label className="block text-sm font-medium mb-2">
                     Content
                   </label>
-                  <Textarea
+                  {/* <Textarea
                     placeholder="Write your content here..."
                     value={section.content}
                     onChange={(e) =>
                       updateSection(index, "content", e.target.value)
                     }
                     rows={6}
-                  />
+                  /> */}
+                  <div className="border-0 rounded-xl outline-[1px] bg-secondary">
+                    <SimpleEditor setNewPostRichText={ (string) =>
+                    updateSection(index, "content", string)
+                  } />
+                  </div>
                   {errors.sections?.[index]?.content && (
                     <span className="text-red-500">
                       {errors.sections[index].content}

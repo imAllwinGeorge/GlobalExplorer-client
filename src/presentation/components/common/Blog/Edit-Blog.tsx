@@ -7,10 +7,10 @@ import { Save, Plus, Trash2, Upload, ImageIcon, ArrowLeft } from "lucide-react";
 import { Button } from "../../ui/button";
 import { Card, CardContent } from "../../../../components/ui/card";
 import Input from "../../Input";
-import { Textarea } from "../../../../components/ui/textarea";
 import type { BlogPost, BlogSection } from "../../../../shared/types/global";
 import toast from "react-hot-toast";
 import { userService } from "../../../../services/UserService";
+import { SimpleEditor } from "@/components/tiptap-templates/simple/simple-editor";
 
 interface BlogEditProps {
   blogPost: BlogPost;
@@ -198,7 +198,7 @@ export default function BlogEdit({
     const newErrors = validate();
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
-      return 
+      return;
     }
     const data = new FormData();
 
@@ -298,18 +298,18 @@ export default function BlogEdit({
               >
                 Introduction
               </label>
-              <Textarea
-                id="introduction"
-                value={formData.introduction}
-                onChange={(e) =>
-                  handleInputChange("introduction", e.target.value)
-                }
-                placeholder="Write your blog introduction..."
-                className="min-h-[100px] resize-none"
-              />
-              {errors.introduction && (
-                <span className="text-red-500">{errors.introduction}</span>
-              )}
+
+              <div className="border-0 rounded-xl outline-[1px] bg-gray-50">
+                <SimpleEditor
+                  setNewPostRichText={(string) =>
+                    handleInputChange("introduction", string)
+                  }
+                  initialContent={formData.introduction}
+                />
+                {errors.introduction && (
+                  <span className="text-red-500">{errors.introduction}</span>
+                )}
+              </div>
             </div>
 
             {/* Main Image */}
@@ -426,14 +426,15 @@ export default function BlogEdit({
                       <label className="text-sm font-medium mb-2 block">
                         Section Content
                       </label>
-                      <Textarea
-                        value={section.content}
-                        onChange={(e) =>
-                          handleSectionChange(index, "content", e.target.value)
+                  
+                      <div className="border-0 rounded-xl outline-[1px] bg-gray-50">
+                        <SimpleEditor
+                        setNewPostRichText={(string) =>
+                          handleSectionChange(index, "content", string)
                         }
-                        placeholder="Write your section content..."
-                        className="min-h-[120px] resize-none"
+                        initialContent={section.content}
                       />
+                      </div>
                       {errors.sections?.[index].content && (
                         <span className="text-red-500">
                           {errors.sections?.[index].content}
@@ -446,7 +447,7 @@ export default function BlogEdit({
                       <label className="text-sm font-medium mb-2 block">
                         Section Image
                       </label>
-                      <div className="space-y-4">
+                      <div className="space-y-4 ">
                         <Button
                           type="button"
                           variant="outline"
@@ -468,10 +469,10 @@ export default function BlogEdit({
                           className="hidden"
                         />
                         {errors.sections?.[index].image && (
-                        <span className="text-red-500">
-                          {errors.sections?.[index].image}
-                        </span>
-                      )}
+                          <span className="text-red-500">
+                            {errors.sections?.[index].image}
+                          </span>
+                        )}
                         {section.image && (
                           <div className="relative">
                             <img

@@ -5,10 +5,12 @@ import { useSelector } from "react-redux";
 import type { RootState } from "../../../store";
 import BlogEdit from "./Edit-Blog";
 import type { BlogPost } from "../../../../shared/types/global";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { userService } from "../../../../services/UserService";
 import ConfirmModal from "../../ReusableComponents/ConfirmModal";
+import { EditorContent, useEditor } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
 
 interface BlogReadProps {
   blogPost: BlogPost;
@@ -33,6 +35,26 @@ export default function BlogRead({ blogPost, onBack }: BlogReadProps) {
       }
     }
   };
+
+
+  const editor = useEditor({
+    shouldRerenderOnTransaction: false,
+    content:   blogPost.introduction,
+    extensions: [StarterKit],
+  });
+
+  useEffect(() => {
+    editor.commands.setContent(blogPost.introduction)
+}, [editor,blogPost])
+
+function ReadOnlyEditor({ html }: { html: string }) {
+  const editor = useEditor({
+    extensions: [StarterKit],
+    content: html,
+    editable: false
+  });
+  return <EditorContent editor={editor} />;
+}
 
   // 🔁 Toggle between blog preview and edit page
   if (editBlog) {
@@ -85,9 +107,7 @@ export default function BlogRead({ blogPost, onBack }: BlogReadProps) {
                 {blogPost.title || "Your Blog Title"}
               </h1>
               {blogPost.introduction && (
-                <p className="text-lg text-gray-700 leading-relaxed max-w-3xl mx-auto">
-                  {blogPost.introduction}
-                </p>
+                <EditorContent editor={editor} />
               )}
               {blogPost.image && (
                 <div className="mb-4">
@@ -109,14 +129,7 @@ export default function BlogRead({ blogPost, onBack }: BlogReadProps) {
                 )}
                 {section.content && (
                   <div className="prose max-w-none mb-4">
-                    {section.content.split("\n").map((paragraph, idx) => (
-                      <p
-                        key={idx}
-                        className="mb-4 text-gray-700 leading-relaxed"
-                      >
-                        {paragraph}
-                      </p>
-                    ))}
+                    <ReadOnlyEditor html={section.content} />
                   </div>
                 )}
                 {section.image && (

@@ -4,6 +4,8 @@ import { Card, CardContent } from "../../../../components/ui/card"
 import { Badge } from "../../../../components/ui/badge"
 import { Button } from "../../ui/button"
 import type { BlogPost } from "../../../../shared/types/global"
+import { useEditor } from "@tiptap/react"
+import StarterKit from "@tiptap/starter-kit"
 
 
 
@@ -47,6 +49,22 @@ export default function BlogCard({ blog, onReadMore, className = "" }: BlogCardP
       scale: 1.05,
       transition: { duration: 0.3, ease: easeOut },
     },
+  }
+  
+  const Translate = ({initialText}: {initialText: string}) => {
+    const editor = useEditor({
+    extensions: [StarterKit],
+    content: initialText,  // load plain string here
+  })
+
+  const text = editor.getText();
+
+  return <motion.p
+              className="text-gray-600 text-sm sm:text-base leading-relaxed mb-3 sm:mb-4 line-clamp-3 flex-grow"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+            >{text}</motion.p>
   }
 
   return (
@@ -107,14 +125,9 @@ export default function BlogCard({ blog, onReadMore, className = "" }: BlogCardP
             </motion.h3>
 
             {/* Introduction/Content */}
-            <motion.p
-              className="text-gray-600 text-sm sm:text-base leading-relaxed mb-3 sm:mb-4 line-clamp-3 flex-grow"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.3 }}
-            >
-              {blog.introduction || blog.sections?.[0]?.content?.substring(0, 150) + "..." || "No content available"}
-            </motion.p>
+            
+              <Translate initialText={blog.introduction || blog.sections?.[0]?.content?.substring(0, 150) + "..." || "No content available"} />
+            
 
             {/* Sections Preview */}
             {blog.sections && blog.sections.length > 0 && (

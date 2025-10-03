@@ -542,7 +542,7 @@ const NavBar = ({ role }: NavBarPropsType) => {
         )}
       </AnimatePresence>
       {isOpenNoti && (
-        <NotificationMessages notifications={notifications} receiverId={user?._id as string} />
+        <NotificationMessages notifications={notifications} receiverId={user?._id as string} onLeave={() => setIsOpenNoti(false)} />
       )}
     </>
   );

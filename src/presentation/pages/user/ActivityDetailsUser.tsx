@@ -51,6 +51,7 @@ import {
 import { useSelector } from "react-redux";
 import type { RootState } from "../../store";
 import { axiosInstance } from "../../../api/axiosInstance";
+import { WriteReview } from "@/presentation/components/review/WriteReview";
 
 interface RazorpayResponse {
   amount: number;
@@ -590,7 +591,12 @@ export default function ActivityDetailsUser() {
                   </CardContent>
                 </Card>
               </motion.div>
+              <div>
+              <WriteReview entityId={activity._id} userId={user?._id as string} />
             </div>
+            </div>
+            
+            
 
             {/* Booking Sidebar */}
             <div className="lg:col-span-1">

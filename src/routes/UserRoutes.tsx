@@ -17,6 +17,7 @@ import OrderSuccess from '../presentation/pages/user/OrderSuccess'
 import Profile from '../presentation/pages/user/Profile'
 import MyBookings from '../presentation/pages/user/MyBookings'
 import ChatPage from '../presentation/pages/user/Chat-Page'
+import VideoChat from '@/presentation/pages/user/Video-Chat'
 
 const UserRoutes = () => {
   return (
@@ -37,6 +38,7 @@ const UserRoutes = () => {
           <Route path='profile' element={<Profile />} />
           <Route path='bookings' element={<MyBookings />}/>
           <Route path='chat' element={<ChatPage/>} />
+          <Route path='video' element={<VideoChat />} />
         </Route>
     </Routes>
   )
