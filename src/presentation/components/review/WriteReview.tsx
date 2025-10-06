@@ -11,7 +11,6 @@ import { Button } from "../ui/button";
 import toast from "react-hot-toast";
 import type { ReviewDTO } from "@/shared/types/DTO";
 import { userService } from "@/services/UserService";
-import type { Review } from "@/shared/types/global";
 
 interface WriteReviewProps {
   entityId: string;
@@ -118,7 +117,7 @@ export function WriteReview({
 
       if (response.status === 201) {
         resetForm();
-        onReviewSubmitted?.(response.data.review as Review);
+        onReviewSubmitted?.(response.data.review as ReviewDTO);
         toast.success("review posted successfully`")
       }
     } catch (error) {

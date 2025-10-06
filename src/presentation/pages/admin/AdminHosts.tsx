@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { adminService } from "../../../services/AdminService";
 import type { Host } from "../../../shared/types/global";
-import ConfirmModal from "../../components/ReusableComponents/ConfirmModal";
+import ConfirmModal from "../../components/sharedElements/ConfirmModal";
 import { ChevronsRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Pagination from "../../components/common/Pagination";
+import { HttpStatusCode, ROLE } from "@/shared/constants/constants";
 // import { toast } from 'react-toastify';
 
 const AdminHosts = () => {
@@ -19,7 +20,7 @@ const AdminHosts = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await adminService.getAllUsers<Host>(page, 5,"host");
+        const response = await adminService.getAllUsers<Host>(page, 5, "host");
         console.log("response fetchuserdata: ", response);
         if (response) {
           setUsers(response.users);
@@ -46,9 +47,9 @@ const AdminHosts = () => {
       const response = await adminService.updateStatus(
         selectedUser._id,
         value,
-        "host"
+        ROLE.HOST
       );
-      if (response.status === 200) {
+      if (response.status === HttpStatusCode.OK) {
         setTriggerFetch((state) => !state);
         toast.dismiss(toastId);
         console.log("response changeing status", response);

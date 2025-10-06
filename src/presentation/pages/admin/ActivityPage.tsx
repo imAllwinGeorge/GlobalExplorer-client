@@ -5,7 +5,7 @@ import type { Activity } from "../../../shared/types/global";
 import AcitivityList from "../../components/activity/AcitivityList";
 import Pagination from "../../components/common/Pagination";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
-import { LOCAL_STORAGE_KEYS } from "../../../shared/constants/constants";
+import { HttpStatusCode, LOCAL_STORAGE_KEYS, ROLE } from "../../../shared/constants/constants";
 
 const ActivityPage = () => {
   const [activities, setActivities] = useState<Activity[] | null>(null);
@@ -20,7 +20,7 @@ const ActivityPage = () => {
     const fetchActivities = async () => {
       try {
         const response = await adminService.getActivities(page, 6);
-        if (response.status === 200) {
+        if (response.status === HttpStatusCode.OK) {
           setActivities(response.data.activities as Activity[]);
           setTotalPages(response.data.totalPages as number);
         }
@@ -44,7 +44,7 @@ const ActivityPage = () => {
       {activities && (
         <AcitivityList
           activities={activities}
-          role="admin"
+          role={ROLE.ADMIN}
           refetch={() => setTriggerFetch((prev) => !prev)}
         />
       )}

@@ -6,6 +6,7 @@ import type { Activity } from "../../../shared/types/global";
 import Carousel from "../../components/common/Carousel";
 import ActivityCard from "../../components/common/ActivityCard";
 import { useNavigate } from "react-router-dom";
+import { HttpStatusCode } from "@/shared/constants/constants";
 const ActivityPageUser = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -23,7 +24,7 @@ const ActivityPageUser = () => {
     const fetchActivities = async () => {
       try {
         const response = await userService.getAllActivities(page, 9);
-        if (response.status === 200) {
+        if (response.status === HttpStatusCode.OK) {
           setActivities(response.data.activities as Activity[]);
           setTotalPages(response.data.totalPages as number);
         }

@@ -8,9 +8,10 @@ import type { BlogPost } from "../../../../shared/types/global";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { userService } from "../../../../services/UserService";
-import ConfirmModal from "../../ReusableComponents/ConfirmModal";
+import ConfirmModal from "../../sharedElements/ConfirmModal";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import { HttpStatusCode } from "@/shared/constants/constants";
 
 interface BlogReadProps {
   blogPost: BlogPost;
@@ -25,7 +26,7 @@ export default function BlogRead({ blogPost, onBack }: BlogReadProps) {
   const deleteBlog = async (id: string) => {
     try {
       const response = await userService.deleteBlog(id);
-      if (response.status === 200) {
+      if (response.status === HttpStatusCode.OK) {
         toast.success("Blog deleted");
         onBack();
       }
@@ -36,25 +37,24 @@ export default function BlogRead({ blogPost, onBack }: BlogReadProps) {
     }
   };
 
-
   const editor = useEditor({
     shouldRerenderOnTransaction: false,
-    content:   blogPost.introduction,
+    content: blogPost.introduction,
     extensions: [StarterKit],
   });
 
   useEffect(() => {
-    editor.commands.setContent(blogPost.introduction)
-}, [editor,blogPost])
+    editor.commands.setContent(blogPost.introduction);
+  }, [editor, blogPost]);
 
-function ReadOnlyEditor({ html }: { html: string }) {
-  const editor = useEditor({
-    extensions: [StarterKit],
-    content: html,
-    editable: false
-  });
-  return <EditorContent editor={editor} />;
-}
+  function ReadOnlyEditor({ html }: { html: string }) {
+    const editor = useEditor({
+      extensions: [StarterKit],
+      content: html,
+      editable: false,
+    });
+    return <EditorContent editor={editor} />;
+  }
 
   // 🔁 Toggle between blog preview and edit page
   if (editBlog) {
@@ -106,9 +106,7 @@ function ReadOnlyEditor({ html }: { html: string }) {
               <h1 className="text-4xl font-bold mb-4">
                 {blogPost.title || "Your Blog Title"}
               </h1>
-              {blogPost.introduction && (
-                <EditorContent editor={editor} />
-              )}
+              {blogPost.introduction && <EditorContent editor={editor} />}
               {blogPost.image && (
                 <div className="mb-4">
                   <img

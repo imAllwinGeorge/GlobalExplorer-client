@@ -145,7 +145,7 @@ export default function MyProfile({ initialData}: HostDetailsDisplayProps) {
             //   <p className="text-xs text-gray-500">
             //     {file.name} ({formatFileSize(file.size)})
             //   </p>
-            <img src= {`http://localhost:3000/uploads/images/${file}`} alt={label} className="w-32 h-32 object-cover border roounded-md" />
+            <img src= {`${import.meta.env.VITE_IMG_URL}${file}`} alt={label} className="w-32 h-32 object-cover border roounded-md" />
             ) : (
               <p className="text-xs text-red-500">No file uploaded</p>
             )}

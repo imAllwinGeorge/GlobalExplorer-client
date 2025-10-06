@@ -1,5 +1,6 @@
 import axios from "axios";
 import { handleRoleBasedLogout } from "../utils/protected/authUtils";
+import { HttpStatusCode } from "@/shared/constants/constants";
 const baseUrl = import.meta.env.VITE_API_BASE_URL;
 console.log(baseUrl);
 export const axiosInstance = axios.create({
@@ -19,7 +20,7 @@ axiosInstance.interceptors.response.use(
     const message = error.response?.data?.message;
 
     // Only retry for 401 with "Token Expired" message
-    if (status === 401 && message === "Token Expired.") {
+    if (status === HttpStatusCode.UNAUTHORIZED && message === "Token Expired.") {
       const originalRequest = error.config;
       console.log(originalRequest);
       
@@ -44,7 +45,7 @@ axiosInstance.interceptors.response.use(
       }
     }
     // Handle other 401 errors (not token expired) and 403 errors
-    else if (status === 403 || (status === 401 && message !== "Token Expired.")) {
+    else if (status === HttpStatusCode.FORBIDDEN || (status === HttpStatusCode.UNAUTHORIZED && message !== "Token Expired.")) {
       console.log("Handling 403 or other 401 errors - logging out");
       handleRoleBasedLogout(window.location.pathname);
     }

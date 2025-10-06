@@ -5,6 +5,7 @@ import { AuthAPI } from "../../../../services/AuthAPI";
 import { useDispatch } from "react-redux";
 import { hostRegister } from "../../../store/slices/hostSlice";
 import Input from "../../../components/Input";
+import { HttpStatusCode } from "@/shared/constants/constants";
 
 const HostOtp = () => {
   const navigate = useNavigate();
@@ -83,14 +84,14 @@ const HostOtp = () => {
       const response = await authAPI.verify(otp)
       console.log("dispatch response: ",response);
      
-      if(response.status === 201){
+      if(response.status === HttpStatusCode.CREATED){
         dispatch(hostRegister(response.data.user));
         console.log(response)
         navigate("/host/home")
       }
       // need to check at the time of forgot password.....................................
 
-      // else if (response.status === 200) {
+      // else if (response.status === HttpStatusCode.OK) {
       //   setEmail(response.data.user?.email);
       //   navigate("/new-password", { state: { email: email } });
       // }
@@ -112,7 +113,7 @@ const HostOtp = () => {
 
     try {
       const response = await authAPI.resendOtp();
-      if (response.status === 200) {
+      if (response.status === HttpStatusCode.OK) {
         const newExpiry = Date.now() + 120000; // 2 minutes from now
         localStorage.setItem("otp_expiry", newExpiry.toString());
         // Reset timer and states

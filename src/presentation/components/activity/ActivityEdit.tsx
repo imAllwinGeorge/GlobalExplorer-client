@@ -27,7 +27,8 @@ import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
 import type { LatLngExpression } from "leaflet";
 import toast from "react-hot-toast";
 import { HostService } from "../../../services/HostService";
-import ConfirmModal from "../ReusableComponents/ConfirmModal";
+import ConfirmModal from "../sharedElements/ConfirmModal";
+import { HttpStatusCode } from "@/shared/constants/constants";
 
 interface ActivityEditProps {
   activity: Activity;
@@ -51,7 +52,7 @@ const getLocationFromAddress = async (
     console.log("Getting location for address:", address);
     // Return default coordinates for now
     const response = await fetch(
-      `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(
+      `${import.meta.env.VITE_GET_GEOLOCATION}${encodeURIComponent(
         address
       )}&key=${import.meta.env.VITE_MAP_API}`
     );
@@ -254,7 +255,7 @@ export default function ActivityEdit({
         selectedActivity?.activityId,
         { isActive: selectedActivity?.status }
       );
-      if (response.status === 200) {
+      if (response.status === HttpStatusCode.OK) {
         toast.success(response.data.message || "status changed successfull");
         setStatusChange(selectedActivity.status);
         setFormData((prev) => ({ ...prev, isActive: selectedActivity.status }));

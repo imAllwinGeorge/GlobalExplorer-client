@@ -10,7 +10,7 @@ import { PlusCircle } from "lucide-react";
 import toast from "react-hot-toast";
 import Pagination from "../../components/common/Pagination";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
-import { LOCAL_STORAGE_KEYS } from "../../../shared/constants/constants";
+import { HttpStatusCode, LOCAL_STORAGE_KEYS } from "../../../shared/constants/constants";
 import BlogRead from "../../components/common/Blog/Read-Blog";
 
 const Blogs = () => {
@@ -29,7 +29,7 @@ const Blogs = () => {
   const handleSave = async (formData: FormData) => {
     try {
       const response = await userService.createBlog(formData);
-      if (response.status === 201) {
+      if (response.status === HttpStatusCode.CREATED) {
         console.log(response);
         setOpenModal(false);
         setTriggerFetch((prev) => !prev);
@@ -47,7 +47,7 @@ const Blogs = () => {
     try {
       const response = await userService.getMyBlogs(user?._id, page, 9);
       console.log(response);
-      if (response.status === 200) {
+      if (response.status === HttpStatusCode.OK) {
         setBlogs(response.data.blogs as BlogPost[]);
         setTotalPages(response.data.totalPages as number);
       }
@@ -62,7 +62,7 @@ const Blogs = () => {
     const fetchBlogs = async () => {
       try {
         const response = await userService.getBlogs(page, 9);
-        if (response.status === 200) {
+        if (response.status === HttpStatusCode.OK) {
           setBlogs(response.data.blogs as BlogPost[]);
           setTotalPages(response.data.totalPages as number);
         }

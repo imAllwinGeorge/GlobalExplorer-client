@@ -9,6 +9,7 @@ import { AuthAPI } from "../../../../services/AuthAPI";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { hostLogin } from "../../../store/slices/hostSlice";
+import { HttpStatusCode, ROLE } from "@/shared/constants/constants";
 
  
 
@@ -16,7 +17,7 @@ const HostLogin = () => {
    const [data, setData] = useState({
     email: "",
     password: "",
-    role: "host",
+    role: ROLE.HOST,
   });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<LoginFormError>({});
@@ -42,7 +43,7 @@ const HostLogin = () => {
     }
     try {
       const response = await authAPI.login(data)
-      if(response.status === 200){
+      if(response.status === HttpStatusCode.OK){
         dispatch(hostLogin(response.data.user))
         navigate("/host/home")
       }
@@ -132,7 +133,7 @@ const HostLogin = () => {
             >
               Login
             </button>
-            <Link to="/forgot-password" state={"host"} className=" text-indigo-600 hover:underline">
+            <Link to="/forgot-password" state={ROLE.HOST} className=" text-indigo-600 hover:underline">
              forgot password
           </Link>
 

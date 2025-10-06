@@ -16,6 +16,7 @@ import type { Dashboard } from "../../../../shared/types/global";
 import { hostService } from "../../../../services/HostService";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../store";
+import { HttpStatusCode } from "@/shared/constants/constants";
 
 // Register necessary Chart.js components
 ChartJS.register(
@@ -73,7 +74,7 @@ const HostHome = () => {
       if(!host) return
       try {
         const response = await hostService.dashboardData(host._id);
-        if(response.status === 200){
+        if(response.status === HttpStatusCode.OK){
           console.log(response);
           const dashboardData = response.data.dashboardData as Dashboard[];
           setLabels(dashboardData.map((prod) => prod.activity.activityName));

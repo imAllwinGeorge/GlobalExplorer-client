@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { socketService } from "../services/SocketService";
 import { SocketContext } from "../contexts/SocketContext";
 import { Socket } from "socket.io-client";
+// import GlobalCallListener from "./components/videoCall/GlobalCallListener";
 
 const App = () => {
   const user = useSelector((state: RootState) => state.auth.user);
@@ -39,6 +40,7 @@ const App = () => {
   return (
     <div>
       <SocketContext.Provider value={socket}>
+        {/* <GlobalCallListener /> */}
         <Routes>
           <Route path="/*" element={<UserRoutes />} />
           <Route path="/host/*" element={<HostRoutes />} />

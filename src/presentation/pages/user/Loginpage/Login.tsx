@@ -9,12 +9,13 @@ import { useAppDispatch } from "../../../hooks/useAppHooks";
 import { login, setGoogleUser } from "../../../store/slices/authSlice";
 import { AuthAPI } from "../../../../services/AuthAPI";
 import toast from "react-hot-toast";
+import { ROLE } from "@/shared/constants/constants";
 
 const Login = () => {
   const [data, setData] = useState({
     email: "",
     password: "",
-    role: "user",
+    role: ROLE.USER,
   });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<LoginFormError>({});
@@ -62,7 +63,7 @@ const Login = () => {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const userString = params.get("user");
+    const userString = params.get(ROLE.USER);
     if (userString) {
       const user = JSON.parse(decodeURIComponent(userString));
       console.log(user);

@@ -73,6 +73,21 @@ export interface Activity {
   updatedAt: Date;
 }
 
+export interface Review {
+  _id: string;
+  entityId: string;
+  userId: string | {
+    _id: string;
+    firstName: string;
+    lastName: string;
+  }
+  rating: number;
+  title: string;
+  comment: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface BlogPost {
   _id: string;            // MongoDB ObjectId as a string
   userId: string;         // Author's user ID
@@ -190,6 +205,7 @@ export interface AuthResponse {
   blogs?: BlogPost[],
   blog?: BlogPost,
   activity?: Activity
+  reviews?: Review[]
   totalPages?: number,
   razorpayAccountId?: string,
   availability?: {date: string, availableSeats: number}[]

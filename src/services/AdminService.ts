@@ -1,3 +1,4 @@
+import { HttpStatusCode } from "@/shared/constants/constants";
 import { axiosInstance } from "../api/axiosInstance";
 import type { ErrorResponse } from "../shared/types/auth.type";
 import type { AuthResponse, Host, ResponseType, User } from "../shared/types/global";
@@ -8,7 +9,7 @@ export const adminService = {
       const response = await axiosInstance.get<{ users: T[], totalPages: number }>(
         `/admin/get-users/${role}?page=${page}&limit=${limit}`
       );
-      if (response.status === 200) {
+      if (response.status === HttpStatusCode.OK) {
         console.log(response);
         return {users: response.data.users, totalPages: response.data.totalPages}
       }

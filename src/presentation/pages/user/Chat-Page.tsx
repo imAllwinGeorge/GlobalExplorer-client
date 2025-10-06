@@ -8,7 +8,7 @@ import { useSelector } from "react-redux";
 import type { RootState } from "../../store";
 import toast from "react-hot-toast";
 import { userService } from "../../../services/UserService";
-import { DIRECT_CHAT_EVENTS } from "../../../shared/constants/constants";
+import { DIRECT_CHAT_EVENTS, HttpStatusCode } from "../../../shared/constants/constants";
 import { useSocket } from "../../../contexts/SocketContext";
 // import toast from "react-hot-toast";
 
@@ -70,7 +70,7 @@ const Chat = () => {
     if(!user?._id) return 
    try {
      const response = await userService.MarkReadMessage(conversationId, user._id);
-    if(response.status === 200){
+    if(response.status === HttpStatusCode.OK){
       console.log(response)
       const convo = response.data.conversation as Conversation
       const conversations = users.map((prev) => prev._id === convo._id ? {...convo, receiverId: prev.receiverId, firstName: prev.firstName, lastName: prev.lastName}: prev)
@@ -124,7 +124,7 @@ const Chat = () => {
           user?._id as string
         );
 
-        if (response.status === 200) {
+        if (response.status === HttpStatusCode.OK) {
           console.log("conversation response: ", response);
           setUsers(response.data.conversations as ConversationResponse[])
         }
@@ -144,6 +144,7 @@ const Chat = () => {
         <ChatPage
         users={users as ConversationResponse[]}
         currentUserId={user?._id as string}
+        role={user?.role as string}
         onSendMessage={handleSendMessage}
         onMarkAsRead={handleMarkAsRead}
         updateLastMessage={updateCoversation}

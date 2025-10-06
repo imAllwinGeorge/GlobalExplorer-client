@@ -8,10 +8,11 @@ import type { AddCategoryError } from "../../../shared/types/auth.type";
 import { isValidName } from "../../../shared/validation/validations";
 import { adminService } from "../../../services/AdminService";
 import type { Category } from "../../../shared/types/global";
-import ConfirmModal from "../../components/ReusableComponents/ConfirmModal";
+import ConfirmModal from "../../components/sharedElements/ConfirmModal";
 import toast from "react-hot-toast";
 import { Pencil, Plus, X } from "lucide-react";
 import Pagination from "../../components/common/Pagination";
+import { HttpStatusCode } from "@/shared/constants/constants";
 
 const CategoryPage = () => {
   const [data, setData] = useState({
@@ -58,7 +59,7 @@ const CategoryPage = () => {
     }
     try {
       const response = await adminService.addCategory(data);
-      if (response.status === 201) {
+      if (response.status === HttpStatusCode.CREATED) {
         setTriggerFetch((prev) => !prev);
         setData({ categoryName: "", description: "" });
         setError({});
@@ -66,13 +67,11 @@ const CategoryPage = () => {
       }
     } catch (error) {
       console.log(error);
-      if(error instanceof Error){
+      if (error instanceof Error) {
         toast.error(error.message);
       }
     }
   };
-
-
 
   const handleCategoryState = async () => {
     if (!selectedCategory) return;
@@ -82,7 +81,7 @@ const CategoryPage = () => {
         _id: selectedCategory?._id,
         value: { isActive: !selectedCategory?.isActive },
       });
-      if (response.status === 200) {
+      if (response.status === HttpStatusCode.OK) {
         toast.dismiss(toastId);
         toast.success(
           `Category ${!selectedCategory.isActive ? "activated" : "deactivated"}`
@@ -111,7 +110,7 @@ const CategoryPage = () => {
           description: editData.description,
         },
       });
-      if (response.status === 200) {
+      if (response.status === HttpStatusCode.OK) {
         setTriggerFetch((prev) => !prev);
         setOpenEditModal(false);
         setData({ categoryName: "", description: "" });
@@ -129,11 +128,10 @@ const CategoryPage = () => {
     const fetchCategory = async () => {
       try {
         const response = await adminService.getCategories(page, 5);
-        console.log(response)
-        if (response.status === 200) {
-          
+        console.log(response);
+        if (response.status === HttpStatusCode.OK) {
           setCategory(response.data.categories as Category[]);
-          setTotalPages(response.data.totalPages as number)
+          setTotalPages(response.data.totalPages as number);
         }
       } catch (error) {
         console.log(error);

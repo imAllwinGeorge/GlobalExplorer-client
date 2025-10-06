@@ -20,14 +20,24 @@ import type {
 } from "../../../shared/types/global";
 import toast from "react-hot-toast";
 import { userService } from "../../../services/UserService";
-import { DIRECT_CHAT_EVENTS } from "../../../shared/constants/constants";
+import {
+  DIRECT_CHAT_EVENTS,
+  HttpStatusCode,
+  ROLE,
+} from "../../../shared/constants/constants";
 import { useSocket } from "../../../contexts/SocketContext";
-import Picker from 'emoji-picker-react';
+import Picker from "emoji-picker-react";
 import { useNavigate } from "react-router-dom";
+import { useAppDispatch } from "@/presentation/hooks/useAppHooks";
+import { logout } from "@/presentation/store/slices/authSlice";
+import { hostLogout } from "@/presentation/store/slices/hostSlice";
+import { adminLogout } from "@/presentation/store/slices/adminSlice";
+import { AuthAPI } from "@/services/AuthAPI";
 
 interface ChatPageProps {
   users: ConversationResponse[];
   currentUserId: string;
+  role: string;
   onSendMessage: (userId: string, content: string) => void;
   onMarkAsRead: (userId: string) => void;
   updateLastMessage: (conversation: Conversation) => void;
@@ -36,6 +46,7 @@ interface ChatPageProps {
 export default function ChatPage({
   users,
   currentUserId,
+  role,
   onSendMessage,
   onMarkAsRead,
   updateLastMessage,
@@ -49,6 +60,7 @@ export default function ChatPage({
   const [showSidebar, setShowSidebar] = useState(true);
   const [searchedUsers, setSearchedUsers] = useState<SearchUsers[]>([]);
   const messageEndRef = useRef<HTMLDivElement | null>(null);
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const filteredUsers = users.filter((user) =>
     user.firstName.toLowerCase().includes(searchQuery.toLowerCase())
@@ -60,7 +72,7 @@ export default function ChatPage({
   const getMessages = async (conversationId: string) => {
     try {
       const response = await userService.getMessages(conversationId);
-      if (response.status === 200) {
+      if (response.status === HttpStatusCode.OK) {
         console.log(response);
         setMessages((response.data.messages as Message[]).reverse());
       }
@@ -134,9 +146,12 @@ export default function ChatPage({
     return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
   };
 
-  function scroll () {
-    if(messageEndRef.current){
-      messageEndRef.current.scrollIntoView({behavior: "smooth", block: "end"})
+  function scroll() {
+    if (messageEndRef.current) {
+      messageEndRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "end",
+      });
     }
   }
 
@@ -145,7 +160,7 @@ export default function ChatPage({
       if (!searchQuery.trim()) return;
       try {
         const response = await userService.searchUser(searchQuery);
-        if (response.status === 200) {
+        if (response.status === HttpStatusCode.OK) {
           console.log("user search result: ", response);
           setSearchedUsers(response.data.userSearch as SearchUsers[]);
         }
@@ -160,8 +175,17 @@ export default function ChatPage({
   }, [searchQuery]);
 
   useEffect(() => {
-    // const socket = socketService.instance;
     if (!socket) return;
+
+    const authAPI = new AuthAPI();
+
+    scroll();
+
+    socket.on(DIRECT_CHAT_EVENTS.SEND_MESSAGE, (data) => {
+      setMessages((prev) => [...prev, data.message]);
+      updateLastMessage(data.conversation);
+      scroll();
+    });
 
     socket.on(DIRECT_CHAT_EVENTS.RECEIVE_MESSAGE, (data) => {
       console.log("Message received:", data);
@@ -170,24 +194,35 @@ export default function ChatPage({
       scroll();
     });
 
-    return () => {
-      socket.off(DIRECT_CHAT_EVENTS.RECEIVE_MESSAGE);
-    };
-  }, [socket, updateLastMessage]);
-
-  useEffect(() => {
-    if (!socket) return;
-
-    socket.on(DIRECT_CHAT_EVENTS.SEND_MESSAGE, (data) => {
-      setMessages((prev) => [...prev, data.message]);
-      updateLastMessage(data.conversation);
-      scroll();
+    socket?.on(DIRECT_CHAT_EVENTS.DISCONNECT, async () => {
+      console.log("socket diconnect triggered.....");
+      try {
+        const response = await authAPI.logout(role);
+        if (response.status === HttpStatusCode.OK) {
+          if (role === ROLE.USER) {
+            dispatch(logout());
+            navigate("/login");
+          } else if (role === ROLE.HOST) {
+            dispatch(hostLogout());
+            navigate("/host/login");
+          } else if (role === ROLE.ADMIN) {
+            dispatch(adminLogout());
+            navigate("/admin/login");
+          }
+        }
+      } catch (error) {
+        console.log(error);
+        if (error instanceof Error) {
+          toast.error(error.message);
+        }
+      }
     });
 
     return () => {
       socket.off(DIRECT_CHAT_EVENTS.SEND_MESSAGE);
+      socket.off(DIRECT_CHAT_EVENTS.RECEIVE_MESSAGE);
     };
-  }, [socket, updateLastMessage]);
+  }, [socket, updateLastMessage, dispatch, navigate, role]);
 
   return (
     <div className="flex h-screen ">
@@ -344,7 +379,13 @@ export default function ChatPage({
                   <Button variant="ghost" size="sm">
                     <Phone className="w-4 h-4" />
                   </Button>
-                  <Button variant="ghost" size="sm" onClick={() => navigate("/video", { state:{userId: selectedUserId}})} >
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() =>
+                      navigate("/video", { state: { userId: selectedUserId } })
+                    }
+                  >
                     <Video className="w-4 h-4" />
                   </Button>
                   <Button variant="ghost" size="sm">
@@ -393,11 +434,25 @@ export default function ChatPage({
               </AnimatePresence>
               <div ref={messageEndRef} />
             </div>
-                {showPicker && ( <Picker lazyLoadEmojis={true} width={"70%"} onEmojiClick={(emojiObject) => setNewMessage((prev) => prev+emojiObject.emoji)} />)}
+            {showPicker && (
+              <div onMouseLeave={() => setShowPicker(false)}>
+                <Picker
+                  lazyLoadEmojis={true}
+                  width={"70%"}
+                  onEmojiClick={(emojiObject) =>
+                    setNewMessage((prev) => prev + emojiObject.emoji)
+                  }
+                />
+              </div>
+            )}
             {/* Message Input */}
             <div className=" shrink-0 p-4 border-t border-gray-200 bg-white ">
               <div className="flex items-center space-x-2">
-                <Button variant="ghost" size="sm" onClick={() => setShowPicker(prev => !prev)}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowPicker((prev) => !prev)}
+                >
                   <Smile className="w-4 h-4" />
                 </Button>
                 <Input

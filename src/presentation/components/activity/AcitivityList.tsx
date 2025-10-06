@@ -5,7 +5,7 @@ import ActivityDetails from "./ActvityDetails";
 import ActivityEdit from "./ActivityEdit";
 import toast from "react-hot-toast";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
-import { LOCAL_STORAGE_KEYS } from "../../../shared/constants/constants";
+import { HttpStatusCode, LOCAL_STORAGE_KEYS, ROLE } from "../../../shared/constants/constants";
 
 type ActivityListProps = {
   activities: Activity[];
@@ -66,7 +66,7 @@ const AcitivityList = ({ activities, role, refetch }: ActivityListProps) => {
 
     try {
       const response = await hostService.editActivity(activity._id, data);
-      if (response.status === 200) {
+      if (response.status === HttpStatusCode.OK) {
         toast.success("Activity Edited successfully.");
         setEditActivity(null);
         refetch();
@@ -98,7 +98,7 @@ const AcitivityList = ({ activities, role, refetch }: ActivityListProps) => {
                 currencySymbol="$"
                 exchangeRate={83.5}
                 secondaryCurrency="INR"
-                buttonTitle={role === "host" ? "EDIT" : "Details"}
+                buttonTitle={role === ROLE.HOST ? "EDIT" : "Details"}
               />
             ))}
           </div>
@@ -118,7 +118,7 @@ const AcitivityList = ({ activities, role, refetch }: ActivityListProps) => {
       )}
 
       {/* Fullscreen Activity Edit View */}
-      {editActivity && role === "host" && (
+      {editActivity && role === ROLE.HOST && (
         <div className="fixed inset-0 z-50 bg-white overflow-y-auto">
           <ActivityEdit
             activity={editActivity}

@@ -6,6 +6,7 @@ import type { RootState } from "../../store"
 import type { Host } from "../../../shared/types/global"
 import MyProfile from "../../components/common/MyProfile"
 import { HostService } from "../../../services/HostService"
+import { HttpStatusCode, ROLE } from "@/shared/constants/constants"
 
 const Profile = () => {
   const user = useSelector((state: RootState) => state.host.host)
@@ -18,7 +19,7 @@ const Profile = () => {
     if(!user) return;
     try {
       const response = await hostService.editProfile(user._id, data);
-      if(response.status === 200) {
+      if(response.status === HttpStatusCode.OK) {
         toast.success("Profile edited successful")
         setTriggerFetch(prev => !prev)
       }
@@ -34,8 +35,8 @@ const Profile = () => {
     if(!user) return;
     const fetchProfile = async () => {
       try {
-        const response = await authService.getUserProfile(user?._id, "host")
-        if(response.status === 200) {
+        const response = await authService.getUserProfile(user?._id, ROLE.HOST)
+        if(response.status === HttpStatusCode.OK) {
           setProfile(response.data.user as Host);
         }
       } catch (error) {

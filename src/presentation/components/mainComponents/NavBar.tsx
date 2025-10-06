@@ -13,7 +13,7 @@ import { Link } from "react-router-dom";
 import { userService } from "../../../services/UserService";
 import type { Notification } from "../../../shared/types/global";
 import { useSocket } from "../../../contexts/SocketContext";
-import { NOTIFICATION_EVENT } from "../../../shared/constants/constants";
+import { HttpStatusCode, NOTIFICATION_EVENT, ROLE } from "../../../shared/constants/constants";
 import NotificationMessages from "../notification/NotificationMessage";
 
 // // Mock user type for demonstration
@@ -54,14 +54,14 @@ const NavBar = ({ role }: NavBarPropsType) => {
   const handleLogout = async () => {
     try {
       const response = await authAPI.logout(role);
-      if (response.status === 200) {
-        if (role === "user") {
+      if (response.status === HttpStatusCode.OK) {
+        if (role === ROLE.USER) {
           dispatch(logout());
           navigate("/login");
-        } else if (role === "host") {
+        } else if (role === ROLE.HOST) {
           dispatch(hostLogout());
           navigate("/host/login");
-        } else if (role === "admin") {
+        } else if (role === ROLE.ADMIN) {
           dispatch(adminLogout());
           navigate("/admin/login");
         }
@@ -196,7 +196,7 @@ const NavBar = ({ role }: NavBarPropsType) => {
       try {
         if (!user) return;
         const response = await userService.fetchNotification(user._id);
-        if (response.status === 200) {
+        if (response.status === HttpStatusCode.OK) {
           console.log("navbar notification response : ", response);
           setNotifications(
             response.data.notifications as unknown as Notification[]

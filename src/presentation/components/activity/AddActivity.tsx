@@ -12,6 +12,7 @@ import type { LatLngExpression } from "leaflet";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../store";
 import toast from "react-hot-toast";
+import { HttpStatusCode } from "@/shared/constants/constants";
 
 // Placeholder function for getting coordinates from address
 const getLocationFromAddress = async (
@@ -242,7 +243,7 @@ export default function AddActivity({ onClose }: AddActivityProps) {
       console.log("gwsgs")
       const response = await hostService.addActivity(data); // Ensure this sends FormData
       console.log("Success:", response.data);
-      if (response.status === 201) {
+      if (response.status === HttpStatusCode.CREATED) {
         toast.success("Activity added successfully");
         onClose();
       }
@@ -265,7 +266,7 @@ export default function AddActivity({ onClose }: AddActivityProps) {
     const fetchCategory = async () => {
       try {
         const response = await hostService.getCategories();
-        if (response.status === 200) {
+        if (response.status === HttpStatusCode.OK) {
           setCategories(response.data.categories as Category[]);
           console.log(response);
         }

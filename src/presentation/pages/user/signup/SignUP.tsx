@@ -11,6 +11,7 @@ import { AuthAPI } from "../../../../services/AuthAPI";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
+import { HttpStatusCode, ROLE } from "@/shared/constants/constants";
 
 const SignUP = () => {
   const [data, setData] = useState({
@@ -19,7 +20,7 @@ const SignUP = () => {
     email: "",
     phoneNumber: "",
     password: "",
-    role: "user",
+    role: ROLE.USER,
   });
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -52,7 +53,7 @@ const SignUP = () => {
     }
     try {
       const response = await authAPI.register(data);
-      if (response.status === 200) {
+      if (response.status === HttpStatusCode.OK) {
         navigate("/verify_otp");
       }
     } catch (error) {

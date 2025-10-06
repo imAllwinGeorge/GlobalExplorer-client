@@ -6,11 +6,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Filter, X } from "lucide-react";
 import Pagination from "../../components/common/Pagination";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
-import { LOCAL_STORAGE_KEYS } from "../../../shared/constants/constants";
+import { HttpStatusCode, LOCAL_STORAGE_KEYS } from "../../../shared/constants/constants";
 import type { Activity, Category } from "../../../shared/types/global";
 import toast from "react-hot-toast";
 import { userService } from "../../../services/UserService";
-import SearchBox from "../../components/ReusableComponents/Search-box";
+import SearchBox from "../../components/sharedElements/Search-box";
 import ActivityCard from "../../components/common/ActivityCard";
 import { useNavigate } from "react-router-dom";
 
@@ -109,7 +109,7 @@ export default function FilterPage({
     async function fetchCategories() {
       try {
         const response = await userService.getCategories();
-        if (response.status === 200) {
+        if (response.status === HttpStatusCode.OK) {
           setCategories(response.data.categories as Category[]);
         }
       } catch (error) {
@@ -128,7 +128,7 @@ export default function FilterPage({
         setIsLoading(true);
         console.log(filters);
         const response = await userService.filterSearch(page, 9, filters);
-        if (response.status === 200) {
+        if (response.status === HttpStatusCode.OK) {
           setActivities(response.data.activities as Activity[]);
           setTotalPages(response.data.totalPages as number);
         }

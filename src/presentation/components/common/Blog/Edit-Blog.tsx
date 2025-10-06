@@ -11,6 +11,7 @@ import type { BlogPost, BlogSection } from "../../../../shared/types/global";
 import toast from "react-hot-toast";
 import { userService } from "../../../../services/UserService";
 import { SimpleEditor } from "@/components/tiptap-templates/simple/simple-editor";
+import { HttpStatusCode } from "@/shared/constants/constants";
 
 interface BlogEditProps {
   blogPost: BlogPost;
@@ -216,7 +217,7 @@ export default function BlogEdit({
     );
     try {
       const response = await userService.editBlog(formData._id, data);
-      if (response.status === 200) {
+      if (response.status === HttpStatusCode.OK) {
         onSave();
       }
     } catch (error) {

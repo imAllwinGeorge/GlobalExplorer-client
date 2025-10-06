@@ -7,11 +7,11 @@ import { useSelector } from "react-redux";
 import type { RootState } from "../../store";
 import type { Booking } from "../../../shared/types/global";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
-import { LOCAL_STORAGE_KEYS } from "../../../shared/constants/constants";
+import { HttpStatusCode, LOCAL_STORAGE_KEYS } from "../../../shared/constants/constants";
 import { userService } from "../../../services/UserService";
-import ReusableTable from "../../components/ReusableComponents/ReusableTable";
+import ReusableTable from "../../components/sharedElements/SharedTable";
 import Pagination from "../../components/common/Pagination";
-import RejectionModal from "../../components/ReusableComponents/RejectionModal";
+import RejectionModal from "../../components/sharedElements/RejectionModal";
 import { hostService } from "../../../services/HostService";
 
 const columns = [
@@ -51,7 +51,7 @@ const BookingPage = () => {
       try {
         setLoading(true);
         const response = await hostService.activityBookings(user?._id, page, 9);
-        if (response.status === 200) {
+        if (response.status === HttpStatusCode.OK) {
           console.log(response, user._id);
           setData(response.data.bookings);
           setTotalPages(response.data.totalPages as number);
@@ -89,7 +89,7 @@ const BookingPage = () => {
         selectedBooking,
         message
       );
-      if (response.status === 200) {
+      if (response.status === HttpStatusCode.OK) {
         toast.success("Booking cancellation requested");
       }
     } catch (error) {

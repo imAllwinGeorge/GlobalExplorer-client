@@ -14,6 +14,7 @@ import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { adminService } from "../../../../services/AdminService";
 import type { Dashboard } from "../../../../shared/types/global";
+import { HttpStatusCode } from "@/shared/constants/constants";
 
 // Register necessary Chart.js components
 ChartJS.register(
@@ -68,7 +69,7 @@ const AdminHomePage = () => {
     const fetchDashboardData = async () => {
       try {
         const response = await adminService.dashboardData();
-        if(response.status === 200){
+        if(response.status === HttpStatusCode.OK){
           console.log(response);
           const dashboardData = response.data.dashboardData as Dashboard[];
           setLabels(dashboardData.map((prod) => prod.activity.activityName));

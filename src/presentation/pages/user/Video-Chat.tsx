@@ -355,7 +355,6 @@ import { VIDEO_CALL_EVENT } from "@/shared/constants/constants";
 import type { RootState } from "@/presentation/store";
 import { useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
-import toast from "react-hot-toast";
 
 const configuration: RTCConfiguration = {
   iceServers: [
@@ -374,6 +373,7 @@ const VideoChat = () => {
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
   const [incomingCall, setIncomingCall] = useState<{ callerId: string } | null>(null);
+  const [onCall, setOnCall] = useState(false);
 
   const peerRef = useRef<RTCPeerConnection | null>(null);
   const pendingCandidates = useRef<RTCIceCandidateInit[]>([]);
@@ -401,6 +401,7 @@ const VideoChat = () => {
       callerId: user?._id,
       calleeId: receiverId,
     });
+    console.log("called...")
   };
 
   const acceptCall = async () => {
@@ -409,7 +410,8 @@ const VideoChat = () => {
       callerId: incomingCall.callerId,
       calleeId: user?._id,
     });
-    // setIncomingCall(null);
+    setIncomingCall(null);
+    setOnCall(true);
   };
 
   const rejectCall = () => {
@@ -435,12 +437,14 @@ const VideoChat = () => {
       from: user?._id,
     });
     console.log("call ended..........")
+    setOnCall(false)
     navigate("/chat")
   };
 
   useEffect(() => {
     if (!socket) return;
-
+    console.log("video component mounted")
+    startCall();
     const processPendingCandidates = async () => {
       if (pendingCandidates.current.length > 0 && peerRef.current?.remoteDescription) {
         for (const candidate of pendingCandidates.current) {
@@ -454,8 +458,6 @@ const VideoChat = () => {
     socket.on(VIDEO_CALL_EVENT.CALL_REQUEST, (data) => {
       setIncomingCall({ callerId: data.callerId });
       ///addd a incomming call alert...........
-      console.log("call request arrived.................")
-      toast.success("call request...");
     });
 
     socket.on(VIDEO_CALL_EVENT.CALL_REJECT, () => {
@@ -509,6 +511,7 @@ const VideoChat = () => {
       if (peerRef.current && !peerRef.current.remoteDescription) {
         await peerRef.current.setRemoteDescription(new RTCSessionDescription(data.sdp));
         await processPendingCandidates();
+        setOnCall(true);
       }
     });
 
@@ -558,7 +561,7 @@ const VideoChat = () => {
         bg-background text-foreground
       "
     >
-      {!incomingCall ? (
+      {!incomingCall && !onCall ? (
         <button
           onClick={startCall}
           className="
@@ -572,7 +575,7 @@ const VideoChat = () => {
         >
           Start Call
         </button>
-      ) : (
+      ) : incomingCall && !onCall ? (
         <div
           className="
             w-full max-w-sm
@@ -612,7 +615,7 @@ const VideoChat = () => {
             </button>
           </div>
         </div>
-      )}
+      ): ""}
 
       {localStream && (
         <VideoCall
