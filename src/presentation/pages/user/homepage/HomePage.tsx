@@ -7,6 +7,7 @@ import { motion } from "framer-motion"
 import { ArrowRight, Play } from "lucide-react"
 import { Button } from "../../../components/ui/button";
 import { userService } from "../../../../services/UserService";
+import { HttpStatusCode } from "@/shared/constants/constants";
 
 const textVariant = {
   hidden: { opacity: 0, y: 20 },
@@ -33,7 +34,7 @@ const HomePage = () => {
         try {
           const response = await userService.getUserDetails(id, role);
           console.log(response)
-          if(response.status === 200){
+          if(response.status === HttpStatusCode.OK){
             toast.success("success")
           }
         } catch (error) {
@@ -43,7 +44,7 @@ const HomePage = () => {
           }
         }
       }
-       fetchUser("68408d0750fe22eaac47d496", "role");
+       fetchUser("68408d0750fe22eaac47d496", "user");
     },[])
   return (
     <div>

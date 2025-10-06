@@ -5,6 +5,7 @@ import { AuthAPI } from "../../../services/AuthAPI";
 import { useAppDispatch } from "../../hooks/useAppHooks";
 import { register } from "../../store/slices/authSlice";
 import toast from "react-hot-toast";
+import { HttpStatusCode } from "@/shared/constants/constants";
 
 const Otp = () => {
   const navigate = useNavigate();
@@ -97,7 +98,7 @@ const Otp = () => {
       }
       // need to check at the time of forgot password.....................................
 
-      // else if (response.status === 200) {
+      // else if (response.status === HttpStatusCode.OK) {
       //   setEmail(response.data.user?.email);
       //   navigate("/new-password", { state: { email: email } });
       // }
@@ -119,7 +120,7 @@ const Otp = () => {
 
     try {
       const response = await authAPI.resendOtp();
-      if (response.status === 200) {
+      if (response.status === HttpStatusCode.OK) {
         const newExpiry = Date.now() + 120000; // 2 minutes from now
         localStorage.setItem("otp_expiry", newExpiry.toString());
         // Reset timer and states

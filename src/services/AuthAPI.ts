@@ -2,6 +2,8 @@ import type { AuthResponse, ResponseType } from "../shared/types/global";
 import type { LoginDTO, SignupDTO } from "../shared/types/DTO";
 import type { ErrorResponse } from "../shared/types/auth.type";
 import { axiosInstance } from "../api/axiosInstance";
+import { socketService } from "./SocketService";
+import { HttpStatusCode } from "@/shared/constants/constants";
 
 // interface SignupDTO {
 //   firstName: string;
@@ -143,6 +145,9 @@ export class AuthAPI {
       const response = await axiosInstance.post<AuthResponse>(
         `/logout/${role}`
       );
+      if(response.status === HttpStatusCode.OK) {
+        socketService.disconnect();
+      }
       return response;
     } catch (error) {
       console.log(error);
@@ -163,7 +168,6 @@ export class AuthAPI {
       throw new Error(message)
     }
   }
-
  
 }
 

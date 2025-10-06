@@ -5,6 +5,7 @@ import { useNavigate, useParams } from "react-router-dom"
 import { isValidPassword } from "../../../../shared/validation/validations"
 import { AuthAPI } from "../../../../services/AuthAPI"
 import toast from "react-hot-toast"
+import { HttpStatusCode } from "@/shared/constants/constants"
 
 export default function ChangePassword() {
   const [newPassword, setNewPassword] = useState("")
@@ -39,7 +40,7 @@ export default function ChangePassword() {
       // Simulate API call
       if(id && token && newPassword && role) {
         const response = await authAPI.resetPassword(id, role, token, newPassword)
-        if(response.status === 200){
+        if(response.status === HttpStatusCode.OK){
           // setIsSuccess(true)
           toast.success(response.data.message || "password updated")
           navigate('/login')

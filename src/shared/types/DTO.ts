@@ -66,3 +66,11 @@ export interface BlogDTO {
   }[];
   image: File | string;
 }
+
+export interface ReviewDTO {
+  entityId: string;
+  userId: string;
+  title: string;
+  comment: string;
+  rating: number;
+}

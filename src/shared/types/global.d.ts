@@ -73,6 +73,21 @@ export interface Activity {
   updatedAt: Date;
 }
 
+export interface Review {
+  _id: string;
+  entityId: string;
+  userId: string | {
+    _id: string;
+    firstName: string;
+    lastName: string;
+  }
+  rating: number;
+  title: string;
+  comment: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface BlogPost {
   _id: string;            // MongoDB ObjectId as a string
   userId: string;         // Author's user ID
@@ -121,6 +136,67 @@ export interface Booking {
   createdAt: Date;
 }
 
+export interface Message {
+  _id: string;
+  conversationId?: string | ObjectId;
+  senderId: string;
+  receiverId?: string;
+  content: string;
+  read: boolean;
+  sentAt: string;
+}
+
+export interface Conversation {
+  _id: string;
+  participants: string[];
+  lastMessage: string;
+  lastSender: string;
+  lastMessageAt: string;
+  unreadCount: Record<string, number>
+}
+
+export interface ConversationResponse extends Conversation {
+  receiverId: string;
+  firstName: string;
+  lastName: string;
+}
+
+export interface SearchUsers {
+  _id: string;
+  firstName: string;
+  lastName: string;
+}
+
+export interface Notification {
+  _id: string;
+  userId: string;
+  type: string;
+  message: string;
+  isRead: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Dashboard {
+  _id: string,
+  count: number,
+  activity: {
+    activityName: string,
+    pricePerHead: number,
+  }
+}
+
+export interface Review {
+  _id: string;
+  entityId: string;
+  userId: string;
+  title: string;
+  comment: string;
+  rating: number;
+  createdAt: string;
+  updatedAt: string;
+}
+ 
 export interface AuthResponse {
   user?: User | Host | null | undefined,
   category?: Category 
@@ -129,11 +205,24 @@ export interface AuthResponse {
   blogs?: BlogPost[],
   blog?: BlogPost,
   activity?: Activity
+  reviews?: Review[]
   totalPages?: number,
   razorpayAccountId?: string,
   availability?: {date: string, availableSeats: number}[]
   booking?: Booking,
   bookings?: Booking[],
+  conversations?: ConversationResponse [],
+  conversation?: Conversation,
+  messages?: Message[],
+  userSearch?: SearchUsers[],
+  notifications?: Notification,
+  notification?: Notification,
+  userCount?: number,
+  hostCount?: number,
+  activityCount?:number,
+  bookingCount?: number,
+  dashboardData?: Dashboard[],
+  review?: Review,
   token?: string | null | undefined;
   message?: string;
 }

@@ -14,6 +14,7 @@ import {
   isValidIFSC,
   isValidName,
 } from "../../../../shared/validation/validations";
+import { HttpStatusCode, ROLE } from "@/shared/constants/constants";
 
 export type HostFormData = {
   firstName: string;
@@ -41,7 +42,7 @@ const initialFormState: HostFormData = {
   email: "",
   phoneNumber: "",
   password: "",
-  role: "host",
+  role: ROLE.HOST,
   accountHolderName: "",
   ifsc: "",
   accountNumber: "",
@@ -81,7 +82,7 @@ const HostSignUp = () => {
     }
     try {
       const response = await authAPI.register(formData);
-      if (response.status === 200) {
+      if (response.status === HttpStatusCode.OK) {
         navigate("/host/verify_otp");
       }
     } catch (error) {

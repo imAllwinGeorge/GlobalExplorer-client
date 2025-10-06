@@ -5,6 +5,7 @@ import { isValidEmail } from "../../../../shared/validation/validations"
 import { AuthAPI } from "../../../../services/AuthAPI"
 import { useLocation, useNavigate } from "react-router-dom"
 import toast from "react-hot-toast"
+import { HttpStatusCode } from "@/shared/constants/constants"
 export default function VerifyEmail() {
   const [email, setEmail] = useState("")
   const [isLoading, setIsLoading] = useState(false)
@@ -26,7 +27,7 @@ export default function VerifyEmail() {
     }
     try {
       const response = await authAPI.verifyEmail(email, location.state);
-      if(response.status === 200){
+      if(response.status === HttpStatusCode.OK){
         setIsSubmitted(true)
         toast.success(response.data.message || "Recovery link sented to you email")
       }

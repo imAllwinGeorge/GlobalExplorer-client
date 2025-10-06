@@ -28,12 +28,12 @@ import { Separator } from "@radix-ui/react-select";
 import { Badge } from "../../../components/ui/badge";
 // import { Switch } from "../../../components/ui/switch"
 import { Avatar, AvatarFallback } from "../../../components/ui/avatar";
-import { AvatarImage } from "@radix-ui/react-avatar";
 import type {
   Activity,
   AuthResponse,
   Booking,
   ResponseType,
+  Review,
 } from "../../../shared/types/global";
 import { useLocation, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
@@ -51,6 +51,13 @@ import {
 import { useSelector } from "react-redux";
 import type { RootState } from "../../store";
 import { axiosInstance } from "../../../api/axiosInstance";
+import { WriteReview } from "@/presentation/components/review/WriteReview";
+import {
+  averageRating,
+  formateDate,
+  totalRatings,
+} from "@/utils/helpers/helper";
+import { HttpStatusCode } from "@/shared/constants/constants";
 
 interface RazorpayResponse {
   amount: number;
@@ -63,13 +70,13 @@ interface RazorpayVerifyResponse {
   razorpay_order_id: string;
   razorpay_signature: string;
 }
-
 type Availability = { date: string; availableSeats: number };
 
 export default function ActivityDetailsUser() {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
   const [activity, setActivity] = useState<Activity | null>(null);
+  const [reviews, setReviews] = useState<Review[] | null>(null);
   const [availability, setAvailability] = useState<Record<string, number>>({});
   const [checkAvailability, setCheckAvailability] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>();
@@ -101,26 +108,6 @@ export default function ActivityDetailsUser() {
       currency: "USD",
     }).format(price);
   };
-
-  // Mock reviews data since it's not in your Activity type
-  const mockReviews = [
-    {
-      id: 1,
-      name: "Sarah Johnson",
-      rating: 5,
-      comment: "Amazing experience! Highly recommended.",
-      date: "2024-01-15",
-      avatar: "/placeholder.svg?height=40&width=40",
-    },
-    {
-      id: 2,
-      name: "Mike Chen",
-      rating: 4,
-      comment: "Great activity, well organized and fun.",
-      date: "2024-01-10",
-      avatar: "/placeholder.svg?height=40&width=40",
-    },
-  ];
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -160,7 +147,7 @@ export default function ActivityDetailsUser() {
 
   //   try {
   //     const response = await userService.BookActivit(data);
-  //     if (response.status === 201) {
+  //     if (response.status === HttpStatusCode.CREATED) {
   //       toast.success("activityBooking success");
   //     }
   //   } catch (error) {
@@ -211,14 +198,14 @@ export default function ActivityDetailsUser() {
       razorpayAccountId,
       pricePerParticipant: activity.pricePerHead,
     };
-    console.log(razorpayData);
+    console.log("razorpay data: ", razorpayData);
     try {
       const res = await axiosInstance.post(
         "/user/activity/booking",
         razorpayData
       );
       const data = res.data as RazorpayResponse;
-      console.log(res);
+      console.log("razorpay response  : ", res);
       const options: RazorpayOptions = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
         amount: data.amount,
@@ -226,10 +213,12 @@ export default function ActivityDetailsUser() {
         name: activity.activityName,
         order_id: data.id,
         handler: async (response: RazorpayVerifyResponse) => {
+          console.log("handler response:   ", response);
           try {
             const verifyRes: ResponseType<AuthResponse> =
               await axiosInstance.post("/user/payment/verify", {
                 ...response,
+                ...data,
                 ...razorpayData,
               });
             console.log(verifyRes);
@@ -266,8 +255,9 @@ export default function ActivityDetailsUser() {
       try {
         const response = await userService.getActivityDetails(location.state);
         console.log(response);
-        if (response.status === 200) {
+        if (response.status === HttpStatusCode.OK) {
           setActivity(response.data.activity as Activity);
+          setReviews(response.data.reviews as Review[]);
           setRazorpayAccountId(response.data.razorpayAccountId as string);
           // const mockAvailabilityData = [
           //   { date: "2025-07-12", availableSeats: 10 },
@@ -539,55 +529,68 @@ export default function ActivityDetailsUser() {
               </motion.div>
 
               {/* Reviews */}
-              <motion.div variants={itemVariants}>
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                      Reviews (127)
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-6">
-                      {mockReviews.map((review) => (
-                        <div key={review.id} className="flex gap-4">
-                          <Avatar>
-                            <AvatarImage
-                              src={review.avatar || "/placeholder.svg"}
-                            />
-                            <AvatarFallback>
-                              {review.name.charAt(0)}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-1">
-                              <span className="font-semibold">
-                                {review.name}
-                              </span>
-                              <div className="flex">
-                                {[...Array(5)].map((_, i) => (
-                                  <Star
-                                    key={i}
-                                    className={`w-4 h-4 ${
-                                      i < review.rating
-                                        ? "fill-yellow-400 text-yellow-400"
-                                        : "text-gray-300"
-                                    }`}
-                                  />
-                                ))}
+              {reviews !== null && reviews.length > 0 && (
+                <motion.div variants={itemVariants}>
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-4xl">
+                        {averageRating(reviews)}
+                        <Star className="w-8 h-8 fill-yellow-400 text-yellow-400" />
+                      </CardTitle>
+                      <span>{`${totalRatings(reviews)} ratings &
+                      ${reviews.length} reviews`}</span>
+                    </CardHeader>
+                    <hr />
+                    <CardContent>
+                      <div className="space-y-6">
+                        {reviews.map((review) => (
+                          <div key={review._id} className="flex gap-4">
+                            <Avatar>
+                              <AvatarFallback>
+                                {typeof review.userId === "object"
+                                  ? review.userId.firstName.charAt(0)
+                                  : ""}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="font-semibold">
+                                  {typeof review.userId === "object"
+                                    ? `${review.userId.firstName} ${review.userId.lastName}`
+                                    : "Anonymous"}
+                                </span>
+                                <div className="flex">
+                                  {[...Array(5)].map((_, i) => (
+                                    <Star
+                                      key={i}
+                                      className={`w-4 h-4 ${
+                                        i < review.rating
+                                          ? "fill-yellow-400 text-yellow-400"
+                                          : "text-gray-300"
+                                      }`}
+                                    />
+                                  ))}
+                                </div>
+                                <span className="text-sm text-gray-500">
+                                  {formateDate(review.createdAt)}
+                                </span>
                               </div>
-                              <span className="text-sm text-gray-500">
-                                {review.date}
-                              </span>
+                              <h2 className="font-bold">{review.title}</h2>
+                              <p className="text-gray-700">{review.comment}</p>
                             </div>
-                            <p className="text-gray-700">{review.comment}</p>
                           </div>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              )}
+              <div>
+                <WriteReview
+                  entityId={activity._id}
+                  userId={user?._id as string}
+                />
+              </div>
             </div>
 
             {/* Booking Sidebar */}

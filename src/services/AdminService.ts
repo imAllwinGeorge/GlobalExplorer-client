@@ -1,3 +1,4 @@
+import { HttpStatusCode } from "@/shared/constants/constants";
 import { axiosInstance } from "../api/axiosInstance";
 import type { ErrorResponse } from "../shared/types/auth.type";
 import type { AuthResponse, Host, ResponseType, User } from "../shared/types/global";
@@ -8,7 +9,7 @@ export const adminService = {
       const response = await axiosInstance.get<{ users: T[], totalPages: number }>(
         `/admin/get-users/${role}?page=${page}&limit=${limit}`
       );
-      if (response.status === 200) {
+      if (response.status === HttpStatusCode.OK) {
         console.log(response);
         return {users: response.data.users, totalPages: response.data.totalPages}
       }
@@ -113,6 +114,17 @@ export const adminService = {
       } catch (error) {
         const message = (error as ErrorResponse).response?.data?.message || 
         "Something went Wrong! Please try again."
+        throw new Error(message)
+      }
+    },
+
+    dashboardData: async (): Promise<ResponseType<AuthResponse>> => {
+      try {
+        const response = axiosInstance.get<AuthResponse>("/admin/dashboard");
+        return response
+      } catch (error) {
+        const message = (error as ErrorResponse).response?.data?.message ||
+        " Something went wrong!. Please try again"
         throw new Error(message)
       }
     }

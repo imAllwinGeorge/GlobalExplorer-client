@@ -22,8 +22,9 @@ import type { Host } from "../../../shared/types/global";
 import { useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
 import { adminService } from "../../../services/AdminService";
-import ConfirmModal from "../../components/ReusableComponents/ConfirmModal";
-import RejectionModal from "../../components/ReusableComponents/RejectionModal";
+import ConfirmModal from "../../components/sharedElements/ConfirmModal";
+import RejectionModal from "../../components/sharedElements/RejectionModal";
+import { HttpStatusCode, ROLE } from "@/shared/constants/constants";
 
 type NewStatus = {
   isVerified?: string,
@@ -110,7 +111,7 @@ export default function AdminHostDetails() {
       console.log(statusObj)
       const response = await adminService.updateStatus(statusObj.id, statusObj.newStatus, statusObj.role);
       console.log("host verifiction response ", response)
-      if(response.status === 200) {
+      if(response.status === HttpStatusCode.OK) {
         toast.success("status updated!")
         setTriggerFetch(prev => !prev)
       }
@@ -130,7 +131,7 @@ export default function AdminHostDetails() {
     const fetchUser = async (id: string, role: string) => {
       try {
         const response = await adminService.getUserDetails(id, role);
-        if (response && response.status === 200 && role === "host") {
+        if (response && response.status === HttpStatusCode.OK && role === ROLE.HOST) {
           setData(response.data.user as Host); // type cast safely
         } else {
           toast.error("Invalid user data");
@@ -160,7 +161,7 @@ export default function AdminHostDetails() {
             <p className="font-medium text-sm">{label}</p>
             {file ? (
               <img
-                src={`http://localhost:3000/uploads/images/${file}`}
+                src={`${import.meta.env.VITE_IMG_URL}${file}`}
                 alt={label}
                 className="w-32 h-32 object-cover border roounded-md"
               />

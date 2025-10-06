@@ -1,3 +1,4 @@
+import type { ReviewDTO } from "@/shared/types/DTO";
 import { axiosInstance } from "../api/axiosInstance";
 import type { ErrorResponse } from "../shared/types/auth.type";
 import type { AuthResponse, Booking, ResponseType } from "../shared/types/global";
@@ -73,6 +74,17 @@ export class UserService {
     try {
       const response = await axiosInstance.put<AuthResponse>(`/user/blog/edit-blog/${id}`, data);
       return response;
+    } catch (error) {
+      const message = (error as ErrorResponse).response?.data?.message ||
+      "Something went wrong! Please try again.";
+      throw new Error(message)
+    }
+  }
+
+  async deleteBlog(id: string): Promise<ResponseType<AuthResponse>> {
+    try {
+      const response = await axiosInstance.delete<AuthResponse>(`/user/blog/delete-blog/${id}`)
+      return response
     } catch (error) {
       const message = (error as ErrorResponse).response?.data?.message ||
       "Something went wrong! Please try again.";
@@ -162,6 +174,72 @@ export class UserService {
     } catch (error) {
       const message = (error as ErrorResponse).response?.data?.message ||
       "Something went wrong! Please try again."
+      throw new Error(message)
+    }
+  }
+
+  async getConverSations(id: string): Promise<ResponseType<AuthResponse>> {
+    try {
+      const response = await axiosInstance.get<AuthResponse>(`/user/chat/get-conversation/${id}`);
+      return response;
+    } catch (error) {
+      const message = (error as ErrorResponse).response?.data?.message ||
+      "Something went wrong!. Please try agian.";
+      throw new Error(message);
+    }
+  }
+
+  async searchUser (search: string): Promise<ResponseType<AuthResponse>> {
+    try {
+      const response = await axiosInstance.get<AuthResponse>(`/user/get-user/${search}`);
+      return response
+    } catch (error) {
+      const message = (error as ErrorResponse).response?.data?.message ||
+      "Something went Wrong!. Please try again.";
+      throw new Error(message);
+    }
+  }
+
+  async getMessages (conversationId: string): Promise<ResponseType<AuthResponse>> {
+    try {
+      const response = await axiosInstance.get<AuthResponse>(`/user/get-chat/${conversationId}`);
+      return response;
+    } catch (error) {
+      const message = (error as ErrorResponse).response?.data?.message ||
+      "Something went wrong. Please try again.";
+      throw new Error(message)
+    }
+  }
+
+  async MarkReadMessage (conversationId: string, userId: string): Promise<ResponseType<AuthResponse>> {
+    try {
+      const response = await axiosInstance.patch<AuthResponse>(`/user/mark-read-message/${conversationId}/${userId}`);
+      return response
+    } catch (error) {
+      const message = (error as ErrorResponse).response?.data?.message ||
+      "Something went wrong!. Please try again";
+      throw new Error(message)
+    }
+  }
+
+  async fetchNotification (userId: string): Promise<ResponseType<AuthResponse>> {
+    try {
+      const response = await axiosInstance.get<AuthResponse>(`user/get-notification/${userId}`);
+      return response
+    } catch (error) {
+      const message = (error as ErrorResponse).response?.data?.message ||
+      "Something went wrong!. Please try again."
+      throw new Error(message)
+    }
+  }
+
+  async writeReview (review: ReviewDTO): Promise<ResponseType<AuthResponse>> {
+    try {
+      const response = await axiosInstance.post<AuthResponse>(`/user/review/write-review`, {review});
+      return response
+    } catch (error) {
+      const message = (error as ErrorResponse).response?.data?.message ||
+      " Something went wrong!. Please try again!."
       throw new Error(message)
     }
   }

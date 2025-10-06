@@ -9,6 +9,7 @@ import HostLayout from "../presentation/components/layouts/HostLayout"
 import ActivityPage from "../presentation/pages/host/ActivityPage"
 import Profile from "../presentation/pages/host/Profile"
 import BookingPage from "../presentation/pages/host/BookingPage"
+import Chat from "../presentation/pages/host/ChatPage"
 
 
 const HostRoutes = () => {
@@ -24,6 +25,7 @@ const HostRoutes = () => {
           <Route path="activity" element={<ActivityPage />} />
           <Route path="profile" element={<Profile />} />
           <Route path="bookings" element={<BookingPage />} />
+          <Route path="chat" element={<Chat />} />
         </Route>
     </Routes>
     </>

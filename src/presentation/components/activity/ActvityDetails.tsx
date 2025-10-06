@@ -21,11 +21,12 @@ import {
   CardTitle,
 } from "../../../components/ui/card";
 import { Separator } from "@radix-ui/react-select";
-import {  useState } from "react";
+import { useState } from "react";
 import { adminService } from "../../../services/AdminService";
 import { Switch } from "../../../components/ui/switch";
 import toast from "react-hot-toast";
-import ConfirmModal from "../ReusableComponents/ConfirmModal";
+import ConfirmModal from "../sharedElements/ConfirmModal";
+import { HttpStatusCode, ROLE } from "@/shared/constants/constants";
 
 interface ActivityViewProps {
   role: string;
@@ -41,7 +42,10 @@ export default function ActivityDetails({
   onBack,
 }: ActivityViewProps) {
   const [statusChange, setStatusChange] = useState(activity.isActive);
-  const [selectedActvity, setSelectedActivity] = useState<{activityId: string, status: boolean} | null>(null)
+  const [selectedActvity, setSelectedActivity] = useState<{
+    activityId: string;
+    status: boolean;
+  } | null>(null);
   const [isModalOpen, setIsModelOpen] = useState(false);
 
   const formatDate = (date: Date | string | null | undefined) => {
@@ -86,20 +90,23 @@ export default function ActivityDetails({
   };
 
   const updateStatus = async () => {
-    if(!selectedActvity) return;
+    if (!selectedActvity) return;
     try {
-      const response = await adminService.updateActivityStatus(selectedActvity?.activityId, {
-        isActive: selectedActvity?.status,
-      });
-      if (response.status === 200) {
+      const response = await adminService.updateActivityStatus(
+        selectedActvity?.activityId,
+        {
+          isActive: selectedActvity?.status,
+        }
+      );
+      if (response.status === HttpStatusCode.OK) {
         setStatusChange(selectedActvity.status);
-        
-        toast.success("Activity Status Changed")
+
+        toast.success("Activity Status Changed");
       }
     } catch (error) {
       console.log(error);
-      if(error instanceof Error) {
-        toast.error(error.message)
+      if (error instanceof Error) {
+        toast.error(error.message);
       }
     }
   };
@@ -128,7 +135,7 @@ export default function ActivityDetails({
           </div>
 
           <div className="flex items-center gap-3">
-            {role === "host" ? (
+            {role === ROLE.HOST ? (
               <Badge variant={activity.isActive ? "default" : "secondary"}>
                 {activity.isActive ? "Active" : "Inactive"}
               </Badge>
@@ -138,11 +145,13 @@ export default function ActivityDetails({
                   <Switch
                     id="active-status"
                     checked={statusChange}
-                    onCheckedChange={(checked: boolean) =>{
-                      setSelectedActivity({activityId: activity._id, status: checked});
-                      setIsModelOpen(true)
-                    }
-                    }
+                    onCheckedChange={(checked: boolean) => {
+                      setSelectedActivity({
+                        activityId: activity._id,
+                        status: checked,
+                      });
+                      setIsModelOpen(true);
+                    }}
                   />
                   <label htmlFor="active-status">
                     {statusChange ? "Active" : "Inactive"}
@@ -150,7 +159,7 @@ export default function ActivityDetails({
                 </div>
               </div>
             )}
-            {(onEdit&& role === "host") && (
+            {onEdit && role === ROLE.HOST && (
               <Button
                 onClick={() => onEdit(activity)}
                 className="bg-blue-600 hover:bg-blue-700"

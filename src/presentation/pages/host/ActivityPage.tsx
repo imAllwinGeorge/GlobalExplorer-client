@@ -9,7 +9,7 @@ import Pagination from "../../components/common/Pagination";
 import { Plus } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
-import { LOCAL_STORAGE_KEYS } from "../../../shared/constants/localStoragekeys";
+import { HttpStatusCode, LOCAL_STORAGE_KEYS, ROLE } from "../../../shared/constants/constants";
 
 const ActivityPage = () => {
   const [isOpenModal, setIsOpenModal] = useState(false);
@@ -28,7 +28,7 @@ const ActivityPage = () => {
       if (!user) return;
       try {
         const response = await hostService.getActivities(user?._id, page, 6);
-        if (response.status === 200) {
+        if (response.status === HttpStatusCode.OK) {
           console.log("fetched activities", response);
           setActivities(response.data.activities as Activity[]);
           setTotalPages(response.data.totalPages as number);
@@ -82,7 +82,7 @@ const ActivityPage = () => {
           <div className="mb-8">
             <AcitivityList
               activities={activities}
-              role="host"
+              role={ROLE.HOST}
               refetch={() => setTriggerFetch((prev) => !prev)}
             />
           </div>
@@ -128,7 +128,12 @@ const ActivityPage = () => {
         <div className="fixed inset-0 z-[9999] bg-black/50 bg-opacity-50 overflow-y-auto">
           <div className="min-h-screen flex items-center justify-center p-4">
             <div className="bg-white rounded-lg shadow-lg w-full max-w-3xl">
-              <AddActivity onClose={() => setIsOpenModal(false)} />
+              <AddActivity
+                onClose={() => {
+                  setIsOpenModal(false);
+                  setTriggerFetch((prev) => !prev);
+                }}
+              />
             </div>
           </div>
         </div>

@@ -10,6 +10,7 @@ import { userService } from "../../../services/UserService"
 import { authService } from "../../../services/AuthAPI"
 import SideBar from "../../components/mainComponents/SideBar"
 import MyProfile from "../../components/common/MyProfile"
+import { HttpStatusCode, ROLE } from "@/shared/constants/constants"
 
 const Profile = () => {
   const [profile, setProfile] = useState<User | null>(null)
@@ -22,7 +23,7 @@ const Profile = () => {
     console.log("Editing profile...")
     try {
       const response = await userService.editProfile(user._id, data)
-      if (response.status === 200) {
+      if (response.status === HttpStatusCode.OK) {
         toast.success("Profile edited successfully")
         setTriggerFetch((prev) => !prev)
       }
@@ -40,9 +41,9 @@ const Profile = () => {
     const fetchProfile = async () => {
       try {
         setLoading(true)
-        const response = await authService.getUserProfile(user?._id, "user")
+        const response = await authService.getUserProfile(user?._id, ROLE.USER)
         console.log(response)
-        if (response.status === 200) {
+        if (response.status === HttpStatusCode.OK) {
           setProfile(response.data.user as User)
         }
       } catch (error) {

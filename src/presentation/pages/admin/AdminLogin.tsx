@@ -6,6 +6,7 @@ import { AuthAPI } from "../../../services/AuthAPI";
 import { useDispatch } from "react-redux";
 import { adminLogin } from "../../store/slices/adminSlice";
 import toast from "react-hot-toast";
+import { HttpStatusCode, ROLE } from "@/shared/constants/constants";
 
 
 const AdminLogin = () => {
@@ -36,10 +37,10 @@ const AdminLogin = () => {
       const data = {
         email,
         password,
-        role: "admin",
+        role: ROLE.ADMIN,
       };
       const response = await authAPI.login(data);
-      if (response.status === 200) {
+      if (response.status === HttpStatusCode.OK) {
         console.log(response.data)
         setTimeout(() => {
           dispatch(adminLogin(response.data.user))
