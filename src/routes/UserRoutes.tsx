@@ -18,13 +18,14 @@ import Profile from '../presentation/pages/user/Profile'
 import MyBookings from '../presentation/pages/user/MyBookings'
 import ChatPage from '../presentation/pages/user/Chat-Page'
 import VideoChat from '@/presentation/pages/user/Video-Chat'
+import NotFoundPage from '@/presentation/pages/common/NotFoundPage'
 
 const UserRoutes = () => {
   return (
     <Routes>
         <Route index element={<LandingPage />} />
         <Route path='login' element={<PublicRoute element={<Login/>}  />} />
-        <Route path='forgot-password' element={<VerifyEmail />} />
+        <Route path='forgot-password/:role' element={<VerifyEmail />} />
         <Route path='reset-password/:role/:id/:token' element={<ResetPassword />} />
         <Route path="signup" element={<SignUP />} />
         <Route path="verify_otp" element={<Otp />} />
@@ -32,14 +33,15 @@ const UserRoutes = () => {
           <Route path='home' element={<HomePage />} />
           <Route path='explorations' element={<ActivityPageUser />} />
           <Route path='blogs' element={<Blogs />} />
-          <Route path='activity-details' element={<ActivityDetailsUser />} />
+          <Route path='activity-details/:id' element={<ActivityDetailsUser />} />
           <Route path='filter' element={<FilterPage />} />
-          <Route path='order-success' element={<OrderSuccess/>} />
+          <Route path='order-success/:orderId' element={<OrderSuccess/>} />
           <Route path='profile' element={<Profile />} />
           <Route path='bookings' element={<MyBookings />}/>
           <Route path='chat' element={<ChatPage/>} />
-          <Route path='video' element={<VideoChat />} />
+          <Route path='video/:receiverId' element={<VideoChat />} />
         </Route>
+        <Route path="*" element={<NotFoundPage />} />
     </Routes>
   )
 }

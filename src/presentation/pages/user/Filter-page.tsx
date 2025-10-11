@@ -463,10 +463,10 @@ export default function FilterPage({
               key={activity._id}
               activity={activity}
               onEdit={() =>
-                navigate("/activity-details", { state: activity._id })
+                navigate(`/activity-details/${activity._id}`)
               }
               onViewDetails={() =>
-                navigate("/activity-details", { state: activity._id })
+                navigate(`/activity-details/${activity._id}`)
               }
               currencySymbol="$"
               exchangeRate={83.5}

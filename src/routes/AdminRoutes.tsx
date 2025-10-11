@@ -9,6 +9,7 @@ import AdminHosts from '../presentation/pages/admin/AdminHosts'
 import AdminHostDetails from '../presentation/pages/admin/AdminHostDetails'
 import CategoryPage from '../presentation/pages/admin/CategoryPage'
 import ActivityPage from '../presentation/pages/admin/ActivityPage'
+import NotFoundPage from '@/presentation/pages/common/NotFoundPage'
 
 const AdminRoutes = () => {
   return (
@@ -16,12 +17,13 @@ const AdminRoutes = () => {
         <Route path='login' element={<PublicRoute element={<AdminLogin />} />} />
         
         <Route  element= {<ProtectedRoute element={<AdminLayout />} allowedRoles={["admin"]} />} >
-          <Route path='adminhome' element={<AdminHomePage />} />
+          <Route path='home' element={<AdminHomePage />} />
           <Route path='users' element={<Users />} />
           <Route path='host' element={<AdminHosts />} />
-          <Route path='verify' element={<AdminHostDetails />} />
+          <Route path='verify/:id/:role' element={<AdminHostDetails />} />
           <Route path='services' element={<CategoryPage />} />
           <Route path='activities' element={<ActivityPage />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Route>
     </Routes>
   )

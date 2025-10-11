@@ -114,6 +114,18 @@ export class UserService {
     }
   }
 
+  async getOrder (orderId: string): Promise<ResponseType<AuthResponse>> {
+    try {
+      const response = await axiosInstance.get<AuthResponse>(`/user/activity/order/${orderId}`);
+      return response
+    } catch (error) {
+      const message = (error as ErrorResponse).response?.data?.message || 
+      "Something went wrong! Please try again"
+
+      throw new Error(message);
+    }
+  }
+
   async getCategories (): Promise<ResponseType<AuthResponse>>{
     try {
       const response = await axiosInstance.get<AuthResponse>('/user/get-categories');

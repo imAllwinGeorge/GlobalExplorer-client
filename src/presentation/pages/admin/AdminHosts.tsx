@@ -125,9 +125,7 @@ const AdminHosts = () => {
                   <button
                     className={`px-4 py-1 rounded-md font-medium transition duration-150 "bg-white text-yellow-700 border border-yellow-600 hover:bg-yellow-600"`}
                     onClick={() =>
-                      navigate("/admin/verify", {
-                        state: { id: user._id, role: user.role },
-                      })
+                      navigate(`/admin/verify/${user._id}/${user.role}`)
                     }
                   >
                     <span>

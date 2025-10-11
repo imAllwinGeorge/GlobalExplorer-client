@@ -35,7 +35,7 @@ import type {
   ResponseType,
   Review,
 } from "../../../shared/types/global";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { userService } from "../../../services/UserService";
 import {
@@ -58,6 +58,7 @@ import {
   totalRatings,
 } from "@/utils/helpers/helper";
 import { HttpStatusCode } from "@/shared/constants/constants";
+import { formatInTimeZone } from "date-fns-tz";
 
 interface RazorpayResponse {
   amount: number;
@@ -80,12 +81,13 @@ export default function ActivityDetailsUser() {
   const [availability, setAvailability] = useState<Record<string, number>>({});
   const [checkAvailability, setCheckAvailability] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>();
+  const [formattedDate, setFormattedDate] = useState<string>();
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [count, setCount] = useState(1);
   const [razorpayAccountId, setRazorpayAccountId] = useState("");
   // const [statusChange, setStatusChange] = useState(activity.isActive)
-  const location = useLocation();
   const user = useSelector((state: RootState) => state.auth.user);
+  const { id } = useParams<{id: string}>();
   const navigate = useNavigate();
 
   const formatDate = (date: Date | string | null | undefined) => {
@@ -194,7 +196,7 @@ export default function ActivityDetailsUser() {
       userId: user._id,
       hostId: activity.userId,
       holdUntilDate: expiryDate,
-      date: selectedDate,
+      date: formattedDate,
       razorpayAccountId,
       pricePerParticipant: activity.pricePerHead,
     };
@@ -224,7 +226,7 @@ export default function ActivityDetailsUser() {
             console.log(verifyRes);
             if (verifyRes.status === 201) {
               toast.success("Booking successful!");
-              navigate("/order-success", {
+              navigate(`/order-success/${(verifyRes.data.booking as Booking)._id}`, {
                 state: verifyRes.data.booking as Booking,
               });
             }
@@ -253,7 +255,7 @@ export default function ActivityDetailsUser() {
   useEffect(() => {
     const fetchActivity = async () => {
       try {
-        const response = await userService.getActivityDetails(location.state);
+        const response = await userService.getActivityDetails(id as string);
         console.log(response);
         if (response.status === HttpStatusCode.OK) {
           setActivity(response.data.activity as Activity);
@@ -286,7 +288,7 @@ export default function ActivityDetailsUser() {
       }
     };
     fetchActivity();
-  }, [location.state]);
+  }, [id]);
 
   useEffect(() => {
     console.log(activity);
@@ -312,6 +314,9 @@ export default function ActivityDetailsUser() {
     if (seats > 0) {
       setSelectedDate(date);
     }
+    const asianDate = formatInTimeZone(date, "Asia/Kolkata", "yyyy-MM-dd");
+    setFormattedDate(asianDate)
+    console.log("selected date:   ", date)
   };
 
   const nextMonth = () => {

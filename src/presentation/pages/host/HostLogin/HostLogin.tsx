@@ -140,7 +140,7 @@ const HostLogin = () => {
             {/* Navigation Link */}
             <p className="text-xs text-center text-gray-500 mt-4">
               Don't have an account?{" "}
-              <Link to="/signup" className="text-indigo-600 hover:underline">
+              <Link to="/host/signup" className="text-indigo-600 hover:underline">
                 Sign up
               </Link>
             </p>

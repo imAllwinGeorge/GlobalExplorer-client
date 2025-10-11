@@ -44,7 +44,7 @@ const Login = () => {
       if (login.fulfilled.match(response)) {
         navigate("/home");
       } else {
-        toast.error(response.payload as string)
+        toast.error(response.payload as string);
       }
     } catch (error) {
       console.log("dispatch error message: ", error);
@@ -149,9 +149,12 @@ const Login = () => {
             >
               Login
             </button>
-            <Link to="/forgot-password" state={"user"} className=" text-indigo-600 hover:underline">
-             forgot password
-          </Link>
+            <Link
+              to="/forgot-password/user"
+              className=" text-indigo-600 hover:underline"
+            >
+              forgot password
+            </Link>
 
             {/* Navigation Link */}
             <p className="text-xs text-center text-gray-500 mt-4">

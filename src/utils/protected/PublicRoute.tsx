@@ -27,7 +27,7 @@ const PublicRoute = ({element}: PublicRouteProps) => {
     if(session && session.role){
         const roleRedirects: Record<string,string> = {
             user : "/home",
-            admin: "/admin/adminhome",
+            admin: "/admin/home",
             host: "/host/home",
         };
         return <Navigate to={roleRedirects[session.role] || "/unauthorized"} replace />

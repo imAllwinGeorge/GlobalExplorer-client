@@ -383,7 +383,7 @@ export default function ChatPage({
                     variant="ghost"
                     size="sm"
                     onClick={() =>
-                      navigate("/video", { state: { userId: selectedUserId } })
+                      navigate(`/video/${selectedUserId}`)
                     }
                   >
                     <Video className="w-4 h-4" />
