@@ -114,7 +114,7 @@ export interface Booking {
   userId: string;
   activityId: string;
   activityTitle: string;
-  date: Date;
+  date: string;
   participantCount: number;
   pricePerParticipant: number;
   paymentStatus: "pending" | "paid" | "failed" | "refunded";
@@ -131,9 +131,9 @@ export interface Booking {
   refundStatus?: "initialized" | "completed" | "failed";
   razorpayTransferId?: string;
   isReleasedId: boolean;
-  holdUntilDate: Date;
-  updatedAt: Date;
-  createdAt: Date;
+  holdUntilDate: string;
+  updatedAt: string;
+  createdAt: string;
 }
 
 export interface Message {
@@ -177,12 +177,16 @@ export interface Notification {
   updatedAt: string;
 }
 
-export interface Dashboard {
+export interface DashboardData {
   _id: string,
   count: number,
+  totalParticipants: number,
   activity: {
     activityName: string,
     pricePerHead: number,
+  }
+  category: {
+    categoryName: string,
   }
 }
 
@@ -221,7 +225,14 @@ export interface AuthResponse {
   hostCount?: number,
   activityCount?:number,
   bookingCount?: number,
-  dashboardData?: Dashboard[],
+  upCommingBooking?: number,
+  cancelledBooking?: number,
+  completedBooking?: number,
+  monthlyBookings?: {
+      _id: { month: number };
+      count: number;
+    }[]
+  dashboardData?: DashboardData[],
   review?: Review,
   token?: string | null | undefined;
   message?: string;

@@ -19,7 +19,7 @@ import {
   CardTitle,
 } from "../../../components/ui/card";
 import type { Host } from "../../../shared/types/global";
-import { useLocation } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { adminService } from "../../../services/AdminService";
 import ConfirmModal from "../../components/sharedElements/ConfirmModal";
@@ -27,18 +27,20 @@ import RejectionModal from "../../components/sharedElements/RejectionModal";
 import { HttpStatusCode, ROLE } from "@/shared/constants/constants";
 
 type NewStatus = {
-  isVerified?: string,
-  reasonForRejection?: string
-  kyc_verified?: boolean
-}
+  isVerified?: string;
+  reasonForRejection?: string;
+  kyc_verified?: boolean;
+};
 
 export default function AdminHostDetails() {
   const [data, setData] = useState({} as Host);
-  const [status, setStatus] = useState({} as { newStatus: NewStatus; id: string, role: string });
+  const [status, setStatus] = useState(
+    {} as { newStatus: NewStatus; id: string; role: string }
+  );
   const [isModalOpen, setIsModelOpen] = useState(false);
   const [isRejected, setIsRejected] = useState(false);
   const [triggerFetch, setTriggerFetch] = useState(false);
-  const location = useLocation();
+  const { id, role } = useParams();
 
   // const [errors, setErrors] = useState<HostSignupFormErrors>({})
 
@@ -97,41 +99,51 @@ export default function AdminHostDetails() {
     { label: "Rejected", value: "reject" },
   ];
 
-  const handleStatusChange = (newStatus: NewStatus, id: string, role: string) => {
+  const handleStatusChange = (
+    newStatus: NewStatus,
+    id: string,
+    role: string
+  ) => {
     setStatus({ newStatus, id, role });
-    if(newStatus.isVerified === "reject"){
+    if (newStatus.isVerified === "reject") {
       setIsRejected(true);
-    }else{
-      setIsModelOpen(true)
+    } else {
+      setIsModelOpen(true);
     }
-    
   };
   const handleStatus = async (statusObj = status) => {
     try {
-      console.log(statusObj)
-      const response = await adminService.updateStatus(statusObj.id, statusObj.newStatus, statusObj.role);
-      console.log("host verifiction response ", response)
-      if(response.status === HttpStatusCode.OK) {
-        toast.success("status updated!")
-        setTriggerFetch(prev => !prev)
+      console.log(statusObj);
+      const response = await adminService.updateStatus(
+        statusObj.id,
+        statusObj.newStatus,
+        statusObj.role
+      );
+      console.log("host verifiction response ", response);
+      if (response.status === HttpStatusCode.OK) {
+        toast.success("status updated!");
+        setTriggerFetch((prev) => !prev);
       }
     } catch (error) {
       console.log(error);
-      if(error instanceof Error) {
-        toast.error(error.message)
+      if (error instanceof Error) {
+        toast.error(error.message);
       }
+    } finally {
+      setIsModelOpen(false);
+      setIsRejected(false);
     }
-    finally{
-      setIsModelOpen(false)
-      setIsRejected(false)
-    }
-  }
+  };
 
   useEffect(() => {
     const fetchUser = async (id: string, role: string) => {
       try {
         const response = await adminService.getUserDetails(id, role);
-        if (response && response.status === HttpStatusCode.OK && role === ROLE.HOST) {
+        if (
+          response &&
+          response.status === HttpStatusCode.OK &&
+          role === ROLE.HOST
+        ) {
           setData(response.data.user as Host); // type cast safely
         } else {
           toast.error("Invalid user data");
@@ -143,8 +155,8 @@ export default function AdminHostDetails() {
         }
       }
     };
-    fetchUser(location.state.id, location.state.role);
-  }, [location.state.id, location.state.role, triggerFetch]);
+    fetchUser(id as string, role as string);
+  }, [id, role, triggerFetch]);
 
   const FileDisplay = ({
     file,
@@ -171,7 +183,17 @@ export default function AdminHostDetails() {
           </div>
         </div>
         {file && (
-          <Button variant="ghost" size="sm">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              const link = document.createElement("a");
+              link.href = `${file}`; // your cloudinary image url
+              link.download = "my-image.jpg"; // optional name
+              link.target = "_blank";
+              link.click();
+            }}
+          >
             <Download size={16} />
           </Button>
         )}
@@ -276,11 +298,15 @@ export default function AdminHostDetails() {
           <div className="flex items-center space-x-2">
             <FileText className="text-orange-600" size={24} />
             <CardTitle>KYC Documents</CardTitle>
-            <Button className="bg-orange-400 font-bold" 
-            onClick={() => {
-              const newStatus = {kyc_verified: !data.kyc_verified}
-              handleStatus({newStatus, id:data._id, role:data.role})
-            }} >{data.kyc_verified?"Verified": "pending"}</Button>
+            <Button
+              className="bg-orange-400 font-bold"
+              onClick={() => {
+                const newStatus = { kyc_verified: !data.kyc_verified };
+                handleStatus({ newStatus, id: data._id, role: data.role });
+              }}
+            >
+              {data.kyc_verified ? "Verified" : "pending"}
+            </Button>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -325,7 +351,13 @@ export default function AdminHostDetails() {
         <select
           id="status"
           value={data.isVerified}
-          onChange={(e) => handleStatusChange({isVerified:e.target.value}, data._id, data.role)}
+          onChange={(e) =>
+            handleStatusChange(
+              { isVerified: e.target.value },
+              data._id,
+              data.role
+            )
+          }
           className="block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
         >
           <option disabled value="">
@@ -343,25 +375,26 @@ export default function AdminHostDetails() {
         onClose={() => setIsModelOpen(false)}
         onConfirm={handleStatus}
         title={"Verify Host Details"}
-        message={`Are you sure you want to ${
-          status.newStatus?.isVerified
-        }?`}
+        message={`Are you sure you want to ${status.newStatus?.isVerified}?`}
         confirmText="Confirm"
         cancelText="Cancel"
         variant="warning"
       />
-      <RejectionModal isOpen={isRejected} onclose={() => setIsRejected(false)} 
-      onConfirm={(message) => {
-    const updatedStatus = {
-      ...status,
-      newStatus: {
-        ...status.newStatus,
-        reasonForRejection: message,
-      },
-    };
+      <RejectionModal
+        isOpen={isRejected}
+        onclose={() => setIsRejected(false)}
+        onConfirm={(message) => {
+          const updatedStatus = {
+            ...status,
+            newStatus: {
+              ...status.newStatus,
+              reasonForRejection: message,
+            },
+          };
 
-    handleStatus(updatedStatus); // ✅ Safely use the new data
-  }} />
+          handleStatus(updatedStatus); // ✅ Safely use the new data
+        }}
+      />
     </div>
   );
 }

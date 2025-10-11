@@ -3,7 +3,7 @@ import type React from "react"
 import { useState } from "react"
 import { isValidEmail } from "../../../../shared/validation/validations"
 import { AuthAPI } from "../../../../services/AuthAPI"
-import { useLocation, useNavigate } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import toast from "react-hot-toast"
 import { HttpStatusCode } from "@/shared/constants/constants"
 export default function VerifyEmail() {
@@ -11,7 +11,7 @@ export default function VerifyEmail() {
   const [isLoading, setIsLoading] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [error, setError] = useState("")
-  const location = useLocation();
+  const { role } = useParams<{role: string}>();
 
   const navigate = useNavigate();
   const authAPI = new AuthAPI();
@@ -26,7 +26,7 @@ export default function VerifyEmail() {
       setError("please Enter valid email")
     }
     try {
-      const response = await authAPI.verifyEmail(email, location.state);
+      const response = await authAPI.verifyEmail(email, role as string);
       if(response.status === HttpStatusCode.OK){
         setIsSubmitted(true)
         toast.success(response.data.message || "Recovery link sented to you email")

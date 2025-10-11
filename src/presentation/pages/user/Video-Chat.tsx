@@ -354,7 +354,7 @@ import VideoCall from "@/presentation/components/videoCall/VideoCall";
 import { VIDEO_CALL_EVENT } from "@/shared/constants/constants";
 import type { RootState } from "@/presentation/store";
 import { useSelector } from "react-redux";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const configuration: RTCConfiguration = {
   iceServers: [
@@ -366,8 +366,7 @@ const configuration: RTCConfiguration = {
 const VideoChat = () => {
   const socket = useSocket();
   const user = useSelector((state: RootState) => state.auth.user);
-  const location = useLocation();
-  const receiverId = location.state.userId;
+  const { receiverId } = useParams();
   const navigate = useNavigate();
 
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);

@@ -10,6 +10,7 @@ import ActivityPage from "../presentation/pages/host/ActivityPage"
 import Profile from "../presentation/pages/host/Profile"
 import BookingPage from "../presentation/pages/host/BookingPage"
 import Chat from "../presentation/pages/host/ChatPage"
+import NotFoundPage from "@/presentation/pages/common/NotFoundPage"
 
 
 const HostRoutes = () => {
@@ -27,6 +28,7 @@ const HostRoutes = () => {
           <Route path="bookings" element={<BookingPage />} />
           <Route path="chat" element={<Chat />} />
         </Route>
+        <Route path="*" element={<NotFoundPage />} />
     </Routes>
     </>
   )

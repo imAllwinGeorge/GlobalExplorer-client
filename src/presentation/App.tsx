@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { socketService } from "../services/SocketService";
 import { SocketContext } from "../contexts/SocketContext";
 import { Socket } from "socket.io-client";
+import NotFoundPage from "./pages/common/NotFoundPage";
 // import GlobalCallListener from "./components/videoCall/GlobalCallListener";
 
 const App = () => {
@@ -45,6 +46,7 @@ const App = () => {
           <Route path="/*" element={<UserRoutes />} />
           <Route path="/host/*" element={<HostRoutes />} />
           <Route path="/admin/*" element={<AdminRoutes />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </SocketContext.Provider>
     </div>

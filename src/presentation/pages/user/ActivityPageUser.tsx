@@ -17,7 +17,7 @@ const ActivityPageUser = () => {
   const handleCardClick = (activity: Activity) => {
     console.log("Card clicked:", activity.activityName);
     // Handle card click - navigate to details page, etc.
-    navigate("/activity-details", { state: activity._id });
+    navigate(`/activity-details/${activity._id}`);
   };
 
   useEffect(() => {
@@ -56,10 +56,10 @@ const ActivityPageUser = () => {
               key={activity._id}
               activity={activity}
               onEdit={() =>
-                navigate("/activity-details", { state: activity._id })
+                navigate(`/activity-details/${activity._id}`)
               }
               onViewDetails={() =>
-                navigate("/activity-details", { state: activity._id })
+                navigate(`/activity-details/${activity._id}`)
               }
               currencySymbol="$"
               exchangeRate={83.5}

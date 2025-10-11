@@ -38,6 +38,7 @@
     "chart.js": "^4.5.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "date-fns-tz": "^3.2.0",
     "emoji-picker-react": "^4.13.2",
     "framer-motion": "^12.19.1",
     "input-otp": "^1.4.2",
