@@ -1,7 +1,8 @@
 import type { ReviewDTO } from "@/shared/types/DTO";
 import { axiosInstance } from "../api/axiosInstance";
 import type { ErrorResponse } from "../shared/types/auth.type";
-import type { AuthResponse, Booking, ResponseType } from "../shared/types/global";
+import type { AuthResponse, Booking } from "../shared/types/global";
+import type { AxiosResponse } from "axios";
 
 export class UserService {
   private http: typeof axiosInstance;
@@ -12,7 +13,7 @@ export class UserService {
   async getUserDetails(
     _id: string,
     role: string
-  ): Promise<ResponseType<AuthResponse>> {
+  ): Promise<AxiosResponse<AuthResponse>> {
     try {
       const response = await this.http.get<AuthResponse>(
         `/user/get-user?_id=${_id}&role=${role}`
@@ -26,9 +27,9 @@ export class UserService {
     }
   };
 
-  async getAllActivities(page: number, limit: number, filter: object = {}): Promise<ResponseType<AuthResponse>> {
+  async getAllActivities(page: number, limit: number, search: string): Promise<AxiosResponse<AuthResponse>> {
     try {
-      const response = await this.http.get<AuthResponse>(`/user/get-activities?page=${page}&limit=${limit}`, filter)
+      const response = await this.http.get<AuthResponse>(`/user/get-activities?page=${page}&limit=${limit}&search=${search}`)
       return response
     } catch (error) {
       const message = (error as ErrorResponse).response?.data?.message ||
@@ -37,7 +38,7 @@ export class UserService {
     }
   }
 
-  async createBlog( data: FormData): Promise<ResponseType<AuthResponse>> {
+  async createBlog( data: FormData): Promise<AxiosResponse<AuthResponse>> {
     try {
       const response = await this.http.post<AuthResponse>(`/user/blog/create-blog`, data);
       return response
@@ -48,7 +49,7 @@ export class UserService {
     }
   }
 
-  async getBlogs(page: number, limit: number): Promise<ResponseType<AuthResponse>> {
+  async getBlogs(page: number, limit: number): Promise<AxiosResponse<AuthResponse>> {
     try {
       const response = await axiosInstance.get<AuthResponse>(`/user/blog/get-blogs?page=${page}?limit=${limit}`);
       return response
@@ -59,7 +60,7 @@ export class UserService {
     }
   }
 
-  async getMyBlogs(id: string, page: number, limit: number): Promise<ResponseType<AuthResponse>> {
+  async getMyBlogs(id: string, page: number, limit: number): Promise<AxiosResponse<AuthResponse>> {
     try {
       const response = await axiosInstance.get<AuthResponse>(`/user/blog/get-myblogs?id=${id}&page=${page}&limit=${limit}`);
       return response;
@@ -70,7 +71,7 @@ export class UserService {
     }
   }
 
-  async editBlog(id: string, data: FormData): Promise<ResponseType<AuthResponse>> {
+  async editBlog(id: string, data: FormData): Promise<AxiosResponse<AuthResponse>> {
     try {
       const response = await axiosInstance.put<AuthResponse>(`/user/blog/edit-blog/${id}`, data);
       return response;
@@ -81,7 +82,7 @@ export class UserService {
     }
   }
 
-  async deleteBlog(id: string): Promise<ResponseType<AuthResponse>> {
+  async deleteBlog(id: string): Promise<AxiosResponse<AuthResponse>> {
     try {
       const response = await axiosInstance.delete<AuthResponse>(`/user/blog/delete-blog/${id}`)
       return response
@@ -92,7 +93,7 @@ export class UserService {
     }
   }
 
-  async getActivityDetails(id: string): Promise<ResponseType<AuthResponse>> {
+  async getActivityDetails(id: string): Promise<AxiosResponse<AuthResponse>> {
     try {
       const response = await axiosInstance.get<AuthResponse>(`/user/activity/get-details/${id}`);
       return response
@@ -103,7 +104,7 @@ export class UserService {
     }
   }
 
-  async BookActivit (data: object): Promise<ResponseType<AuthResponse>> {
+  async BookActivit (data: object): Promise<AxiosResponse<AuthResponse>> {
     try {
       const response = await axiosInstance.post<AuthResponse>('/user/activity/booking',{data});
       return response
@@ -114,7 +115,7 @@ export class UserService {
     }
   }
 
-  async getOrder (orderId: string): Promise<ResponseType<AuthResponse>> {
+  async getOrder (orderId: string): Promise<AxiosResponse<AuthResponse>> {
     try {
       const response = await axiosInstance.get<AuthResponse>(`/user/activity/order/${orderId}`);
       return response
@@ -126,7 +127,7 @@ export class UserService {
     }
   }
 
-  async getCategories (): Promise<ResponseType<AuthResponse>>{
+  async getCategories (): Promise<AxiosResponse<AuthResponse>>{
     try {
       const response = await axiosInstance.get<AuthResponse>('/user/get-categories');
       return response
@@ -137,7 +138,7 @@ export class UserService {
     }
   }
 
-  async filterSearch(page: number, limit: number, filters: object): Promise<ResponseType<AuthResponse>> {
+  async filterSearch(page: number, limit: number, filters: object): Promise<AxiosResponse<AuthResponse>> {
     try {
       const response = await axiosInstance.get<AuthResponse>(`/user/activity/filter`, {
         params: {
@@ -154,7 +155,7 @@ export class UserService {
     }
   }
 
-  async editProfile(id: string, data: object): Promise<ResponseType<AuthResponse>> {
+  async editProfile(id: string, data: object): Promise<AxiosResponse<AuthResponse>> {
     try {
       const response = await axiosInstance.post<AuthResponse>(`/user/update-profile/${id}`, data)
       return response
@@ -166,7 +167,7 @@ export class UserService {
     }
   }
 
-  async getBookedActivity (id: string, page: number, limit: number): Promise<ResponseType<AuthResponse>> {
+  async getBookedActivity (id: string, page: number, limit: number): Promise<AxiosResponse<AuthResponse>> {
     try {
       console.log(id)
       const response = await axiosInstance.get<AuthResponse>(`/user/get-bookings?id=${id}&page=${page}&limit=${limit}`);
@@ -179,7 +180,7 @@ export class UserService {
     }
   }
 
-  async cancelBooking(bookedActivity: Booking, message: string): Promise<ResponseType<AuthResponse>> {
+  async cancelBooking(bookedActivity: Booking, message: string): Promise<AxiosResponse<AuthResponse>> {
     try {
       const response = await axiosInstance.patch<AuthResponse>(`/user/cancel-booking?id=${bookedActivity._id}&message=${message}`);
       return response;
@@ -190,7 +191,7 @@ export class UserService {
     }
   }
 
-  async getConverSations(id: string): Promise<ResponseType<AuthResponse>> {
+  async getConverSations(id: string): Promise<AxiosResponse<AuthResponse>> {
     try {
       const response = await axiosInstance.get<AuthResponse>(`/user/chat/get-conversation/${id}`);
       return response;
@@ -201,7 +202,7 @@ export class UserService {
     }
   }
 
-  async searchUser (search: string): Promise<ResponseType<AuthResponse>> {
+  async searchUser (search: string): Promise<AxiosResponse<AuthResponse>> {
     try {
       const response = await axiosInstance.get<AuthResponse>(`/user/get-user/${search}`);
       return response
@@ -212,7 +213,7 @@ export class UserService {
     }
   }
 
-  async getMessages (conversationId: string): Promise<ResponseType<AuthResponse>> {
+  async getMessages (conversationId: string): Promise<AxiosResponse<AuthResponse>> {
     try {
       const response = await axiosInstance.get<AuthResponse>(`/user/get-chat/${conversationId}`);
       return response;
@@ -223,7 +224,7 @@ export class UserService {
     }
   }
 
-  async MarkReadMessage (conversationId: string, userId: string): Promise<ResponseType<AuthResponse>> {
+  async MarkReadMessage (conversationId: string, userId: string): Promise<AxiosResponse<AuthResponse>> {
     try {
       const response = await axiosInstance.patch<AuthResponse>(`/user/mark-read-message/${conversationId}/${userId}`);
       return response
@@ -234,7 +235,7 @@ export class UserService {
     }
   }
 
-  async fetchNotification (userId: string): Promise<ResponseType<AuthResponse>> {
+  async fetchNotification (userId: string): Promise<AxiosResponse<AuthResponse>> {
     try {
       const response = await axiosInstance.get<AuthResponse>(`user/get-notification/${userId}`);
       return response
@@ -245,7 +246,7 @@ export class UserService {
     }
   }
 
-  async writeReview (review: ReviewDTO): Promise<ResponseType<AuthResponse>> {
+  async writeReview (review: ReviewDTO): Promise<AxiosResponse<AuthResponse>> {
     try {
       const response = await axiosInstance.post<AuthResponse>(`/user/review/write-review`, {review});
       return response

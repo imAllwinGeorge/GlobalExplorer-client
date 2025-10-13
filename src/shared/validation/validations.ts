@@ -1,6 +1,15 @@
-export const isValidName = (name: string) => {
-    return /^[A-Za-z\s]+$/.test(name)
-}
+// export const isValidName = (name: string) => {
+//     return /^[A-Za-z\s]+$/.test(name)
+// }
+
+export const isValidName = (name: string): boolean => {
+  // Only letters and spaces allowed
+  const basicPattern = /^[A-Za-z\s]+$/;
+  // Disallow more than 3 repeated characters
+  const repetitionPattern = /(.)\1{3,}/;
+
+  return basicPattern.test(name) && !repetitionPattern.test(name);
+};
 
 export const isValidEmail = (email: string) => {
     return /^[\w.-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)

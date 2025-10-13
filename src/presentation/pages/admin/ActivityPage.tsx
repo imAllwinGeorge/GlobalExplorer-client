@@ -6,6 +6,7 @@ import AcitivityList from "../../components/activity/AcitivityList";
 import Pagination from "../../components/common/Pagination";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
 import { HttpStatusCode, LOCAL_STORAGE_KEYS, ROLE } from "../../../shared/constants/constants";
+import SearchBox from "@/presentation/components/sharedElements/Search-box";
 
 const ActivityPage = () => {
   const [activities, setActivities] = useState<Activity[] | null>(null);
@@ -15,11 +16,13 @@ const ActivityPage = () => {
     1
   );
   const [totalPages, setTotalPages] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     const fetchActivities = async () => {
       try {
-        const response = await adminService.getActivities(page, 6);
+        const response = await adminService.getActivities(page, 6, searchQuery);
+        console.log(response)
         if (response.status === HttpStatusCode.OK) {
           setActivities(response.data.activities as Activity[]);
           setTotalPages(response.data.totalPages as number);
@@ -32,7 +35,7 @@ const ActivityPage = () => {
       }
     };
     fetchActivities();
-  }, [page, triggerFetch]);
+  }, [page, triggerFetch, searchQuery]);
 
   useEffect(() => {
     return () => {
@@ -41,6 +44,7 @@ const ActivityPage = () => {
   }, []);
   return (
     <div>
+      <SearchBox placeholder="Search for activities...." onSearch={(query) => setSearchQuery(query)} />
       {activities && (
         <AcitivityList
           activities={activities}

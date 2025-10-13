@@ -13,6 +13,7 @@ import toast from "react-hot-toast";
 import { Pencil, Plus, X } from "lucide-react";
 import Pagination from "../../components/common/Pagination";
 import { HttpStatusCode } from "@/shared/constants/constants";
+import SearchBox from "@/presentation/components/sharedElements/Search-box";
 
 const CategoryPage = () => {
   const [data, setData] = useState({
@@ -33,6 +34,7 @@ const CategoryPage = () => {
   const [openEditModal, setOpenEditModal] = useState(false);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const handleChange =
     (key: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -127,7 +129,7 @@ const CategoryPage = () => {
   useEffect(() => {
     const fetchCategory = async () => {
       try {
-        const response = await adminService.getCategories(page, 5);
+        const response = await adminService.getCategories(page, 5, searchQuery);
         console.log(response);
         if (response.status === HttpStatusCode.OK) {
           setCategory(response.data.categories as Category[]);
@@ -141,7 +143,7 @@ const CategoryPage = () => {
       }
     };
     fetchCategory();
-  }, [triggerFetch, page]);
+  }, [triggerFetch, page, searchQuery]);
 
   useEffect(() => {
     if (selectedCategory && openEditModal) {
@@ -275,6 +277,7 @@ const CategoryPage = () => {
           </div>
 
           <div className="overflow-x-auto">
+            <SearchBox placeholder="Search for categories....." onSearch={(query) => setSearchQuery(query)} />
             <table className="min-w-full">
               <thead className="bg-orange-50 border-b border-orange-100">
                 <tr>

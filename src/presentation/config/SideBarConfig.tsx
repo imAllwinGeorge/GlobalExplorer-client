@@ -103,11 +103,11 @@ export const SideBarItems = {
         path: "/admin/services",
         icon: HeartHandshake
     },
-    {
-        title: "Earnings",
-        path: "/admin/earnings",
-        icon: BadgeDollarSign
-    },
+    // {
+    //     title: "Earnings",
+    //     path: "/admin/earnings",
+    //     icon: BadgeDollarSign
+    // },
   ],
   host: [
     {
@@ -136,8 +136,8 @@ export const SideBarItems = {
       icon: MessageCircleMore,
     },
     {
-      title: "My Blogs",
-      path: "/host/blogs",
+      title: "Sales",
+      path: "/host/sales",
       icon: BookHeart,
     },
   ],

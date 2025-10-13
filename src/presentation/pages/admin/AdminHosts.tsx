@@ -7,6 +7,7 @@ import { ChevronsRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Pagination from "../../components/common/Pagination";
 import { HttpStatusCode, ROLE } from "@/shared/constants/constants";
+import SearchBox from "@/presentation/components/sharedElements/Search-box";
 // import { toast } from 'react-toastify';
 
 const AdminHosts = () => {
@@ -16,11 +17,12 @@ const AdminHosts = () => {
   const [triggerFetch, setTriggerFetch] = useState(false);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await adminService.getAllUsers<Host>(page, 5, "host");
+        const response = await adminService.getAllUsers<Host>(page, 5, "host", searchQuery);
         console.log("response fetchuserdata: ", response);
         if (response) {
           setUsers(response.users);
@@ -35,7 +37,7 @@ const AdminHosts = () => {
       }
     };
     fetchUserData();
-  }, [triggerFetch, page]);
+  }, [triggerFetch, page, searchQuery]);
 
   const handleUserState = async () => {
     if (!selectedUser) return null;
@@ -63,6 +65,8 @@ const AdminHosts = () => {
   return (
     <div className="users-container bg-white text-gray-800 p-8 rounded-xl shadow-lg">
       <h1 className="text-2xl font-bold mb-6 text-yellow-700">Host Details</h1>
+
+      <SearchBox placeholder="Search for host......." onSearch={(query) => setSearchQuery(query)} />
 
       <div className="overflow-x-auto rounded-lg shadow border border-gray-200">
         <table className="min-w-full bg-white">

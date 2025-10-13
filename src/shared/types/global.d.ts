@@ -190,6 +190,11 @@ export interface DashboardData {
   }
 }
 
+export interface SalesData {
+  current: { _id: { month: number }; totalSales: number; count: number }[];
+  previous: { _id: { month: number }; totalSales: number; count: number }[],
+}
+
 export interface Review {
   _id: string;
   entityId: string;
@@ -233,6 +238,7 @@ export interface AuthResponse {
       count: number;
     }[]
   dashboardData?: DashboardData[],
+  salesData?: SalesData,
   review?: Review,
   token?: string | null | undefined;
   message?: string;

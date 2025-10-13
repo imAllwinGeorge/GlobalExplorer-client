@@ -7,10 +7,12 @@ import Carousel from "../../components/common/Carousel";
 import ActivityCard from "../../components/common/ActivityCard";
 import { useNavigate } from "react-router-dom";
 import { HttpStatusCode } from "@/shared/constants/constants";
+import SearchBox from "@/presentation/components/sharedElements/Search-box";
 const ActivityPageUser = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [activities, setActivities] = useState<Activity[] | null>(null);
+  const [searchQuery, setSearchQuery] = useState("")
 
   const navigate = useNavigate();
 
@@ -23,7 +25,7 @@ const ActivityPageUser = () => {
   useEffect(() => {
     const fetchActivities = async () => {
       try {
-        const response = await userService.getAllActivities(page, 9);
+        const response = await userService.getAllActivities(page, 9, searchQuery);
         if (response.status === HttpStatusCode.OK) {
           setActivities(response.data.activities as Activity[]);
           setTotalPages(response.data.totalPages as number);
@@ -35,9 +37,10 @@ const ActivityPageUser = () => {
       }
     };
     fetchActivities();
-  }, [page]);
+  }, [page, searchQuery]);
   return (
     <div>
+      <SearchBox placeholder="Search for activities....." onSearch={(query) => setSearchQuery(query)} />
       {activities && (
         <div className="min-h-screen bg-gray-50 py-8">
           <Carousel

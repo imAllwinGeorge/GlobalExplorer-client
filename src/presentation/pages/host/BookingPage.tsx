@@ -13,6 +13,7 @@ import ReusableTable from "../../components/sharedElements/SharedTable";
 import Pagination from "../../components/common/Pagination";
 import RejectionModal from "../../components/sharedElements/RejectionModal";
 import { hostService } from "../../../services/HostService";
+import SearchBox from "@/presentation/components/sharedElements/Search-box";
 
 const columns = [
   "index",
@@ -43,6 +44,7 @@ const BookingPage = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>();
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     if (!user) return;
@@ -50,7 +52,7 @@ const BookingPage = () => {
     const fetchBookingDetails = async () => {
       try {
         setLoading(true);
-        const response = await hostService.activityBookings(user?._id, page, 9);
+        const response = await hostService.activityBookings(user?._id, page, 9, searchQuery);
         if (response.status === HttpStatusCode.OK) {
           console.log(response, user._id);
           setData(response.data.bookings);
@@ -67,7 +69,7 @@ const BookingPage = () => {
     };
 
     fetchBookingDetails();
-  }, [user, page]);
+  }, [user, page, searchQuery]);
 
   useEffect(() => {
     return () => {
@@ -99,7 +101,7 @@ const BookingPage = () => {
     }
   };
 
-  if (loading) {
+  if (loading && !data) {
     return (
       <div className="min-h-screen bg-gray-50 p-4 md:p-6">
         <div className="max-w-7xl mx-auto">
@@ -126,6 +128,7 @@ const BookingPage = () => {
       className="min-h-screen bg-gray-50 p-4 md:p-6"
     >
       <div className="max-w-7xl mx-auto">
+        <SearchBox placeholder="Search for activities....." onSearch={(query) => setSearchQuery(query)} />
         {data && (
           <>
             <ReusableTable

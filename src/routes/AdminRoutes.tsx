@@ -10,6 +10,7 @@ import AdminHostDetails from '../presentation/pages/admin/AdminHostDetails'
 import CategoryPage from '../presentation/pages/admin/CategoryPage'
 import ActivityPage from '../presentation/pages/admin/ActivityPage'
 import NotFoundPage from '@/presentation/pages/common/NotFoundPage'
+import Sales from '@/presentation/pages/admin/Sales'
 
 const AdminRoutes = () => {
   return (
@@ -23,6 +24,7 @@ const AdminRoutes = () => {
           <Route path='verify/:id/:role' element={<AdminHostDetails />} />
           <Route path='services' element={<CategoryPage />} />
           <Route path='activities' element={<ActivityPage />} />
+          <Route path='sales' element={<Sales />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
     </Routes>

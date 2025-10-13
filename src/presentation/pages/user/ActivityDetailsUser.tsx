@@ -59,6 +59,7 @@ import {
 } from "@/utils/helpers/helper";
 import { HttpStatusCode } from "@/shared/constants/constants";
 import { formatInTimeZone } from "date-fns-tz";
+import axios from "axios";
 
 interface RazorpayResponse {
   amount: number;
@@ -87,7 +88,7 @@ export default function ActivityDetailsUser() {
   const [razorpayAccountId, setRazorpayAccountId] = useState("");
   // const [statusChange, setStatusChange] = useState(activity.isActive)
   const user = useSelector((state: RootState) => state.auth.user);
-  const { id } = useParams<{id: string}>();
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
   const formatDate = (date: Date | string | null | undefined) => {
@@ -226,9 +227,12 @@ export default function ActivityDetailsUser() {
             console.log(verifyRes);
             if (verifyRes.status === 201) {
               toast.success("Booking successful!");
-              navigate(`/order-success/${(verifyRes.data.booking as Booking)._id}`, {
-                state: verifyRes.data.booking as Booking,
-              });
+              navigate(
+                `/order-success/${(verifyRes.data.booking as Booking)._id}`,
+                {
+                  state: verifyRes.data.booking as Booking,
+                }
+              );
             }
           } catch (err) {
             console.log(err);
@@ -246,9 +250,17 @@ export default function ActivityDetailsUser() {
 
       const rzp = new window.Razorpay(options);
       rzp.open();
-    } catch (error) {
-      console.log(error);
-      toast.error("Payment initiation failed");
+    } catch (error: unknown) {
+      console.error("Booking error:", error);
+
+      if (axios.isAxiosError(error)) {
+    // Extract a message from backend response if it exists
+    const message =
+      error.response?.data?.message || "Something went wrong. Please try again.";
+    toast.error(message);
+  } else {
+    toast.error("Unexpected error occurred.");
+  }
     }
   };
 
@@ -315,8 +327,8 @@ export default function ActivityDetailsUser() {
       setSelectedDate(date);
     }
     const asianDate = formatInTimeZone(date, "Asia/Kolkata", "yyyy-MM-dd");
-    setFormattedDate(asianDate)
-    console.log("selected date:   ", date)
+    setFormattedDate(asianDate);
+    console.log("selected date:   ", date);
   };
 
   const nextMonth = () => {

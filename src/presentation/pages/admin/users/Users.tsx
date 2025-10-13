@@ -5,6 +5,7 @@ import { adminService } from "../../../../services/AdminService";
 import toast from "react-hot-toast";
 import Pagination from "../../../components/common/Pagination";
 import { HttpStatusCode, ROLE } from "@/shared/constants/constants";
+import SearchBox from "@/presentation/components/sharedElements/Search-box";
 // import { toast } from 'react-toastify';
 
 const Users = () => {
@@ -14,11 +15,12 @@ const Users = () => {
   const [triggerFetch, setTriggerFetch] = useState(false);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await adminService.getAllUsers<User>(page, 5, "user");
+        const response = await adminService.getAllUsers<User>(page, 5, "user", searchQuery);
         console.log("response fetchuserdata: ", response);
         if (response) {
           setUsers(response.users);
@@ -33,7 +35,7 @@ const Users = () => {
       }
     };
     fetchUserData();
-  }, [triggerFetch, page]);
+  }, [triggerFetch, page, searchQuery]);
 
   const handleUserState = async () => {
     if (!selectedUser) return null;
@@ -61,6 +63,8 @@ const Users = () => {
   return (
     <div className="users-container bg-white text-gray-800 p-8 rounded-xl shadow-lg">
       <h1 className="text-2xl font-bold mb-6 text-yellow-700">User Details</h1>
+
+      <SearchBox placeholder="Search for users............." onSearch={(query) => setSearchQuery(query)}  />
 
       <div className="overflow-x-auto rounded-lg shadow border border-gray-200">
         <table className="min-w-full bg-white">

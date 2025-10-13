@@ -1,13 +1,14 @@
 import { HttpStatusCode } from "@/shared/constants/constants";
 import { axiosInstance } from "../api/axiosInstance";
 import type { ErrorResponse } from "../shared/types/auth.type";
-import type { AuthResponse, Host, ResponseType, User } from "../shared/types/global";
+import type { AuthResponse, Host, User } from "../shared/types/global";
+import type { AxiosResponse } from "axios";
 
 export const adminService = {
-  getAllUsers: async <T extends User | Host>(page: number, limit: number, role: "user" | "host"): Promise<{users:T[], totalPages: number}> => {
+  getAllUsers: async <T extends User | Host>(page: number, limit: number, role: "user" | "host", query: string): Promise<{users:T[], totalPages: number}> => {
     try {
       const response = await axiosInstance.get<{ users: T[], totalPages: number }>(
-        `/admin/get-users/${role}?page=${page}&limit=${limit}`
+        `/admin/get-users/${role}?page=${page}&limit=${limit}&search=${query}`
       );
       if (response.status === HttpStatusCode.OK) {
         console.log(response);
@@ -26,7 +27,7 @@ export const adminService = {
     _id: string,
     value: object,
     role: string
-  ): Promise<ResponseType<AuthResponse>> => {
+  ): Promise<AxiosResponse<AuthResponse>> => {
     try {
       const response = await axiosInstance.post<AuthResponse>(
         `/admin/update-status/${role}`,
@@ -41,7 +42,7 @@ export const adminService = {
     }
   },
 
-  getUserDetails: async (_id: string, role: string): Promise<ResponseType<AuthResponse>> => {
+  getUserDetails: async (_id: string, role: string): Promise<AxiosResponse<AuthResponse>> => {
     try {
       const response = await axiosInstance.get<AuthResponse>(`/admin/get-user?_id=${_id}&role=${role}`);
       return response
@@ -52,7 +53,7 @@ export const adminService = {
     }
   },
 
-  addCategory: async (data: {categoryName: string; description: string}): Promise<ResponseType<AuthResponse>> => {
+  addCategory: async (data: {categoryName: string; description: string}): Promise<AxiosResponse<AuthResponse>> => {
     try {
       const response = await axiosInstance.post<AuthResponse>("/admin/add-category",{data});
       return response;
@@ -63,9 +64,9 @@ export const adminService = {
     }
   },
 
-  getCategories: async(page: number, limit: number): Promise<ResponseType<AuthResponse>> => {
+  getCategories: async(page: number, limit: number, query: string): Promise<AxiosResponse<AuthResponse>> => {
     try {
-      const response = await axiosInstance.get<AuthResponse>(`/admin/get-category?page=${page}&limit=${limit}`);
+      const response = await axiosInstance.get<AuthResponse>(`/admin/get-category?page=${page}&limit=${limit}&search=${query}`);
       return response
     } catch (error) {
       const message = (error as ErrorResponse).response?.data?.message ||
@@ -96,9 +97,9 @@ export const adminService = {
     }
   },
 
-  getActivities: async (page = 1, limit = 3): Promise<ResponseType<AuthResponse>> => {
+  getActivities: async (page = 1, limit = 3, query: string): Promise<AxiosResponse<AuthResponse>> => {
     try {
-      const response = await axiosInstance.get<AuthResponse>(`/admin/get-activities?page=${page}&limit=${limit}`,)
+      const response = await axiosInstance.get<AuthResponse>(`/admin/get-activities?page=${page}&limit=${limit}&search=${query}`,)
       return response
     } catch (error) {
       const message = (error as ErrorResponse).response?.data?.message ||
@@ -107,7 +108,7 @@ export const adminService = {
     }
   },
 
-  updateActivityStatus: async (id: string, data: object): Promise<ResponseType<AuthResponse>> => {
+  updateActivityStatus: async (id: string, data: object): Promise<AxiosResponse<AuthResponse>> => {
       try {
         const response = await axiosInstance.patch<AuthResponse>(`/admin/activity/status/${id}`,{data})
         return response
@@ -118,13 +119,24 @@ export const adminService = {
       }
     },
 
-    dashboardData: async (): Promise<ResponseType<AuthResponse>> => {
+    dashboardData: async (): Promise<AxiosResponse<AuthResponse>> => {
       try {
         const response = axiosInstance.get<AuthResponse>("/admin/dashboard");
         return response
       } catch (error) {
         const message = (error as ErrorResponse).response?.data?.message ||
         " Something went wrong!. Please try again"
+        throw new Error(message)
+      }
+    },
+
+    salesData: async (): Promise<AxiosResponse<AuthResponse>> => {
+      try {
+        const response = axiosInstance.get<AuthResponse>("/admin/sales");
+        return response;
+      } catch (error) {
+        const message = (error as ErrorResponse).response?.data?.message ||
+        "Something went wrong!. Please try again"
         throw new Error(message)
       }
     }

@@ -10,6 +10,7 @@ import { Plus } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
 import { HttpStatusCode, LOCAL_STORAGE_KEYS, ROLE } from "../../../shared/constants/constants";
+import SearchBox from "@/presentation/components/sharedElements/Search-box";
 
 const ActivityPage = () => {
   const [isOpenModal, setIsOpenModal] = useState(false);
@@ -21,13 +22,14 @@ const ActivityPage = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [triggerFetch, setTriggerFetch] = useState(true);
   const user = useSelector((state: RootState) => state.host.host);
+  const [searchQuery, setSearchQuery] = useState("");
   const hostService = new HostService();
 
   useEffect(() => {
     const fetchActivity = async () => {
       if (!user) return;
       try {
-        const response = await hostService.getActivities(user?._id, page, 6);
+        const response = await hostService.getActivities(user?._id, page, 6, searchQuery);
         if (response.status === HttpStatusCode.OK) {
           console.log("fetched activities", response);
           setActivities(response.data.activities as Activity[]);
@@ -40,7 +42,7 @@ const ActivityPage = () => {
     fetchActivity();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, triggerFetch]);
+  }, [page, triggerFetch, searchQuery]);
 
   useEffect(() => {
     return () => {
@@ -77,6 +79,7 @@ const ActivityPage = () => {
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8">
+        <SearchBox placeholder="search for activities....." onSearch={(query) => setSearchQuery(query)} />
         {/* Activity List */}
         {activities && (
           <div className="mb-8">
