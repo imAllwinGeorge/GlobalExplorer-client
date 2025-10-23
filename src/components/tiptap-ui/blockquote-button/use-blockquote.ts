@@ -6,11 +6,11 @@ import { NodeSelection, TextSelection } from "@tiptap/pm/state"
 import { useHotkeys } from "react-hotkeys-hook"
 
 // --- Hooks ---
-import { useTiptapEditor } from "@/hooks/use-tiptap-editor"
-import { useIsMobile } from "@/hooks/use-mobile"
+import { useTiptapEditor } from "../../../hooks/use-tiptap-editor"
+import { useIsMobile } from "../../../hooks/use-mobile"
 
 // --- Icons ---
-import { BlockquoteIcon } from "@/components/tiptap-icons/blockquote-icon"
+import { BlockquoteIcon } from "../../tiptap-icons/blockquote-icon"
 
 // --- UI Utils ---
 import {
@@ -18,7 +18,7 @@ import {
   isNodeInSchema,
   isNodeTypeSelected,
   isValidPosition,
-} from "@/lib/tiptap-utils"
+} from "../../../lib/tiptap-utils"
 
 export const BLOCKQUOTE_SHORTCUT_KEY = "mod+shift+b"
 

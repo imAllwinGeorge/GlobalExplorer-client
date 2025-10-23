@@ -1148,22 +1148,17 @@
 // export default VideoChat;
 
 import { useEffect, useRef, useState } from "react";
-import { useSocket } from "@/contexts/SocketContext";
-import VideoCall from "@/presentation/components/videoCall/VideoCall";
-import { VIDEO_CALL_EVENT } from "@/shared/constants/constants";
-import type { RootState } from "@/presentation/store";
+
 import { useSelector } from "react-redux";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
-import { eventBus } from "@/lib/eventBusInstance";
-import type {
-  AnswerPayload,
-  CallAcceptPayload,
-  CallEndPayload,
-  CallRejectPayload,
-  CallRequestPayload,
-  IceCandidatePayload,
-  OfferPayload,
-} from "@/shared/types/videoCallEvent";
+import type { AnswerPayload, CallAcceptPayload, CallEndPayload, CallRejectPayload, CallRequestPayload, IceCandidatePayload, OfferPayload } from "../../../shared/types/videoCallEvent";
+import { useSocket } from "../../../contexts/SocketContext";
+import type { RootState } from "../../store";
+import { VIDEO_CALL_EVENT } from "../../../shared/constants/constants";
+import { eventBus } from "../../../lib/eventBusInstance";
+import VideoCall from "../../components/videoCall/VideoCall";
+
+
 
 const configuration: RTCConfiguration = {
   iceServers: [

@@ -21,10 +21,11 @@ import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { adminService } from "../../../../services/AdminService";
 import type { DashboardData } from "../../../../shared/types/global";
-import { HttpStatusCode } from "@/shared/constants/constants";
-import StatsCard from "@/presentation/components/common/Dashboard/StatsCard";
-import MonthlyBookingChart from "@/presentation/components/common/Dashboard/MonthlyBookingChart";
-import TopSellingActivities from "@/presentation/components/common/Dashboard/TopSellingActivities";
+import { HttpStatusCode } from "../../../../shared/constants/constants";
+import StatsCard from "../../../components/common/Dashboard/StatsCard";
+import MonthlyBookingChart from "../../../components/common/Dashboard/MonthlyBookingChart";
+import TopSellingActivities from "../../../components/common/Dashboard/TopSellingActivities";
+
 
 // Register necessary Chart.js components
 ChartJS.register(

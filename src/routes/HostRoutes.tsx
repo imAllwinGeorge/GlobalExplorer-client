@@ -10,8 +10,9 @@ import ActivityPage from "../presentation/pages/host/ActivityPage"
 import Profile from "../presentation/pages/host/Profile"
 import BookingPage from "../presentation/pages/host/BookingPage"
 import Chat from "../presentation/pages/host/ChatPage"
-import NotFoundPage from "@/presentation/pages/common/NotFoundPage"
-import SalesPage from "@/presentation/pages/host/SalesPage"
+import SalesPage from "../presentation/pages/host/SalesPage"
+import NotFoundPage from "../presentation/pages/common/NotFoundPage"
+
 
 
 const HostRoutes = () => {

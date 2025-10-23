@@ -9,7 +9,7 @@ import { useAppDispatch } from "../../../hooks/useAppHooks";
 import { login, setGoogleUser } from "../../../store/slices/authSlice";
 import { AuthAPI } from "../../../../services/AuthAPI";
 import toast from "react-hot-toast";
-import { ROLE } from "@/shared/constants/constants";
+import { ROLE } from "../../../../shared/constants/constants";
 
 const Login = () => {
   const [data, setData] = useState({

@@ -5,7 +5,7 @@ import { AuthAPI } from "../../../../services/AuthAPI";
 import { useDispatch } from "react-redux";
 import { hostRegister } from "../../../store/slices/hostSlice";
 import Input from "../../../components/ui/Input";
-import { HttpStatusCode } from "@/shared/constants/constants";
+import { HttpStatusCode } from "../../../../shared/constants/constants";
 
 const HostOtp = () => {
   const navigate = useNavigate();

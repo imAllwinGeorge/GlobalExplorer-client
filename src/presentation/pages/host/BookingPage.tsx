@@ -17,8 +17,9 @@ import ReusableTable from "../../components/sharedElements/SharedTable";
 import Pagination from "../../components/common/Pagination";
 import RejectionModal from "../../components/sharedElements/RejectionModal";
 import { hostService } from "../../../services/HostService";
-import SearchBox from "@/presentation/components/sharedElements/Search-box";
-import RadioGroup from "@/components/ui/RadioGroup";
+import SearchBox from "../../components/sharedElements/Search-box";
+import RadioGroup from "../../../components/ui/RadioGroup";
+
 
 const columns = [
   "index",

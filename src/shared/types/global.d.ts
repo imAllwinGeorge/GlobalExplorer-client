@@ -213,6 +213,7 @@ export interface AuthResponse {
   activities?: Activity[] ,
   blogs?: BlogPost[],
   blog?: BlogPost,
+  images?: GalleryImages[],
   activity?: Activity
   reviews?: Review[]
   totalPages?: number,
@@ -258,4 +259,11 @@ export interface ResponseType<T> {
 export type ChildrenProps = {
     children: React.ReactNode
 }
+
+export type GalleryImages = {
+    image: string;
+    title: string;
+    _id: string;
+    url: string;
+  }
 

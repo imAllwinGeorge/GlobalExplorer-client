@@ -6,9 +6,9 @@ import type { RootState } from "../../store"
 import type { Host } from "../../../shared/types/global"
 import MyProfile from "../../components/common/MyProfile"
 import { HostService } from "../../../services/HostService"
-import { HttpStatusCode, ROLE } from "@/shared/constants/constants"
 import { useDispatch } from "react-redux"
-import { hostLogin } from "@/presentation/store/slices/hostSlice"
+import { HttpStatusCode, ROLE } from "../../../shared/constants/constants"
+import { hostLogin } from "../../store/slices/hostSlice"
 
 const Profile = () => {
   const user = useSelector((state: RootState) => state.host.host)

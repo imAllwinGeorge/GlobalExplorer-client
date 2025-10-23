@@ -5,7 +5,7 @@ import { AuthAPI } from "../../../services/AuthAPI";
 import { useAppDispatch } from "../../hooks/useAppHooks";
 import { register } from "../../store/slices/authSlice";
 import toast from "react-hot-toast";
-import { HttpStatusCode } from "@/shared/constants/constants";
+import { HttpStatusCode } from "../../../shared/constants/constants";
 
 const Otp = () => {
   const navigate = useNavigate();

@@ -6,7 +6,7 @@ import { AuthAPI } from "../../../services/AuthAPI";
 import { useDispatch } from "react-redux";
 import { adminLogin } from "../../store/slices/adminSlice";
 import toast from "react-hot-toast";
-import { HttpStatusCode, ROLE } from "@/shared/constants/constants";
+import { HttpStatusCode, ROLE } from "../../../shared/constants/constants";
 
 
 const AdminLogin = () => {

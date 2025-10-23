@@ -126,20 +126,14 @@
 //-------------------------------------------------
 
 import { useEffect } from "react";
-import { useSocket } from "@/contexts/SocketContext";
-import { VIDEO_CALL_EVENT } from "@/shared/constants/constants";
+
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import type {
-  AnswerPayload,
-  CallAcceptPayload,
-  CallEndPayload,
-  CallRejectPayload,
-  CallRequestPayload,
-  IceCandidatePayload,
-  OfferPayload,
-} from "@/shared/types/videoCallEvent";
-import { eventBus } from "@/lib/eventBusInstance";
+import { useSocket } from "../../../contexts/SocketContext";
+import { VIDEO_CALL_EVENT } from "../../../shared/constants/constants";
+import type { AnswerPayload, CallAcceptPayload, CallEndPayload, CallRejectPayload, CallRequestPayload, IceCandidatePayload, OfferPayload } from "../../../shared/types/videoCallEvent";
+import { eventBus } from "../../../lib/eventBusInstance";
+
 
 const GlobalCallListener = () => {
   const socket = useSocket();

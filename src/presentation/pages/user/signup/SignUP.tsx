@@ -9,7 +9,7 @@ import { AuthAPI } from "../../../../services/AuthAPI";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
-import { HttpStatusCode, ROLE } from "@/shared/constants/constants";
+import { HttpStatusCode, ROLE } from "../../../../shared/constants/constants";
 
 const SignUP = () => {
   const [data, setData] = useState({

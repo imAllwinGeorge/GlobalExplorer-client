@@ -12,8 +12,9 @@ import ConfirmModal from "../../components/sharedElements/ConfirmModal";
 import toast from "react-hot-toast";
 import { Pencil, Plus, X } from "lucide-react";
 import Pagination from "../../components/common/Pagination";
-import { HttpStatusCode } from "@/shared/constants/constants";
-import SearchBox from "@/presentation/components/sharedElements/Search-box";
+import { HttpStatusCode } from "../../../shared/constants/constants";
+import SearchBox from "../../components/sharedElements/Search-box";
+
 
 const CategoryPage = () => {
   const [data, setData] = useState({

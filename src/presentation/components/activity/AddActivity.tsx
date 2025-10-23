@@ -12,7 +12,7 @@ import type { LatLngExpression } from "leaflet";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../store";
 import toast from "react-hot-toast";
-import { HttpStatusCode } from "@/shared/constants/constants";
+import { HttpStatusCode } from "../../../shared/constants/constants";
 
 // Placeholder function for getting coordinates from address
 const getLocationFromAddress = async (

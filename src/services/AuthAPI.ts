@@ -3,8 +3,8 @@ import type { LoginDTO, SignupDTO } from "../shared/types/DTO";
 import type { ErrorResponse } from "../shared/types/auth.type";
 import { axiosInstance } from "../api/axiosInstance";
 import { socketService } from "./SocketService";
-import { HttpStatusCode } from "@/shared/constants/constants";
 import type { AxiosResponse } from "axios";
+import { HttpStatusCode } from "../shared/constants/constants";
 
 // interface SignupDTO {
 //   firstName: string;

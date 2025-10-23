@@ -47,8 +47,8 @@
 
 
 // VideoCall.tsx
-import { cn } from "@/lib/utils";
 import { useEffect, useRef } from "react";
+import { cn } from "../../../lib/tiptap-utils";
 
 type VideoProp = {
   stream: MediaStream;

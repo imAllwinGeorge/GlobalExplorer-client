@@ -1,6 +1,6 @@
-import type { ReviewDTO } from "@/shared/types/DTO";
 import { axiosInstance } from "../api/axiosInstance";
 import type { ErrorResponse } from "../shared/types/auth.type";
+import type { ReviewDTO } from "../shared/types/DTO";
 import type { AuthResponse, Booking } from "../shared/types/global";
 import type { AxiosResponse } from "axios";
 

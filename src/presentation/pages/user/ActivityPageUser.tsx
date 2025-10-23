@@ -6,8 +6,8 @@ import type { Activity } from "../../../shared/types/global";
 import Carousel from "../../components/common/Carousel";
 import ActivityCard from "../../components/common/ActivityCard";
 import { useNavigate } from "react-router-dom";
-import { HttpStatusCode } from "@/shared/constants/constants";
-import SearchBox from "@/presentation/components/sharedElements/Search-box";
+import { HttpStatusCode } from "../../../shared/constants/constants";
+import SearchBox from "../../components/sharedElements/Search-box";
 const ActivityPageUser = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);

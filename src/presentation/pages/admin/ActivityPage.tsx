@@ -10,8 +10,9 @@ import {
   LOCAL_STORAGE_KEYS,
   ROLE,
 } from "../../../shared/constants/constants";
-import SearchBox from "@/presentation/components/sharedElements/Search-box";
-import RadioGroup from "@/components/ui/RadioGroup";
+import SearchBox from "../../components/sharedElements/Search-box";
+import RadioGroup from "../../../components/ui/RadioGroup";
+
 
 const options = [
   { label: "Active", value: true },

@@ -6,9 +6,10 @@ import ConfirmModal from "../../components/sharedElements/ConfirmModal";
 import { ChevronsRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Pagination from "../../components/common/Pagination";
-import { HttpStatusCode, ROLE } from "@/shared/constants/constants";
-import SearchBox from "@/presentation/components/sharedElements/Search-box";
-import RadioGroup from "@/components/ui/radioGroup";
+import { HttpStatusCode, ROLE } from "../../../shared/constants/constants";
+import SearchBox from "../../components/sharedElements/Search-box";
+import RadioGroup from "../../../components/ui/RadioGroup";
+
 // import { toast } from 'react-toastify';
 
 const options = [

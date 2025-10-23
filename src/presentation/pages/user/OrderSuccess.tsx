@@ -163,9 +163,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../..
 import { Separator } from '@radix-ui/react-select';
 import { Calendar, CheckCircle, Package } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { UserService } from '@/services/UserService';
-import { HttpStatusCode } from '@/shared/constants/constants';
-import type { Booking } from '@/shared/types/global';
+import type { Booking } from '../../../shared/types/global';
+import { UserService } from '../../../services/UserService';
+import { HttpStatusCode } from '../../../shared/constants/constants';
+
 
 const OrderSuccess = () => {
   const { orderId } = useParams<{ orderId: string }>();

@@ -5,7 +5,7 @@ import { isValidEmail } from "../../../../shared/validation/validations"
 import { AuthAPI } from "../../../../services/AuthAPI"
 import { useNavigate, useParams } from "react-router-dom"
 import toast from "react-hot-toast"
-import { HttpStatusCode } from "@/shared/constants/constants"
+import { HttpStatusCode } from "../../../../shared/constants/constants"
 export default function VerifyEmail() {
   const [email, setEmail] = useState("")
   const [isLoading, setIsLoading] = useState(false)

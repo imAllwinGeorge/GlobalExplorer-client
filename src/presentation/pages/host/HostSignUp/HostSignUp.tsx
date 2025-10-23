@@ -14,7 +14,7 @@ import {
   isValidIFSC,
   isValidName,
 } from "../../../../shared/validation/validations";
-import { HttpStatusCode, ROLE } from "@/shared/constants/constants";
+import { HttpStatusCode, ROLE } from "../../../../shared/constants/constants";
 
 export type HostFormData = {
   firstName: string;

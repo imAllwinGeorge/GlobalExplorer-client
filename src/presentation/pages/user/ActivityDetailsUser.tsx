@@ -51,15 +51,12 @@ import {
 import { useSelector } from "react-redux";
 import type { RootState } from "../../store";
 import { axiosInstance } from "../../../api/axiosInstance";
-import { WriteReview } from "@/presentation/components/review/WriteReview";
-import {
-  averageRating,
-  formateDate,
-  totalRatings,
-} from "@/utils/helpers/helper";
-import { HttpStatusCode } from "@/shared/constants/constants";
+
 import { formatInTimeZone } from "date-fns-tz";
 import axios from "axios";
+import { HttpStatusCode } from "../../../shared/constants/constants";
+import { averageRating, formateDate, totalRatings } from "../../../utils/helpers/helper";
+import { WriteReview } from "../../components/review/WriteReview";
 
 interface RazorpayResponse {
   amount: number;

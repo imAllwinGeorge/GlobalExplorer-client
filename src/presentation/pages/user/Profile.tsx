@@ -148,7 +148,7 @@ import type { RootState } from "../../store"
 import { userService } from "../../../services/UserService"
 import { authService } from "../../../services/AuthAPI"
 import MyProfile from "../../components/common/MyProfile"
-import { HttpStatusCode, ROLE } from "@/shared/constants/constants"
+import { HttpStatusCode, ROLE } from "../../../shared/constants/constants"
 
 const Profile = () => {
   const [profile, setProfile] = useState<User | null>(null)

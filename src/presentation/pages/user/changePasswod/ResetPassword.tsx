@@ -5,7 +5,7 @@ import { useNavigate, useParams } from "react-router-dom"
 import { isValidPassword } from "../../../../shared/validation/validations"
 import { AuthAPI } from "../../../../services/AuthAPI"
 import toast from "react-hot-toast"
-import { HttpStatusCode } from "@/shared/constants/constants"
+import { HttpStatusCode } from "../../../../shared/constants/constants"
 
 export default function ChangePassword() {
   const [newPassword, setNewPassword] = useState("")

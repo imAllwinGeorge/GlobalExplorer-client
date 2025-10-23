@@ -22,10 +22,10 @@ import type { DashboardData } from "../../../../shared/types/global";
 import { hostService } from "../../../../services/HostService";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../store";
-import { HttpStatusCode } from "@/shared/constants/constants";
-import TopSellingActivities from "@/presentation/components/common/Dashboard/TopSellingActivities";
-import StatsCard from "@/presentation/components/common/Dashboard/StatsCard";
-import MonthlyBookingChart from "@/presentation/components/common/Dashboard/MonthlyBookingChart";
+import { HttpStatusCode } from "../../../../shared/constants/constants";
+import StatsCard from "../../../components/common/Dashboard/StatsCard";
+import MonthlyBookingChart from "../../../components/common/Dashboard/MonthlyBookingChart";
+import TopSellingActivities from "../../../components/common/Dashboard/TopSellingActivities";
 
 // Register necessary Chart.js components
 ChartJS.register(

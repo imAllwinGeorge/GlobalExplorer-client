@@ -4,13 +4,14 @@ import type React from "react";
 
 import { useState } from "react";
 import { Star, Send } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@radix-ui/react-dropdown-menu";
 import Input from "../ui/Input";
 import { Button } from "../ui/button";
 import toast from "react-hot-toast";
-import type { ReviewDTO } from "@/shared/types/DTO";
-import { userService } from "@/services/UserService";
+import type { ReviewDTO } from "../../../shared/types/DTO";
+import { userService } from "../../../services/UserService";
+import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
+
 
 interface WriteReviewProps {
   entityId: string;

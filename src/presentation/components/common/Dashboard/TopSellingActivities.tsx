@@ -1,4 +1,4 @@
-import type { DashboardData } from '@/shared/types/global'
+import type { DashboardData } from '../../../../shared/types/global';
 import ReusableTable from '../../sharedElements/SharedTable'
 
 type TopSellingActivitiesPropsType = {

@@ -28,11 +28,12 @@ import {
 import { useSocket } from "../../../contexts/SocketContext";
 import Picker from "emoji-picker-react";
 import { useNavigate } from "react-router-dom";
-import { useAppDispatch } from "@/presentation/hooks/useAppHooks";
-import { logout } from "@/presentation/store/slices/authSlice";
-import { hostLogout } from "@/presentation/store/slices/hostSlice";
-import { adminLogout } from "@/presentation/store/slices/adminSlice";
-import { AuthAPI } from "@/services/AuthAPI";
+import { useAppDispatch } from "../../hooks/useAppHooks";
+import { AuthAPI } from "../../../services/AuthAPI";
+import { logout } from "../../store/slices/authSlice";
+import { hostLogout } from "../../store/slices/hostSlice";
+import { adminLogout } from "../../store/slices/adminSlice";
+
 
 interface ChatPageProps {
   users: ConversationResponse[];

@@ -1,6 +1,6 @@
 import axios from "axios";
 import { handleRoleBasedLogout } from "../utils/protected/authUtils";
-import { HttpStatusCode } from "@/shared/constants/constants";
+import { HttpStatusCode } from "../shared/constants/constants";
 const baseUrl = import.meta.env.VITE_API_BASE_URL;
 console.log(baseUrl);
 export const axiosInstance = axios.create({

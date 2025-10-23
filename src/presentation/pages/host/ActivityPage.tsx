@@ -10,8 +10,9 @@ import { Plus } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
 import { HttpStatusCode, LOCAL_STORAGE_KEYS, OPTIONS, ROLE } from "../../../shared/constants/constants";
-import SearchBox from "@/presentation/components/sharedElements/Search-box";
-import RadioGroup from "@/components/ui/RadioGroup";
+import SearchBox from "../../components/sharedElements/Search-box";
+import RadioGroup from "../../../components/ui/RadioGroup";
+
 
 const ActivityPage = () => {
   const [isOpenModal, setIsOpenModal] = useState(false);

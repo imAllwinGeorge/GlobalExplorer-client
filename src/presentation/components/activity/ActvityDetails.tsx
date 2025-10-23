@@ -26,7 +26,7 @@ import { adminService } from "../../../services/AdminService";
 import { Switch } from "../../../components/ui/switch";
 import toast from "react-hot-toast";
 import ConfirmModal from "../sharedElements/ConfirmModal";
-import { HttpStatusCode, ROLE } from "@/shared/constants/constants";
+import { HttpStatusCode, ROLE } from "../../../shared/constants/constants";
 
 interface ActivityViewProps {
   role: string;

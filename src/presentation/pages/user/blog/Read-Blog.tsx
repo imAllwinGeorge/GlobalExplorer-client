@@ -11,8 +11,8 @@ import { userService } from "../../../../services/UserService";
 import ConfirmModal from "../../../components/sharedElements/ConfirmModal";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { HttpStatusCode } from "@/shared/constants/constants";
 import { useNavigate, useParams } from "react-router-dom";
+import { HttpStatusCode } from "../../../../shared/constants/constants";
 
 export default function BlogRead() {
   const { id } = useParams<{ id: string }>();

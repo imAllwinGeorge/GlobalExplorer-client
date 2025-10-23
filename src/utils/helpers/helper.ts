@@ -1,4 +1,4 @@
-import type { Review, SalesData } from "@/shared/types/global";
+import type { Review, SalesData } from "../../shared/types/global";
 
 export function formateDate(isoString: string) {
   const date = new Date(isoString);

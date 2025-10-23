@@ -4,9 +4,10 @@ import type { Host, User } from "../../../../shared/types/global";
 import { adminService } from "../../../../services/AdminService";
 import toast from "react-hot-toast";
 import Pagination from "../../../components/common/Pagination";
-import { HttpStatusCode, ROLE } from "@/shared/constants/constants";
-import SearchBox from "@/presentation/components/sharedElements/Search-box";
-import RadioGroup from "@/components/ui/radioGroup";
+import { HttpStatusCode, ROLE } from "../../../../shared/constants/constants";
+import SearchBox from "../../../components/sharedElements/Search-box";
+import RadioGroup from "../../../../components/ui/RadioGroup";
+
 // import { toast } from 'react-toastify';
 
 const options = [

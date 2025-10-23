@@ -17,10 +17,11 @@ import OrderSuccess from "../presentation/pages/user/OrderSuccess";
 import Profile from "../presentation/pages/user/Profile";
 import MyBookings from "../presentation/pages/user/MyBookings";
 import ChatPage from "../presentation/pages/user/Chat-Page";
-import VideoChat from "@/presentation/pages/user/Video-Chat";
-import NotFoundPage from "@/presentation/pages/common/NotFoundPage";
-import BlogWriter from "@/presentation/pages/user/blog/Blog-Writer";
-import BlogRead from "@/presentation/pages/user/blog/Read-Blog";
+import BlogWriter from "../presentation/pages/user/blog/Blog-Writer";
+import BlogRead from "../presentation/pages/user/blog/Read-Blog";
+import VideoChat from "../presentation/pages/user/Video-Chat";
+import NotFoundPage from "../presentation/pages/common/NotFoundPage";
+
 
 const UserRoutes = () => {
   return (

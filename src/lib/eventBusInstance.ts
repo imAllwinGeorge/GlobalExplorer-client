@@ -1,5 +1,5 @@
-// src/lib/eventBusInstance.ts
-import { EventBus } from "@/lib/eventBus";
-import type { VideoEvents } from "@/shared/types/videoCallEvent";
+import type { VideoEvents } from "../shared/types/videoCallEvent";
+import { EventBus } from "./eventBus";
+
 
 export const eventBus = new EventBus<VideoEvents>();

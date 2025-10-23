@@ -9,8 +9,9 @@ import AdminHosts from '../presentation/pages/admin/AdminHosts'
 import AdminHostDetails from '../presentation/pages/admin/AdminHostDetails'
 import CategoryPage from '../presentation/pages/admin/CategoryPage'
 import ActivityPage from '../presentation/pages/admin/ActivityPage'
-import NotFoundPage from '@/presentation/pages/common/NotFoundPage'
-import Sales from '@/presentation/pages/admin/Sales'
+import Sales from '../presentation/pages/admin/Sales'
+import NotFoundPage from '../presentation/pages/common/NotFoundPage'
+
 
 const AdminRoutes = () => {
   return (

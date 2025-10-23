@@ -24,7 +24,7 @@ import toast from "react-hot-toast";
 import { adminService } from "../../../services/AdminService";
 import ConfirmModal from "../../components/sharedElements/ConfirmModal";
 import RejectionModal from "../../components/sharedElements/RejectionModal";
-import { HttpStatusCode, ROLE } from "@/shared/constants/constants";
+import { HttpStatusCode, ROLE } from "../../../shared/constants/constants";
 
 type NewStatus = {
   isVerified?: string;

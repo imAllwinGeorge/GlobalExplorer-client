@@ -1,12 +1,13 @@
-import StatsCard from "@/presentation/components/common/Dashboard/StatsCard";
-import GrowthGauge from "@/presentation/components/common/Sales/GrowthGauge";
-import RevanueChart from "@/presentation/components/common/Sales/RevanueChart";
-import { adminService } from "@/services/AdminService";
-import { HttpStatusCode } from "@/shared/constants/constants";
-import type { SalesData } from "@/shared/types/global";
-import { calculateGrowth } from "@/utils/helpers/helper";
+
 import { Users } from "lucide-react";
 import { useEffect, useState } from "react";
+import type { SalesData } from "../../../shared/types/global";
+import { adminService } from "../../../services/AdminService";
+import { HttpStatusCode } from "../../../shared/constants/constants";
+import { calculateGrowth } from "../../../utils/helpers/helper";
+import RevanueChart from "../../components/common/Sales/RevanueChart";
+import GrowthGauge from "../../components/common/Sales/GrowthGauge";
+import StatsCard from "../../components/common/Dashboard/StatsCard";
 
 const Sales = () => {
   const [salesData, setSalesData] = useState<SalesData>();

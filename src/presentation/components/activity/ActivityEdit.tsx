@@ -28,7 +28,7 @@ import type { LatLngExpression } from "leaflet";
 import toast from "react-hot-toast";
 import { HostService } from "../../../services/HostService";
 import ConfirmModal from "../sharedElements/ConfirmModal";
-import { HttpStatusCode } from "@/shared/constants/constants";
+import { HttpStatusCode } from "../../../shared/constants/constants";
 
 interface ActivityEditProps {
   activity: Activity;

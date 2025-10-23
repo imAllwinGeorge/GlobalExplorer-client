@@ -4,16 +4,17 @@ import { useState, useRef, useEffect } from "react";
 import { Plus, Upload, X, Save, Type, List } from "lucide-react";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import "@/styles/_style.scss";
-import { userService } from "@/services/UserService";
-import { HttpStatusCode } from "@/shared/constants/constants";
+import "../../../..//styles/_style.scss";
 import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
-import { Button } from "@/presentation/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import Input from "@/presentation/components/ui/Input";
-import { SimpleEditor } from "@/components/tiptap-templates/simple/simple-editor";
+import { userService } from "../../../../services/UserService";
+import { HttpStatusCode } from "../../../../shared/constants/constants";
+import { Button } from "../../../components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../../../../components/ui/card";
+import { Badge } from "../../../../components/ui/badge";
+import Input from "../../../components/ui/Input";
+import { SimpleEditor } from "../../../../components/tiptap-templates/simple/simple-editor";
+
 
 interface BlogSection {
   sectionTitle: string;

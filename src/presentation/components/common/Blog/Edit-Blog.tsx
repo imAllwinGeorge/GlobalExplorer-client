@@ -10,8 +10,8 @@ import Input from "../../ui/Input";
 import type { BlogPost, BlogSection } from "../../../../shared/types/global";
 import toast from "react-hot-toast";
 import { userService } from "../../../../services/UserService";
-import { SimpleEditor } from "@/components/tiptap-templates/simple/simple-editor";
-import { HttpStatusCode } from "@/shared/constants/constants";
+import { HttpStatusCode } from "../../../../shared/constants/constants";
+import { SimpleEditor } from "../../../../components/tiptap-templates/simple/simple-editor";
 
 interface BlogEditProps {
   blogPost: BlogPost;

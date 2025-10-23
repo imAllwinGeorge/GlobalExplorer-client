@@ -9,7 +9,7 @@ import { AuthAPI } from "../../../../services/AuthAPI";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { hostLogin } from "../../../store/slices/hostSlice";
-import { HttpStatusCode, ROLE } from "@/shared/constants/constants";
+import { HttpStatusCode, ROLE } from "../../../../shared/constants/constants";
 
 const HostLogin = () => {
   const [data, setData] = useState({

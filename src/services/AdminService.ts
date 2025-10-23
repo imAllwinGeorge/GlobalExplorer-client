@@ -1,5 +1,5 @@
-import { HttpStatusCode } from "@/shared/constants/constants";
 import { axiosInstance } from "../api/axiosInstance";
+import { HttpStatusCode } from "../shared/constants/constants";
 import type { ErrorResponse } from "../shared/types/auth.type";
 import type { AuthResponse, Host, User } from "../shared/types/global";
 import type { AxiosResponse } from "axios";
