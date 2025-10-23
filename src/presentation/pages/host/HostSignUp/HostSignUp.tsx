@@ -4,7 +4,7 @@ import { AuthAPI } from "../../../../services/AuthAPI";
 import toast from "react-hot-toast";
 import { validateHostSignupForm } from "../../../../shared/validation/validateSignupFrom";
 import type { HostSignupFormErrors } from "../../../../shared/types/auth.type";
-import Input from "../../../components/Input";
+import Input from "../../../components/ui/Input";
 import { Banknote, Eye, EyeOff, Phone } from "lucide-react";
 import { Button } from "../../../components/ui/button";
 import { Link } from "react-router-dom";
@@ -210,7 +210,9 @@ const HostSignUp = () => {
                       type="text"
                       value={data.firstName}
                       className="pl-3 pr-8 py-1 w-full border rounded-md"
-                      onChange={(e) => handleChange("firstName", e.target.value)}
+                      onChange={(e) =>
+                        handleChange("firstName", e.target.value)
+                      }
                     />
                     <div className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
                       <svg

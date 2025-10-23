@@ -73,7 +73,7 @@ export default function ActivityCard({
             <div className="lg:w-4/5 relative overflow-hidden ml-3">
               <motion.div variants={imageVariants} className="w-full h-full relative">
                 <img
-                  src={`${import.meta.env.VITE_IMG_URL}${activity.images[0]}`}
+                  src={`${activity.images[0]}`}
                   alt={activity.activityName}
                   width={400}
                   height={300}

@@ -8,8 +8,23 @@ import { useNavigate } from "react-router-dom";
 import Pagination from "../../components/common/Pagination";
 import { HttpStatusCode, ROLE } from "@/shared/constants/constants";
 import SearchBox from "@/presentation/components/sharedElements/Search-box";
+import RadioGroup from "@/components/ui/radioGroup";
 // import { toast } from 'react-toastify';
 
+const options = [
+  {
+    label: "Verified",
+    value: "verified",
+  },
+  {
+    label: "Rejected",
+    value: "reject",
+  },
+  {
+    label: "Pending",
+    value: "pending",
+  },
+];
 const AdminHosts = () => {
   const [users, setUsers] = useState<Host[]>([]);
   const [isModalOpen, setIsModelOpen] = useState(false);
@@ -18,11 +33,18 @@ const AdminHosts = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selected, setSelected] = useState<boolean | string>(options[0].value);
   const navigate = useNavigate();
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await adminService.getAllUsers<Host>(page, 5, "host", searchQuery);
+        const response = await adminService.getAllUsers<Host>(
+          page,
+          5,
+          "host",
+          searchQuery,
+          selected
+        );
         console.log("response fetchuserdata: ", response);
         if (response) {
           setUsers(response.users);
@@ -37,7 +59,7 @@ const AdminHosts = () => {
       }
     };
     fetchUserData();
-  }, [triggerFetch, page, searchQuery]);
+  }, [triggerFetch, page, searchQuery, selected]);
 
   const handleUserState = async () => {
     if (!selectedUser) return null;
@@ -66,7 +88,16 @@ const AdminHosts = () => {
     <div className="users-container bg-white text-gray-800 p-8 rounded-xl shadow-lg">
       <h1 className="text-2xl font-bold mb-6 text-yellow-700">Host Details</h1>
 
-      <SearchBox placeholder="Search for host......." onSearch={(query) => setSearchQuery(query)} />
+      <SearchBox
+        placeholder="Search for host......."
+        onSearch={(query) => setSearchQuery(query)}
+      />
+      <RadioGroup
+        name="status"
+        options={options}
+        value={selected}
+        onChange={setSelected}
+      />
 
       <div className="overflow-x-auto rounded-lg shadow border border-gray-200">
         <table className="min-w-full bg-white">

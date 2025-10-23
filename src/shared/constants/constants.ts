@@ -74,3 +74,19 @@ export const VIDEO_CALL_EVENT = {
   ANSWER: "video:answer",
   ICECANDIDATE: "video:icecandidate",
 } as const;
+
+export const OPTIONS = {
+  admin: [
+  { label: "Active", value: true },
+  { label: "InActive", value: false },
+],
+host: [
+  { label: "Active", value: true },
+  { label: "InActive", value: false },
+],
+booking:[
+  {label: "Up Comming", value: "upcomming"},
+  {label: "Completed", value: "completed"},
+  {label: "Cancelled", value: "cancelled"}
+]
+}

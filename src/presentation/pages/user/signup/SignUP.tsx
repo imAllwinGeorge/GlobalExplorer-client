@@ -1,12 +1,10 @@
 import React, { useState } from "react";
-import Input from "../../../components/Input";
+import Input from "../../../components/ui/Input";
 import { Button } from "../../../components/ui/button";
 import { Eye, EyeOff, Phone } from "lucide-react";
 
 import { validateSignupForm } from "../../../../shared/validation/validateSignupFrom";
-import type {
-  RegisterFormErrors,
-} from "../../../../shared/types/auth.type";
+import type { RegisterFormErrors } from "../../../../shared/types/auth.type";
 import { AuthAPI } from "../../../../services/AuthAPI";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
@@ -58,8 +56,8 @@ const SignUP = () => {
       }
     } catch (error) {
       console.log(error);
-      if(error instanceof Error){
-        toast.error(error.message)
+      if (error instanceof Error) {
+        toast.error(error.message);
       }
     }
   };

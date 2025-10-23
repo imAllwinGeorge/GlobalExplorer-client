@@ -1,14 +1,14 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Search } from "lucide-react"
-import Input from "../Input"
+import { useState, useEffect } from "react";
+import { Search } from "lucide-react";
+import Input from "../ui/Input";
 
 interface SearchBoxProps {
-  placeholder?: string
-  onSearch: (query: string) => void
-  initialValue?: string
-  debounceMs?: number
+  placeholder?: string;
+  onSearch: (query: string) => void;
+  initialValue?: string;
+  debounceMs?: number;
 }
 
 export default function SearchBox({
@@ -17,15 +17,15 @@ export default function SearchBox({
   initialValue = "",
   debounceMs = 500,
 }: SearchBoxProps) {
-  const [query, setQuery] = useState(initialValue)
+  const [query, setQuery] = useState(initialValue);
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      onSearch(query)
-    }, debounceMs)
+      onSearch(query);
+    }, debounceMs);
 
-    return () => clearTimeout(timer)
-  }, [query, onSearch, debounceMs])
+    return () => clearTimeout(timer);
+  }, [query, onSearch, debounceMs]);
 
   return (
     <div className="relative m-4">
@@ -38,5 +38,5 @@ export default function SearchBox({
         className="pl-10 pr-4 py-2 w-full"
       />
     </div>
-  )
+  );
 }

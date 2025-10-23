@@ -4,7 +4,7 @@ import { validateLoginForm } from "../../../../shared/validation/validateLoginFo
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
-import Input from "../../../components/Input";
+import Input from "../../../components/ui/Input";
 import { useAppDispatch } from "../../../hooks/useAppHooks";
 import { login, setGoogleUser } from "../../../store/slices/authSlice";
 import { AuthAPI } from "../../../../services/AuthAPI";

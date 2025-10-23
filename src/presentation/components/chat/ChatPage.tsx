@@ -9,7 +9,7 @@ import {
   Video,
   Smile,
 } from "lucide-react";
-import Input from "../Input";
+import Input from "../ui/Input";
 // import { Avatar } from "../../../components/ui/avatar"
 import { Button } from "../ui/button";
 import type {
@@ -382,9 +382,7 @@ export default function ChatPage({
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() =>
-                      navigate(`/video/${selectedUserId}`)
-                    }
+                    onClick={() => navigate(`/video/${selectedUserId}`)}
                   >
                     <Video className="w-4 h-4" />
                   </Button>

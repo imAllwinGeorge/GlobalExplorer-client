@@ -407,7 +407,7 @@ export default function ActivityDetailsUser() {
               <div className="md:col-span-2 relative">
                 {activity.images.length > 0 ? (
                   <img
-                    src={`${import.meta.env.VITE_IMG_URL}${
+                    src={`${
                       activity.images[selectedImageIndex]
                     }`}
                     alt={activity.activityName}
@@ -425,7 +425,7 @@ export default function ActivityDetailsUser() {
                 {activity.images.slice(0, 5).map((image, index) => (
                   <div key={index} className="relative">
                     <img
-                      src={`${import.meta.env.VITE_IMG_URL}${image}`}
+                      src={`${image}`}
                       alt={`${activity.activityName} - ${index + 2}`}
                       className="w-400 h-60 p-0 object-cover cursor-pointer hover:scale-105 transition-transform duration-300 rounded-lg"
                       onClick={() => setSelectedImageIndex(index + 1)}

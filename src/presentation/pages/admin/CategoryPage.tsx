@@ -3,7 +3,7 @@
 import type React from "react";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Input from "../../components/Input";
+import Input from "../../components/ui/Input";
 import type { AddCategoryError } from "../../../shared/types/auth.type";
 import { isValidName } from "../../../shared/validation/validations";
 import { adminService } from "../../../services/AdminService";
@@ -277,7 +277,10 @@ const CategoryPage = () => {
           </div>
 
           <div className="overflow-x-auto">
-            <SearchBox placeholder="Search for categories....." onSearch={(query) => setSearchQuery(query)} />
+            <SearchBox
+              placeholder="Search for categories....."
+              onSearch={(query) => setSearchQuery(query)}
+            />
             <table className="min-w-full">
               <thead className="bg-orange-50 border-b border-orange-100">
                 <tr>

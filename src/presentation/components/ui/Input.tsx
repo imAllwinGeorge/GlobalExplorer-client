@@ -1,5 +1,5 @@
 import React from "react";
-import { classNames } from "../../shared/utils";
+import { classNames } from "../../../shared/utils";
 
 const Input: React.FC<React.InputHTMLAttributes<HTMLInputElement>> = (
   props

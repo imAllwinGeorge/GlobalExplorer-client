@@ -9,12 +9,16 @@ const HostLayout = () => {
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <NavBar role={role} />
       <div className="flex flex-1">
-        <SideBar role={role} />
+        <div className="min-w-20">
+          <SideBar role={role} />
+        </div>
         <main className="flex-1 overflow-auto">
           <Outlet />
         </main>
       </div>
-      <Footer />
+      <div className="z-50">
+        <Footer />
+      </div>
     </div>
   );
 };

@@ -4,17 +4,15 @@ import { validateLoginForm } from "../../../../shared/validation/validateLoginFo
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
-import Input from "../../../components/Input";
+import Input from "../../../components/ui/Input";
 import { AuthAPI } from "../../../../services/AuthAPI";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { hostLogin } from "../../../store/slices/hostSlice";
 import { HttpStatusCode, ROLE } from "@/shared/constants/constants";
 
- 
-
 const HostLogin = () => {
-   const [data, setData] = useState({
+  const [data, setData] = useState({
     email: "",
     password: "",
     role: ROLE.HOST,
@@ -42,15 +40,15 @@ const HostLogin = () => {
       return setError(errors);
     }
     try {
-      const response = await authAPI.login(data)
-      if(response.status === HttpStatusCode.OK){
-        dispatch(hostLogin(response.data.user))
-        navigate("/host/home")
+      const response = await authAPI.login(data);
+      if (response.status === HttpStatusCode.OK) {
+        dispatch(hostLogin(response.data.user));
+        navigate("/host/home");
       }
     } catch (error) {
       console.log("login error message: ", error);
-      if(error instanceof Error){
-        toast.error(error.message)
+      if (error instanceof Error) {
+        toast.error(error.message);
       }
     }
   };
@@ -133,23 +131,29 @@ const HostLogin = () => {
             >
               Login
             </button>
-            <Link to="/forgot-password" state={ROLE.HOST} className=" text-indigo-600 hover:underline">
-             forgot password
-          </Link>
+            <Link
+              to="/forgot-password"
+              state={ROLE.HOST}
+              className=" text-indigo-600 hover:underline"
+            >
+              forgot password
+            </Link>
 
             {/* Navigation Link */}
             <p className="text-xs text-center text-gray-500 mt-4">
               Don't have an account?{" "}
-              <Link to="/host/signup" className="text-indigo-600 hover:underline">
+              <Link
+                to="/host/signup"
+                className="text-indigo-600 hover:underline"
+              >
                 Sign up
               </Link>
             </p>
           </form>
-          
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default HostLogin
+export default HostLogin;

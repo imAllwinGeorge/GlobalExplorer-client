@@ -1,46 +1,51 @@
 import { useEffect, useState } from "react";
-import BlogWriter from "../../components/common/Blog/Blog-Writer";
+// import BlogWriter from "../../components/common/Blog/Blog-Writer";
 import { useSelector } from "react-redux";
-import type { RootState } from "../../store";
-import BlogCard from "../../components/common/Blog/BlogCard";
-import type { BlogPost } from "../../../shared/types/global";
-import { userService } from "../../../services/UserService";
-import { Button } from "../../components/ui/button";
+import type { RootState } from "../../../store";
+import BlogCard from "../../../components/common/Blog/BlogCard";
+import type { BlogPost } from "../../../../shared/types/global";
+import { userService } from "../../../../services/UserService";
+import { Button } from "../../../components/ui/button";
 import { PlusCircle } from "lucide-react";
 import toast from "react-hot-toast";
-import Pagination from "../../components/common/Pagination";
-import { useLocalStorage } from "../../hooks/useLocalStorage";
-import { HttpStatusCode, LOCAL_STORAGE_KEYS } from "../../../shared/constants/constants";
-import BlogRead from "../../components/common/Blog/Read-Blog";
+import Pagination from "../../../components/common/Pagination";
+// import { useLocalStorage } from "../../../hooks/useLocalStorage";
+import {
+  HttpStatusCode,
+  // LOCAL_STORAGE_KEYS,
+} from "../../../../shared/constants/constants";
+// import BlogRead from "../../../components/common/Blog/Read-Blog";
+import { useNavigate } from "react-router-dom";
 
 const Blogs = () => {
-  const [openModal, setOpenModal] = useState(false);
+  const navigate = useNavigate();
+  // const [openModal, setOpenModal] = useState(false);
   const user = useSelector((state: RootState) => state.auth.user);
   const [blogs, setBlogs] = useState<BlogPost[] | null>(null);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [triggerFetch, setTriggerFetch] = useState(true);
   const [blogsView, setBlogsView] = useState(true);
-  const [selectedBlog, setSelectedBlog] = useLocalStorage<BlogPost | null>(
-    LOCAL_STORAGE_KEYS.SELECTED_BLOG,
-    null
-  );
+  // const [selectedBlog, setSelectedBlog] = useLocalStorage<BlogPost | null>(
+  //   LOCAL_STORAGE_KEYS.SELECTED_BLOG,
+  //   null
+  // );
 
-  const handleSave = async (formData: FormData) => {
-    try {
-      const response = await userService.createBlog(formData);
-      if (response.status === HttpStatusCode.CREATED) {
-        console.log(response);
-        setOpenModal(false);
-        setTriggerFetch((prev) => !prev);
-      }
-    } catch (error) {
-      console.log(error);
-      if (error instanceof Error) {
-        toast.error(error.message);
-      }
-    }
-  };
+  // const handleSave = async (formData: FormData) => {
+  //   try {
+  //     const response = await userService.createBlog(formData);
+  //     if (response.status === HttpStatusCode.CREATED) {
+  //       console.log(response);
+  //       setOpenModal(false);
+  //       setTriggerFetch((prev) => !prev);
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //     if (error instanceof Error) {
+  //       toast.error(error.message);
+  //     }
+  //   }
+  // };
 
   const myBlogs = async () => {
     if (!user) return;
@@ -115,7 +120,8 @@ const Blogs = () => {
                   </Button>
                 )}
                 <Button
-                  onClick={() => setOpenModal(true)}
+                  // onClick={() => setOpenModal(true)}
+                  onClick={() => navigate(`/blog/write/${user._id}`)}
                   className="bg-orange-500 hover:bg-orange-600 text-white px-4 sm:px-6 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors w-full sm:w-auto"
                 >
                   <PlusCircle className="w-5 h-5" />
@@ -136,7 +142,7 @@ const Blogs = () => {
               <BlogCard
                 key={`${blog._id}-${index}`}
                 blog={blog}
-                onReadMore={() => setSelectedBlog(blog)}
+                onReadMore={(id) => navigate(`/blog/read/${id}`)}
               />
             ))}
           </div>
@@ -144,18 +150,18 @@ const Blogs = () => {
       </div>
 
       {/* Blog Writer Modal - Full Page Overlay */}
-      {openModal && (
+      {/* {openModal && (
         <div className="fixed inset-0 z-[999] bg-white overflow-auto">
           <BlogWriter
-            open={openModal}
-            userId={user?._id || ""}
-            submitData={handleSave}
+            // open={openModal}
+            // userId={user?._id || ""}
+            // submitData={handleSave}
             // onClose={() => setOpenModal(false)}
           />
         </div>
-      )}
+      )} */}
 
-      {selectedBlog && (
+      {/* {selectedBlog && (
         <div className="fixed inset-0 z-[999] bg-white overflow-auto">
           <BlogRead
             blogPost={selectedBlog}
@@ -165,7 +171,7 @@ const Blogs = () => {
             }}
           />
         </div>
-      )}
+      )} */}
 
       <Pagination
         page={page}

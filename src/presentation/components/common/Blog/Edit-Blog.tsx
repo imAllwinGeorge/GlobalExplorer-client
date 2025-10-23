@@ -6,7 +6,7 @@ import { Save, Plus, Trash2, Upload, ImageIcon, ArrowLeft } from "lucide-react";
 // import type { RootState } from "../../../store";
 import { Button } from "../../ui/button";
 import { Card, CardContent } from "../../../../components/ui/card";
-import Input from "../../Input";
+import Input from "../../ui/Input";
 import type { BlogPost, BlogSection } from "../../../../shared/types/global";
 import toast from "react-hot-toast";
 import { userService } from "../../../../services/UserService";
@@ -427,14 +427,14 @@ export default function BlogEdit({
                       <label className="text-sm font-medium mb-2 block">
                         Section Content
                       </label>
-                  
+
                       <div className="border-0 rounded-xl outline-[1px] bg-gray-50">
                         <SimpleEditor
-                        setNewPostRichText={(string) =>
-                          handleSectionChange(index, "content", string)
-                        }
-                        initialContent={section.content}
-                      />
+                          setNewPostRichText={(string) =>
+                            handleSectionChange(index, "content", string)
+                          }
+                          initialContent={section.content}
+                        />
                       </div>
                       {errors.sections?.[index].content && (
                         <span className="text-red-500">

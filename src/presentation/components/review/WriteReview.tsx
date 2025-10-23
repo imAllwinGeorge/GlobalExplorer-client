@@ -6,7 +6,7 @@ import { useState } from "react";
 import { Star, Send } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@radix-ui/react-dropdown-menu";
-import Input from "../Input";
+import Input from "../ui/Input";
 import { Button } from "../ui/button";
 import toast from "react-hot-toast";
 import type { ReviewDTO } from "@/shared/types/DTO";
@@ -118,7 +118,7 @@ export function WriteReview({
       if (response.status === 201) {
         resetForm();
         onReviewSubmitted?.(response.data.review as ReviewDTO);
-        toast.success("review posted successfully`")
+        toast.success("review posted successfully`");
       }
     } catch (error) {
       console.error("Error submitting review:", error);

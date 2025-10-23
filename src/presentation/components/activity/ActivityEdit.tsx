@@ -18,7 +18,7 @@ import {
   CardHeader,
   CardTitle,
 } from "../../../components/ui/card";
-import Input from "../Input";
+import Input from "../ui/Input";
 import { Textarea } from "../../../components/ui/textarea";
 import { Separator } from "../../../components/ui/separator";
 import { Switch } from "../../../components/ui/switch";

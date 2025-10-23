@@ -6,6 +6,7 @@ import ActivityEdit from "./ActivityEdit";
 import toast from "react-hot-toast";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
 import { HttpStatusCode, LOCAL_STORAGE_KEYS, ROLE } from "../../../shared/constants/constants";
+import { useEffect } from "react";
 
 type ActivityListProps = {
   activities: Activity[];
@@ -67,6 +68,7 @@ const AcitivityList = ({ activities, role, refetch }: ActivityListProps) => {
     try {
       const response = await hostService.editActivity(activity._id, data);
       if (response.status === HttpStatusCode.OK) {
+        console.log("edit activity: ", response)
         toast.success("Activity Edited successfully.");
         setEditActivity(null);
         refetch();
@@ -80,6 +82,11 @@ const AcitivityList = ({ activities, role, refetch }: ActivityListProps) => {
 
   // When either detail or edit is active, hide activity list
   const showOverlay = selectedActivity || editActivity;
+
+  useEffect(() => {
+    return () => 
+      localStorage.removeItem(LOCAL_STORAGE_KEYS.SELECTED_ACTIVITY)
+  }, [])
 
   return (
     <div className="container mx-auto px-4">

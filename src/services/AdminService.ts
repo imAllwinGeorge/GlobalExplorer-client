@@ -5,10 +5,10 @@ import type { AuthResponse, Host, User } from "../shared/types/global";
 import type { AxiosResponse } from "axios";
 
 export const adminService = {
-  getAllUsers: async <T extends User | Host>(page: number, limit: number, role: "user" | "host", query: string): Promise<{users:T[], totalPages: number}> => {
+  getAllUsers: async <T extends User | Host>(page: number, limit: number, role: "user" | "host", query: string, filter: string | boolean): Promise<{users:T[], totalPages: number}> => {
     try {
       const response = await axiosInstance.get<{ users: T[], totalPages: number }>(
-        `/admin/get-users/${role}?page=${page}&limit=${limit}&search=${query}`
+        `/admin/get-users/${role}?page=${page}&limit=${limit}&search=${query}&filter=${filter}`
       );
       if (response.status === HttpStatusCode.OK) {
         console.log(response);
@@ -97,9 +97,9 @@ export const adminService = {
     }
   },
 
-  getActivities: async (page = 1, limit = 3, query: string): Promise<AxiosResponse<AuthResponse>> => {
+  getActivities: async (page = 1, limit = 3, query: string, filter: string | boolean): Promise<AxiosResponse<AuthResponse>> => {
     try {
-      const response = await axiosInstance.get<AuthResponse>(`/admin/get-activities?page=${page}&limit=${limit}&search=${query}`,)
+      const response = await axiosInstance.get<AuthResponse>(`/admin/get-activities?page=${page}&limit=${limit}&search=${query}&filter=${filter}`,)
       return response
     } catch (error) {
       const message = (error as ErrorResponse).response?.data?.message ||

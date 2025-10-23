@@ -128,7 +128,7 @@ const contentVariants = {
             <div className="relative w-full h-[280px] sm:h-[320px] md:h-[280px] overflow-hidden rounded-t-2xl">
               <motion.div variants={imageVariants} className="w-full h-full relative">
                 <img
-                  src={`${import.meta.env.VITE_IMG_URL}${activity.images[0]}`}
+                  src={`${activity.images[0]}`}
                   alt={activity.activityName}
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />

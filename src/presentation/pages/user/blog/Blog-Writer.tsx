@@ -2,20 +2,18 @@
 import type React from "react";
 import { useState, useRef, useEffect } from "react";
 import { Plus, Upload, X, Save, Type, List } from "lucide-react";
-import { Button } from "../../ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "../../../../components/ui/card";
-import { Badge } from "../../../../components/ui/badge";
-import Input from "../../Input";
-import { SimpleEditor } from "../../../../components/tiptap-templates/simple/simple-editor";
-
-import { EditorContent, useEditor } from '@tiptap/react'
-import StarterKit from '@tiptap/starter-kit'
-import '@/styles/_style.scss'
+import { EditorContent, useEditor } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import "@/styles/_style.scss";
+import { userService } from "@/services/UserService";
+import { HttpStatusCode } from "@/shared/constants/constants";
+import { useNavigate, useParams } from "react-router-dom";
+import toast from "react-hot-toast";
+import { Button } from "@/presentation/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import Input from "@/presentation/components/ui/Input";
+import { SimpleEditor } from "@/components/tiptap-templates/simple/simple-editor";
 
 interface BlogSection {
   sectionTitle: string;
@@ -32,19 +30,11 @@ interface BlogDTO {
   image: File | string;
 }
 
-interface BlogWritterProps {
-  open: boolean;
-  userId: string;
-  submitData: (formData: FormData) => void;
-}
-
-export default function BlogWriter({
-  open,
-  userId,
-  submitData,
-}: BlogWritterProps) {
+export default function BlogWriter() {
+  const { userId } = useParams<{ userId: string }>();
+  const navigate = useNavigate();
   const [blogPost, setBlogPost] = useState<BlogDTO>({
-    userId: userId,
+    userId: userId as string,
     title: "",
     author: "",
     introduction: "",
@@ -69,17 +59,31 @@ export default function BlogWriter({
   // const [ richTextSample, setRichTextSample] = useState<null | string>(null);
   const editor = useEditor({
     shouldRerenderOnTransaction: false,
-    content:   ``,
+    content: ``,
     extensions: [StarterKit],
   });
 
+  const submitData = async (formData: FormData) => {
+    try {
+      const response = await userService.createBlog(formData);
+      if (response.status === HttpStatusCode.CREATED) {
+        console.log(response);
+        navigate(-1);
+      }
+    } catch (error) {
+      console.log(error);
+      if (error instanceof Error) {
+        toast.error(error.message);
+      }
+    }
+  };
+
   useEffect(() => {
     const allContent = `${blogPost.introduction || ""}
-    ${blogPost.sections.map((section) => section).join(" ") || ""}`
+    ${blogPost.sections.map((section) => section).join(" ") || ""}`;
     // editor.commands.setContent(blogPost.sections.map((section) => section.content))
-    editor.commands.setContent(allContent)
-  }, [blogPost, editor])
-
+    editor.commands.setContent(allContent);
+  }, [blogPost, editor]);
 
   const addNewSection = () => {
     const newSection: BlogSection = {
@@ -124,16 +128,16 @@ export default function BlogWriter({
     }
   };
 
-  useEffect(() => {
-    if (open) {
-      document.body.classList.add("overflow-hidden");
-    } else {
-      document.body.classList.remove("overflow-hidden");
-    }
-    return () => document.body.classList.remove("overflow-hidden");
-  }, [open]);
+  // useEffect(() => {
+  //   if (open) {
+  //     document.body.classList.add("overflow-hidden");
+  //   } else {
+  //     document.body.classList.remove("overflow-hidden");
+  //   }
+  //   return () => document.body.classList.remove("overflow-hidden");
+  // }, [open]);
 
-  if (!open) return null;
+  // if (!open) return null;
 
   const generateTableOfContents = () => {
     return blogPost.sections.filter(
@@ -449,14 +453,13 @@ export default function BlogWriter({
               /> */}
               <div className="border-0 rounded-xl outline-[1px] bg-secondary">
                 <SimpleEditor
-                setNewPostRichText={(string) =>
-                {
-                  setBlogPost((prev) => ({
-                    ...prev, introduction: string
-                  }))
-                }
-                }
-              />
+                  setNewPostRichText={(string) => {
+                    setBlogPost((prev) => ({
+                      ...prev,
+                      introduction: string,
+                    }));
+                  }}
+                />
               </div>
               {errors.introduction && (
                 <span className="text-red-500">{errors.introduction}</span>
@@ -590,9 +593,11 @@ export default function BlogWriter({
                     rows={6}
                   /> */}
                   <div className="border-0 rounded-xl outline-[1px] bg-secondary">
-                    <SimpleEditor setNewPostRichText={ (string) =>
-                    updateSection(index, "content", string)
-                  } />
+                    <SimpleEditor
+                      setNewPostRichText={(string) =>
+                        updateSection(index, "content", string)
+                      }
+                    />
                   </div>
                   {errors.sections?.[index]?.content && (
                     <span className="text-red-500">

@@ -7,12 +7,14 @@ import type { Host } from "../../../shared/types/global"
 import MyProfile from "../../components/common/MyProfile"
 import { HostService } from "../../../services/HostService"
 import { HttpStatusCode, ROLE } from "@/shared/constants/constants"
+import { useDispatch } from "react-redux"
+import { hostLogin } from "@/presentation/store/slices/hostSlice"
 
 const Profile = () => {
   const user = useSelector((state: RootState) => state.host.host)
   const [profile, setProfile] = useState< Host >()
-  const [triggerFetch, setTriggerFetch] = useState(false);
   const hostService = new HostService();
+    const dispatch = useDispatch()
 
 
   const editProfile = async (data: object) => {
@@ -21,7 +23,9 @@ const Profile = () => {
       const response = await hostService.editProfile(user._id, data);
       if(response.status === HttpStatusCode.OK) {
         toast.success("Profile edited successful")
-        setTriggerFetch(prev => !prev)
+        // setTriggerFetch(prev => !prev)
+        dispatch(hostLogin(response.data.user))
+
       }
     } catch (error) {
       console.log(error);
@@ -47,7 +51,7 @@ const Profile = () => {
       }
     }
     fetchProfile()
-  }, [user, triggerFetch])
+  }, [user])
   return (
     <div>
       {profile && <MyProfile role="host" initialData={profile} onEdit={editProfile} />}

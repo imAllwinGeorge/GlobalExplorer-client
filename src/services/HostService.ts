@@ -4,10 +4,10 @@ import type { ErrorResponse } from "../shared/types/auth.type";
 import type { AuthResponse } from "../shared/types/global";
 
 export class HostService {
-  async getActivities(id: string, page: number, limit: number, search: string): Promise<AxiosResponse<AuthResponse>> {
+  async getActivities(id: string, page: number, limit: number, search: string, filter: string | boolean): Promise<AxiosResponse<AuthResponse>> {
     try {
       const response = await axiosInstance.get<AuthResponse>(
-        `/host/get-activity/${id}?page=${page}&limit=${limit}&search=${search}`
+        `/host/get-activity/${id}?page=${page}&limit=${limit}&search=${search}&filter=${filter}`
       );
       return response;
     } catch (error) {
@@ -85,9 +85,9 @@ export class HostService {
     }
   }
 
-  async activityBookings(id: string, page: number, limit: number, search: string): Promise<AxiosResponse<AuthResponse>> {
+  async activityBookings(id: string, page: number, limit: number, search: string, filter: string | boolean): Promise<AxiosResponse<AuthResponse>> {
     try {
-      const response = await axiosInstance.get<AuthResponse>(`/host/get-bookings?id=${id}&page=${page}&limit=${limit}&search=${search}`);
+      const response = await axiosInstance.get<AuthResponse>(`/host/get-bookings?id=${id}&page=${page}&limit=${limit}&search=${search}&filter=${filter}`);
       return response;
     } catch (error) {
       const message = (error as ErrorResponse).response?.data?.message ||

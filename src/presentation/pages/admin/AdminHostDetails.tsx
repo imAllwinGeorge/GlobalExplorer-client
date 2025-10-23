@@ -39,7 +39,6 @@ export default function AdminHostDetails() {
   );
   const [isModalOpen, setIsModelOpen] = useState(false);
   const [isRejected, setIsRejected] = useState(false);
-  const [triggerFetch, setTriggerFetch] = useState(false);
   const { id, role } = useParams();
 
   // const [errors, setErrors] = useState<HostSignupFormErrors>({})
@@ -95,7 +94,7 @@ export default function AdminHostDetails() {
 
   const statusOptions = [
     { label: "Pending", value: "pending" },
-    { label: "Verified", value: "verify" },
+    { label: "Verified", value: "verified" },
     { label: "Rejected", value: "reject" },
   ];
 
@@ -122,7 +121,7 @@ export default function AdminHostDetails() {
       console.log("host verifiction response ", response);
       if (response.status === HttpStatusCode.OK) {
         toast.success("status updated!");
-        setTriggerFetch((prev) => !prev);
+        setData(response.data.user as Host)
       }
     } catch (error) {
       console.log(error);
@@ -156,7 +155,7 @@ export default function AdminHostDetails() {
       }
     };
     fetchUser(id as string, role as string);
-  }, [id, role, triggerFetch]);
+  }, [id, role]);
 
   const FileDisplay = ({
     file,

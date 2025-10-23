@@ -11,7 +11,7 @@ import StarterKit from "@tiptap/starter-kit"
 
 interface BlogCardProps {
   blog: BlogPost
-  onReadMore: (blog: BlogPost) => void
+  onReadMore: (id: string) => void
   className?: string
 }
 
@@ -84,7 +84,7 @@ export default function BlogCard({ blog, onReadMore, className = "" }: BlogCardP
                 src={`${import.meta.env.VITE_IMG_URL}${blog.image}` || "/placeholder.svg?height=300&width=500"}
                 alt={blog.title}
                 className="w-full h-68 sm:h-76 md:h-84 object-cover cursor-pointer"
-                onClick={() => onReadMore?.(blog)}
+                onClick={() => onReadMore?.(blog._id)}
               />
               {/* Overlay for better text readability */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
@@ -119,7 +119,7 @@ export default function BlogCard({ blog, onReadMore, className = "" }: BlogCardP
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
-              onClick={() => onReadMore?.(blog)}
+              onClick={() => onReadMore?.(blog._id)}
             >
               {blog.title}
             </motion.h3>
@@ -203,7 +203,7 @@ export default function BlogCard({ blog, onReadMore, className = "" }: BlogCardP
               className="mt-auto"
             >
               <Button
-                onClick={() => onReadMore?.(blog)}
+                onClick={() => onReadMore?.(blog._id)}
                 className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold px-4 sm:px-6 py-2 text-sm sm:text-base transition-colors duration-200"
               >
                 READ MORE

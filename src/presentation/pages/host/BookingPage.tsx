@@ -7,13 +7,18 @@ import { useSelector } from "react-redux";
 import type { RootState } from "../../store";
 import type { Booking } from "../../../shared/types/global";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
-import { HttpStatusCode, LOCAL_STORAGE_KEYS } from "../../../shared/constants/constants";
+import {
+  HttpStatusCode,
+  LOCAL_STORAGE_KEYS,
+  OPTIONS,
+} from "../../../shared/constants/constants";
 import { userService } from "../../../services/UserService";
 import ReusableTable from "../../components/sharedElements/SharedTable";
 import Pagination from "../../components/common/Pagination";
 import RejectionModal from "../../components/sharedElements/RejectionModal";
 import { hostService } from "../../../services/HostService";
 import SearchBox from "@/presentation/components/sharedElements/Search-box";
+import RadioGroup from "@/components/ui/RadioGroup";
 
 const columns = [
   "index",
@@ -45,14 +50,22 @@ const BookingPage = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>();
   const [searchQuery, setSearchQuery] = useState("");
-
+  const [selected, setSelected] = useState<string | boolean>(
+    OPTIONS.booking[0].value
+  );
   useEffect(() => {
     if (!user) return;
 
     const fetchBookingDetails = async () => {
       try {
         setLoading(true);
-        const response = await hostService.activityBookings(user?._id, page, 9, searchQuery);
+        const response = await hostService.activityBookings(
+          user?._id,
+          page,
+          9,
+          searchQuery,
+          selected
+        );
         if (response.status === HttpStatusCode.OK) {
           console.log(response, user._id);
           setData(response.data.bookings);
@@ -69,7 +82,7 @@ const BookingPage = () => {
     };
 
     fetchBookingDetails();
-  }, [user, page, searchQuery]);
+  }, [user, page, searchQuery, selected]);
 
   useEffect(() => {
     return () => {
@@ -128,7 +141,16 @@ const BookingPage = () => {
       className="min-h-screen bg-gray-50 p-4 md:p-6"
     >
       <div className="max-w-7xl mx-auto">
-        <SearchBox placeholder="Search for activities....." onSearch={(query) => setSearchQuery(query)} />
+        <SearchBox
+          placeholder="Search for activities....."
+          onSearch={(query) => setSearchQuery(query)}
+        />
+        <RadioGroup
+          name="bookings"
+          options={OPTIONS.booking}
+          onChange={setSelected}
+          value={selected}
+        />
         {data && (
           <>
             <ReusableTable

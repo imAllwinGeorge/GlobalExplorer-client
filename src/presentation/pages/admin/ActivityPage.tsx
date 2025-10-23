@@ -5,11 +5,22 @@ import type { Activity } from "../../../shared/types/global";
 import AcitivityList from "../../components/activity/AcitivityList";
 import Pagination from "../../components/common/Pagination";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
-import { HttpStatusCode, LOCAL_STORAGE_KEYS, ROLE } from "../../../shared/constants/constants";
+import {
+  HttpStatusCode,
+  LOCAL_STORAGE_KEYS,
+  ROLE,
+} from "../../../shared/constants/constants";
 import SearchBox from "@/presentation/components/sharedElements/Search-box";
+import RadioGroup from "@/components/ui/RadioGroup";
+
+const options = [
+  { label: "Active", value: true },
+  { label: "InActive", value: false },
+];
 
 const ActivityPage = () => {
   const [activities, setActivities] = useState<Activity[] | null>(null);
+  const [selected, setSelected] = useState<string | boolean>(options[0].value);
   const [triggerFetch, setTriggerFetch] = useState(false);
   const [page, setPage] = useLocalStorage(
     LOCAL_STORAGE_KEYS.ADMIN_ACTIVITY_PAGE,
@@ -21,8 +32,8 @@ const ActivityPage = () => {
   useEffect(() => {
     const fetchActivities = async () => {
       try {
-        const response = await adminService.getActivities(page, 6, searchQuery);
-        console.log(response)
+        const response = await adminService.getActivities(page, 6, searchQuery, selected);
+        console.log(response);
         if (response.status === HttpStatusCode.OK) {
           setActivities(response.data.activities as Activity[]);
           setTotalPages(response.data.totalPages as number);
@@ -35,7 +46,7 @@ const ActivityPage = () => {
       }
     };
     fetchActivities();
-  }, [page, triggerFetch, searchQuery]);
+  }, [page, triggerFetch, searchQuery, selected]);
 
   useEffect(() => {
     return () => {
@@ -44,7 +55,16 @@ const ActivityPage = () => {
   }, []);
   return (
     <div>
-      <SearchBox placeholder="Search for activities...." onSearch={(query) => setSearchQuery(query)} />
+      <SearchBox
+        placeholder="Search for activities...."
+        onSearch={(query) => setSearchQuery(query)}
+      />
+      <RadioGroup
+        name="activities"
+        value={selected}
+        options={options}
+        onChange={setSelected}
+      />
       {activities && (
         <AcitivityList
           activities={activities}

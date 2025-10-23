@@ -3,14 +3,15 @@ import AddActivity from "../../components/activity/AddActivity";
 import AcitivityList from "../../components/activity/AcitivityList";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../store";
-import { HostService } from "../../../services/HostService";
+import { hostService } from "../../../services/HostService";
 import type { Activity } from "../../../shared/types/global";
 import Pagination from "../../components/common/Pagination";
 import { Plus } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
-import { HttpStatusCode, LOCAL_STORAGE_KEYS, ROLE } from "../../../shared/constants/constants";
+import { HttpStatusCode, LOCAL_STORAGE_KEYS, OPTIONS, ROLE } from "../../../shared/constants/constants";
 import SearchBox from "@/presentation/components/sharedElements/Search-box";
+import RadioGroup from "@/components/ui/RadioGroup";
 
 const ActivityPage = () => {
   const [isOpenModal, setIsOpenModal] = useState(false);
@@ -20,16 +21,16 @@ const ActivityPage = () => {
     1
   );
   const [totalPages, setTotalPages] = useState(1);
+  const [selected, setSelected] = useState<string | boolean>(OPTIONS.host[0].value)
   const [triggerFetch, setTriggerFetch] = useState(true);
   const user = useSelector((state: RootState) => state.host.host);
   const [searchQuery, setSearchQuery] = useState("");
-  const hostService = new HostService();
 
   useEffect(() => {
     const fetchActivity = async () => {
       if (!user) return;
       try {
-        const response = await hostService.getActivities(user?._id, page, 6, searchQuery);
+        const response = await hostService.getActivities(user?._id, page, 6, searchQuery, selected);
         if (response.status === HttpStatusCode.OK) {
           console.log("fetched activities", response);
           setActivities(response.data.activities as Activity[]);
@@ -41,14 +42,13 @@ const ActivityPage = () => {
     };
     fetchActivity();
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, triggerFetch, searchQuery]);
-
-  useEffect(() => {
     return () => {
       localStorage.removeItem(LOCAL_STORAGE_KEYS.HOST_ACTIVITY_PAGE);
     };
-  }, []);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, triggerFetch, searchQuery, selected]);
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header Section */}
@@ -80,6 +80,7 @@ const ActivityPage = () => {
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8">
         <SearchBox placeholder="search for activities....." onSearch={(query) => setSearchQuery(query)} />
+          <RadioGroup name="activities" value={selected} options={OPTIONS.host} onChange={setSelected} />
         {/* Activity List */}
         {activities && (
           <div className="mb-8">

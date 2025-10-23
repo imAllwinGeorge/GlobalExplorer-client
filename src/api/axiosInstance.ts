@@ -47,7 +47,7 @@ axiosInstance.interceptors.response.use(
     // Handle other 401 errors (not token expired) and 403 errors
     else if (status === HttpStatusCode.FORBIDDEN || (status === HttpStatusCode.UNAUTHORIZED && message !== "Token Expired.")) {
       console.log("Handling 403 or other 401 errors - logging out");
-      handleRoleBasedLogout(window.location.pathname);
+      // handleRoleBasedLogout(window.location.pathname);
     }
 
     console.log("check the error");

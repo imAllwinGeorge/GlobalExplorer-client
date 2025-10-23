@@ -13,6 +13,7 @@ import ReusableTable from "../../components/sharedElements/SharedTable";
 import Pagination from "../../components/common/Pagination";
 import RejectionModal from "../../components/sharedElements/RejectionModal";
 
+
 const columns = [
   "index",
   "activityTitle",
@@ -130,13 +131,14 @@ const MyBookings = () => {
       className="min-h-screen bg-gray-50 p-4 md:p-6"
     >
       <div className="max-w-7xl mx-auto">
+        <h3 className="text-2xl font-bold text-amber-700 mb-6 pl-3">My Bookings</h3>
         {data && (
           <>
             <ReusableTable
               data={data}
               columns={columns}
               columnHeaders={columnHeaders}
-              title="My Bookings"
+              title=""
               renderCell={(col, row) => {
                 if (col === "index") return data.indexOf(row) + 1;
                 if (col === "date") {

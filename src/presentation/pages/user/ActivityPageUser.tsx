@@ -25,7 +25,7 @@ const ActivityPageUser = () => {
   useEffect(() => {
     const fetchActivities = async () => {
       try {
-        const response = await userService.getAllActivities(page, 9, searchQuery);
+        const response = await userService.getAllActivities(page, 6, searchQuery);
         if (response.status === HttpStatusCode.OK) {
           setActivities(response.data.activities as Activity[]);
           setTotalPages(response.data.totalPages as number);

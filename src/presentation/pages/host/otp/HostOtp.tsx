@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 import { AuthAPI } from "../../../../services/AuthAPI";
 import { useDispatch } from "react-redux";
 import { hostRegister } from "../../../store/slices/hostSlice";
-import Input from "../../../components/Input";
+import Input from "../../../components/ui/Input";
 import { HttpStatusCode } from "@/shared/constants/constants";
 
 const HostOtp = () => {
@@ -81,13 +81,13 @@ const HostOtp = () => {
     }
 
     try {
-      const response = await authAPI.verify(otp)
-      console.log("dispatch response: ",response);
-     
-      if(response.status === HttpStatusCode.CREATED){
+      const response = await authAPI.verify(otp);
+      console.log("dispatch response: ", response);
+
+      if (response.status === HttpStatusCode.CREATED) {
         dispatch(hostRegister(response.data.user));
-        console.log(response)
-        navigate("/host/home")
+        console.log(response);
+        navigate("/host/home");
       }
       // need to check at the time of forgot password.....................................
 
@@ -97,10 +97,10 @@ const HostOtp = () => {
       // }
     } catch (error) {
       console.error("verifyOtp error:", error);
-      if(error instanceof Error){
-        toast.error(error.message)
-      }else{
-        toast.error("unexpected error occured")
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("unexpected error occured");
       }
     }
   };

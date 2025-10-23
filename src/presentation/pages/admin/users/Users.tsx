@@ -6,21 +6,34 @@ import toast from "react-hot-toast";
 import Pagination from "../../../components/common/Pagination";
 import { HttpStatusCode, ROLE } from "@/shared/constants/constants";
 import SearchBox from "@/presentation/components/sharedElements/Search-box";
+import RadioGroup from "@/components/ui/radioGroup";
 // import { toast } from 'react-toastify';
+
+const options = [
+  { label: "Active Users", value: false },
+  { label: "Blocked Users", value: true },
+];
 
 const Users = () => {
   const [users, setUsers] = useState<User[] | Host[]>([]);
   const [isModalOpen, setIsModelOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | Host | null>(null);
-  const [triggerFetch, setTriggerFetch] = useState(false);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
 
+  const [selected, setSelected] = useState<string | boolean>(options[0].value);
+
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await adminService.getAllUsers<User>(page, 5, "user", searchQuery);
+        const response = await adminService.getAllUsers<User>(
+          page,
+          5,
+          "user",
+          searchQuery,
+          selected
+        );
         console.log("response fetchuserdata: ", response);
         if (response) {
           setUsers(response.users);
@@ -35,7 +48,7 @@ const Users = () => {
       }
     };
     fetchUserData();
-  }, [triggerFetch, page, searchQuery]);
+  }, [ page, searchQuery, selected]);
 
   const handleUserState = async () => {
     if (!selectedUser) return null;
@@ -49,8 +62,16 @@ const Users = () => {
         value,
         ROLE.USER
       );
+
       if (response.status === HttpStatusCode.OK) {
-        setTriggerFetch((state) => !state);
+        const updatedUsers = users.filter((user) => {
+          if (user._id !== (response.data.user as Host)._id) {
+            return user;
+          }
+        });
+        console.log(updatedUsers);
+        setUsers(updatedUsers as Host[]);
+        console.log(response);
         toast.dismiss(toastId);
         console.log("response changeing status", response);
         toast.success(response.data.message || "qwertyui");
@@ -64,7 +85,17 @@ const Users = () => {
     <div className="users-container bg-white text-gray-800 p-8 rounded-xl shadow-lg">
       <h1 className="text-2xl font-bold mb-6 text-yellow-700">User Details</h1>
 
-      <SearchBox placeholder="Search for users............." onSearch={(query) => setSearchQuery(query)}  />
+      <SearchBox
+        placeholder="Search for users............."
+        onSearch={(query) => setSearchQuery(query)}
+      />
+
+      <RadioGroup
+        name="status"
+        options={options}
+        value={selected}
+        onChange={setSelected}
+      />
 
       <div className="overflow-x-auto rounded-lg shadow border border-gray-200">
         <table className="min-w-full bg-white">

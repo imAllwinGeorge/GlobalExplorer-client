@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Input from "../../components/Input";
+import Input from "../../components/ui/Input";
 import { AuthAPI } from "../../../services/AuthAPI";
 import { useAppDispatch } from "../../hooks/useAppHooks";
 import { register } from "../../store/slices/authSlice";
@@ -87,14 +87,14 @@ const Otp = () => {
 
     try {
       const response = await dispatch(register(otp));
-      console.log("dispatch response: ",response);
-     
+      console.log("dispatch response: ", response);
+
       if (register.fulfilled.match(response)) {
         console.log("verify otp response", response);
-        localStorage.removeItem("otp_expiry")
-        navigate('/home')
-      }else{
-        toast.error(response.payload as string)
+        localStorage.removeItem("otp_expiry");
+        navigate("/home");
+      } else {
+        toast.error(response.payload as string);
       }
       // need to check at the time of forgot password.....................................
 
@@ -104,10 +104,10 @@ const Otp = () => {
       // }
     } catch (error) {
       console.error("verifyOtp error:", error);
-      if(error instanceof Error){
-        toast.error(error.message)
-      }else{
-        toast.error("unexpected error occured")
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("unexpected error occured");
       }
     }
   };

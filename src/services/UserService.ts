@@ -27,9 +27,9 @@ export class UserService {
     }
   };
 
-  async getAllActivities(page: number, limit: number, search: string): Promise<AxiosResponse<AuthResponse>> {
+  async getAllActivities(page: number, limit: number, search: string, filter = true): Promise<AxiosResponse<AuthResponse>> {
     try {
-      const response = await this.http.get<AuthResponse>(`/user/get-activities?page=${page}&limit=${limit}&search=${search}`)
+      const response = await this.http.get<AuthResponse>(`/user/get-activities?page=${page}&limit=${limit}&search=${search}&filter=${filter}`)
       return response
     } catch (error) {
       const message = (error as ErrorResponse).response?.data?.message ||
@@ -56,6 +56,18 @@ export class UserService {
     } catch (error) {
       const message = (error as ErrorResponse).response?.data?.message ||
       "something went wrong! Please try again"
+      throw new Error(message)
+    }
+  }
+
+  async getBlog(id: string): Promise<AxiosResponse<AuthResponse>> {
+    try {
+      console.log("fetch blog called")
+      const response = await axiosInstance.get<AuthResponse>(`/user/blog/get-blog/${id}`);
+      return response;
+    } catch (error) {
+      const message = (error as ErrorResponse).response?.data?.message ||
+      "something went wrong! please try again"
       throw new Error(message)
     }
   }
@@ -157,7 +169,7 @@ export class UserService {
 
   async editProfile(id: string, data: object): Promise<AxiosResponse<AuthResponse>> {
     try {
-      const response = await axiosInstance.post<AuthResponse>(`/user/update-profile/${id}`, data)
+      const response = await axiosInstance.put<AuthResponse>(`/user/update-profile/${id}`, data)
       return response
     } catch (error) {
       console.log(error)
@@ -253,6 +265,17 @@ export class UserService {
     } catch (error) {
       const message = (error as ErrorResponse).response?.data?.message ||
       " Something went wrong!. Please try again!."
+      throw new Error(message)
+    }
+  }
+
+  async getImages (): Promise<AxiosResponse<AuthResponse>> {
+    try {
+      const response = await axiosInstance.get<AuthResponse>("/user/get-images");
+      return response;
+    } catch (error) {
+      const message = (error as ErrorResponse).response?.data?.message ||
+      "Something went wrong!. Please try again!."
       throw new Error(message)
     }
   }
