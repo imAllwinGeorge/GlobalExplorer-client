@@ -19,7 +19,7 @@ export class AuthAPI {
   ): Promise<AxiosResponse<AuthResponse>> {
     try {
       const response = await axiosInstance.post<AuthResponse>(
-        "/send-otp",
+        "/api/send-otp",
         data
       );
 
@@ -35,7 +35,7 @@ export class AuthAPI {
 
   async verify(otp: string): Promise<AxiosResponse<AuthResponse>> {
     try {
-      const response = await axiosInstance.post<AuthResponse>("/register", {
+      const response = await axiosInstance.post<AuthResponse>("/api/register", {
         otp,
       });
       return response;
@@ -55,7 +55,7 @@ export class AuthAPI {
   ): Promise<AxiosResponse<AuthResponse>> {
     try {
       const response = await axiosInstance.post<AuthResponse>(
-        "/forgot-password",
+        "/api/forgot-password",
         { email, role }
       );
 
@@ -77,7 +77,7 @@ export class AuthAPI {
   ): Promise<AxiosResponse<AuthResponse>> {
     try {
       const response = await axiosInstance.patch<AuthResponse>(
-        `/reset-password/${role}/${id}/${token}`,
+        `/api/reset-password/${role}/${id}/${token}`,
         { password }
       );
       return response;
@@ -93,7 +93,7 @@ export class AuthAPI {
 
   async resendOtp(): Promise<AxiosResponse<unknown>> {
     try {
-      const response = await axiosInstance.post("/resend-otp");
+      const response = await axiosInstance.post("/api/resend-otp");
       return response;
     } catch (error) {
       const message =
@@ -120,7 +120,7 @@ export class AuthAPI {
 
   async verifyToken(): Promise<AxiosResponse<AuthResponse>> {
     try {
-      const response = await axiosInstance.post<AuthResponse>("/verify-token");
+      const response = await axiosInstance.post<AuthResponse>("/api/verify-token");
       // if (!response) throw new Error("something went wrong");
       return response;
     } catch (error) {
@@ -133,7 +133,7 @@ export class AuthAPI {
 
   async googleLogin(role: string) {
     try {
-      window.location.href = `${import.meta.env.VITE_API_BASE_URL}/auth/google?role=${role}`;
+      window.location.href = `${import.meta.env.VITE_API_BASE_URL}/api/auth/google?role=${role}`;
     } catch (error) {
       if (error) {
         throw new Error("something went wrong please try again");
@@ -144,7 +144,7 @@ export class AuthAPI {
   async logout(role: string) {
     try {
       const response = await axiosInstance.post<AuthResponse>(
-        `/logout/${role}`
+        `/api/logout/${role}`
       );
       if(response.status === HttpStatusCode.OK) {
         socketService.disconnect();
@@ -160,7 +160,7 @@ export class AuthAPI {
   }
   async getUserProfile(id: string, role: string): Promise<AxiosResponse<AuthResponse>> {
     try {
-      const response = await axiosInstance.get<AuthResponse>(`/get-profile?role=${role}&id=${id}`);
+      const response = await axiosInstance.get<AuthResponse>(`/api/get-profile?role=${role}&id=${id}`);
       return response
     } catch (error) {
       console.log(error)

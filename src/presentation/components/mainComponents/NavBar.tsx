@@ -332,11 +332,11 @@ const NavBar = ({ role }: NavBarPropsType) => {
                         strokeWidth={0}
                       />
                     </button>
-                    {notifications.filter((noti) => noti.isRead === false)
+                    {(notifications ?? []).filter((noti) => noti.isRead === false)
                       .length > 0 && (
                       <span className="absolute -top-2 -right-2 bg-blue-500 text-white text-[10px] rounded-full px-1.5 py-[1px] min-w-[18px] text-center">
                         {
-                          notifications.filter((noti) => noti.isRead === false)
+                          (notifications ?? []).filter((noti) => noti.isRead === false)
                             .length
                         }
                       </span>
@@ -386,11 +386,11 @@ const NavBar = ({ role }: NavBarPropsType) => {
                         strokeWidth={0}
                       />
                     </button>
-                    {notifications.filter((noti) => noti.isRead === false)
+                    {(notifications ?? []).filter((noti) => noti.isRead === false)
                       .length > 0 && (
                       <span className="absolute -top-2 -right-2 bg-blue-500 text-white text-[10px] rounded-full px-1.5 py-[1px] min-w-[18px] text-center">
                         {
-                          notifications.filter((noti) => noti.isRead === false)
+                          (notifications ?? []).filter((noti) => noti.isRead === false)
                             .length
                         }
                       </span>
