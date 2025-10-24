@@ -105,7 +105,7 @@ export class AuthAPI {
 
   async login(data: LoginDTO): Promise<AxiosResponse<AuthResponse>> {
     try {
-      const response = await axiosInstance.post<AuthResponse>("/login", {
+      const response = await axiosInstance.post<AuthResponse>("/api/login", {
         data,
       });
       return response;
