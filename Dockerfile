@@ -1,13 +1,34 @@
-FROM node:22
+# FROM node:22
+
+# WORKDIR /app
+
+# COPY package*.json .
+
+# RUN npm install
+
+# EXPOSE 5173
+
+# COPY . .
+
+# CMD ["npm", "run", "dev", "--", "--host"]
+
+
+FROM node:22-alpine AS build
 
 WORKDIR /app
 
-COPY package*.json .
+COPY package*.json ./
 
-RUN npm install
-
-EXPOSE 5173
+RUN npm ci
 
 COPY . .
 
-CMD ["npm", "run", "dev", "--", "--host"]
+RUN npm run build
+
+FROM nginx:alpine
+
+COPY --from=build /app/dist /usr/share/nginx/html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "deamon off;"]
