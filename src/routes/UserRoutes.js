@@ -1,0 +1,28 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { Route, Routes } from "react-router-dom";
+import HomePage from "../presentation/pages/user/homepage/HomePage";
+import Login from "../presentation/pages/user/Loginpage/Login";
+import SignUP from "../presentation/pages/user/signup/SignUP";
+import Otp from "../presentation/pages/otp/Otp";
+import ProtectedRoute from "../utils/protected/ProtectedRoute";
+import PublicRoute from "../utils/protected/PublicRoute";
+import VerifyEmail from "../presentation/pages/user/forgotpassword/VerifyEmail";
+import ResetPassword from "../presentation/pages/user/changePasswod/ResetPassword";
+import UserLayout from "../presentation/components/layouts/UserLayout";
+import LandingPage from "../presentation/pages/LandingPage/LandingPage";
+import ActivityPageUser from "../presentation/pages/user/ActivityPageUser";
+import Blogs from "../presentation/pages/user/blog/Blogs";
+import ActivityDetailsUser from "../presentation/pages/user/ActivityDetailsUser";
+import FilterPage from "../presentation/pages/user/Filter-page";
+import OrderSuccess from "../presentation/pages/user/OrderSuccess";
+import Profile from "../presentation/pages/user/Profile";
+import MyBookings from "../presentation/pages/user/MyBookings";
+import ChatPage from "../presentation/pages/user/Chat-Page";
+import BlogWriter from "../presentation/pages/user/blog/Blog-Writer";
+import BlogRead from "../presentation/pages/user/blog/Read-Blog";
+import VideoChat from "../presentation/pages/user/Video-Chat";
+import NotFoundPage from "../presentation/pages/common/NotFoundPage";
+const UserRoutes = () => {
+    return (_jsxs(Routes, { children: [_jsx(Route, { index: true, element: _jsx(LandingPage, {}) }), _jsx(Route, { path: "login", element: _jsx(PublicRoute, { element: _jsx(Login, {}) }) }), _jsx(Route, { path: "forgot-password/:role", element: _jsx(VerifyEmail, {}) }), _jsx(Route, { path: "reset-password/:role/:id/:token", element: _jsx(ResetPassword, {}) }), _jsx(Route, { path: "signup", element: _jsx(SignUP, {}) }), _jsx(Route, { path: "verify_otp", element: _jsx(Otp, {}) }), _jsxs(Route, { path: "/", element: _jsx(ProtectedRoute, { element: _jsx(UserLayout, {}), allowedRoles: ["user"] }), children: [_jsx(Route, { path: "home", element: _jsx(HomePage, {}) }), _jsx(Route, { path: "explorations", element: _jsx(ActivityPageUser, {}) }), _jsx(Route, { path: "blogs", element: _jsx(Blogs, {}) }), _jsx(Route, { path: "blog/write/:userId", element: _jsx(BlogWriter, {}) }), _jsx(Route, { path: "blog/read/:id", element: _jsx(BlogRead, {}) }), _jsx(Route, { path: "activity-details/:id", element: _jsx(ActivityDetailsUser, {}) }), _jsx(Route, { path: "filter", element: _jsx(FilterPage, {}) }), _jsx(Route, { path: "order-success/:orderId", element: _jsx(OrderSuccess, {}) }), _jsx(Route, { path: "profile", element: _jsx(Profile, {}) }), _jsx(Route, { path: "bookings", element: _jsx(MyBookings, {}) }), _jsx(Route, { path: "chat", element: _jsx(ChatPage, {}) }), _jsx(Route, { path: "video/:receiverId", element: _jsx(VideoChat, {}) })] }), _jsx(Route, { path: "*", element: _jsx(NotFoundPage, {}) })] }));
+};
+export default UserRoutes;

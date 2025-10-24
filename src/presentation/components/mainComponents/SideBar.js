@@ -1,0 +1,114 @@
+"use client";
+import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-runtime";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { X, Menu } from "lucide-react";
+import { SideBarItems } from "../../config/SideBarConfig";
+import { useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
+const SideBar = ({ role }) => {
+    const items = SideBarItems[role];
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+    const location = useLocation();
+    const pathname = location.pathname;
+    // Close sidebar on route change (mobile)
+    useEffect(() => {
+        setSidebarOpen(false);
+    }, [pathname]);
+    // Prevent body scroll when mobile sidebar is open
+    useEffect(() => {
+        if (sidebarOpen) {
+            document.body.style.overflow = "hidden";
+        }
+        else {
+            document.body.style.overflow = "unset";
+        }
+        return () => {
+            document.body.style.overflow = "unset";
+        };
+    }, [sidebarOpen]);
+    const sidebarVariants = {
+        open: {
+            x: 0,
+            transition: {
+                type: "spring",
+                stiffness: 300,
+                damping: 30,
+            },
+        },
+        closed: {
+            x: "-100%",
+            transition: {
+                type: "spring",
+                stiffness: 300,
+                damping: 30,
+            },
+        },
+    };
+    const overlayVariants = {
+        open: {
+            opacity: 1,
+            transition: { duration: 0.3 },
+        },
+        closed: {
+            opacity: 0,
+            transition: { duration: 0.3 },
+        },
+    };
+    const itemVariants = {
+        open: {
+            opacity: 1,
+            y: 0,
+            transition: {
+                type: "spring",
+                stiffness: 300,
+                damping: 24,
+            },
+        },
+        closed: {
+            opacity: 0,
+            y: 20,
+            transition: {
+                duration: 0.2,
+            },
+        },
+    };
+    const containerVariants = {
+        open: {
+            transition: {
+                staggerChildren: 0.07,
+                delayChildren: 0.2,
+            },
+        },
+        closed: {
+            transition: {
+                staggerChildren: 0.05,
+                staggerDirection: -1,
+            },
+        },
+    };
+    return (_jsxs(_Fragment, { children: [_jsxs("aside", { className: "fixed left-0 top-0 z-30 lg:hidden w-20 bg-white/95 backdrop-blur-xl border-r border-gray-200/50 min-h-screen flex flex-col items-center py-4", children: [_jsx(motion.button, { onClick: () => setSidebarOpen(!sidebarOpen), className: "p-3 bg-gradient-to-r from-amber-400 to-orange-500 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-200 mb-6", whileHover: { scale: 1.05 }, whileTap: { scale: 0.95 }, children: _jsx(motion.div, { animate: { rotate: sidebarOpen ? 180 : 0 }, transition: { duration: 0.3 }, children: sidebarOpen ? _jsx(X, { className: "w-5 h-5 text-white" }) : _jsx(Menu, { className: "w-5 h-5 text-white" }) }) }), _jsx(motion.nav, { className: "space-y-3 flex-1", initial: { opacity: 0 }, animate: { opacity: 1 }, transition: { duration: 0.6 }, children: items.map((item, index) => {
+                            const Icon = item.icon;
+                            const isActive = pathname === item.path;
+                            return (_jsx(motion.div, { initial: { opacity: 0, x: -20 }, animate: { opacity: 1, x: 0 }, transition: { duration: 0.4, delay: index * 0.1 }, children: _jsxs(Link, { to: item.path, className: `group flex items-center justify-center p-3 rounded-xl transition-all duration-200 relative ${isActive
+                                        ? "bg-gradient-to-r from-amber-400 to-orange-500 text-white shadow-lg shadow-amber-500/25"
+                                        : "hover:bg-gray-50 text-gray-700 hover:text-gray-900"}`, title: item.title, children: [_jsx(Icon, { className: `w-5 h-5 transition-transform duration-200 ${isActive ? "text-white" : "text-gray-500 group-hover:text-gray-700"} group-hover:scale-110` }), isActive && (_jsx(motion.div, { className: "absolute right-0 w-1 h-6 bg-gradient-to-r from-amber-400 to-orange-500 rounded-l-full", layoutId: "mobileActiveIndicator" }))] }) }, index));
+                        }) })] }), _jsx(AnimatePresence, { children: sidebarOpen && (_jsxs(motion.div, { className: "fixed inset-0 z-40 lg:hidden", variants: overlayVariants, initial: "closed", animate: "open", exit: "closed", children: [_jsx(motion.div, { className: "absolute inset-0 bg-black/50 backdrop-blur-sm", onClick: () => setSidebarOpen(false) }), _jsx(motion.aside, { className: "relative w-80 max-w-[85vw] bg-white/95 backdrop-blur-xl border-r border-gray-200/50 h-full shadow-2xl ml-20", variants: sidebarVariants, initial: "closed", animate: "open", exit: "closed", children: _jsxs("div", { className: "p-6 pt-20", children: [_jsxs(motion.div, { className: "mb-6", initial: { opacity: 0, y: -20 }, animate: { opacity: 1, y: 0 }, transition: { delay: 0.3 }, children: [_jsxs("h2", { className: "text-xl font-bold text-gray-800 capitalize", children: [role, " Dashboard"] }), _jsx("div", { className: "w-12 h-1 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full mt-2" })] }), _jsx(motion.nav, { className: "space-y-2", variants: containerVariants, initial: "closed", animate: "open", children: items.map((item, index) => {
+                                            const Icon = item.icon;
+                                            const isActive = pathname === item.path;
+                                            return (_jsx(motion.div, { variants: itemVariants, children: _jsxs(Link, { to: item.path, className: `group flex items-center gap-3 p-4 rounded-xl transition-all duration-200 ${isActive
+                                                        ? "bg-gradient-to-r from-amber-400 to-orange-500 text-white shadow-lg shadow-amber-500/25"
+                                                        : "hover:bg-gray-50 text-gray-700 hover:text-gray-900"}`, children: [_jsx(Icon, { className: `w-5 h-5 transition-transform duration-200 ${isActive ? "text-white" : "text-gray-500 group-hover:text-gray-700"} group-hover:scale-110` }), _jsx("span", { className: "font-medium", children: item.title }), isActive && (_jsx(motion.div, { className: "ml-auto w-2 h-2 bg-white rounded-full", layoutId: "activeIndicator" }))] }) }, index));
+                                        }) })] }) })] })) }), _jsx("aside", { className: "hidden lg:flex w-80 bg-white/80 backdrop-blur-xl border-r border-gray-200/50 min-h-screen sticky top-0", children: _jsxs("div", { className: "flex flex-col w-full p-6", children: [_jsxs(motion.div, { className: "mb-8", initial: { opacity: 0, y: -20 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.6 }, children: [_jsxs("h2", { className: "text-2xl font-bold text-gray-800 capitalize", children: [role, " Dashboard"] }), _jsx("div", { className: "w-16 h-1 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full mt-3" })] }), _jsx(motion.nav, { className: "space-y-3 flex-1", initial: { opacity: 0 }, animate: { opacity: 1 }, transition: { duration: 0.6, delay: 0.2 }, children: items.map((item, index) => {
+                                const Icon = item.icon;
+                                const isActive = pathname === item.path;
+                                return (_jsx(motion.div, { initial: { opacity: 0, x: -20 }, animate: { opacity: 1, x: 0 }, transition: { duration: 0.4, delay: index * 0.1 }, children: _jsxs(Link, { to: item.path, className: `group flex items-center gap-4 p-4 rounded-xl transition-all duration-300 relative overflow-hidden ${isActive
+                                            ? "bg-gradient-to-r from-amber-400 to-orange-500 text-white shadow-lg shadow-amber-500/25 transform scale-[1.02]"
+                                            : "hover:bg-gray-50 text-gray-700 hover:text-gray-900 hover:shadow-md"}`, children: [!isActive && (_jsx(motion.div, { className: "absolute inset-0 bg-gradient-to-r from-amber-50 to-orange-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300", layoutId: `hover-${index}` })), _jsx(Icon, { className: `w-6 h-6 transition-all duration-300 relative z-10 ${isActive ? "text-white" : "text-gray-500 group-hover:text-amber-600"} group-hover:scale-110` }), _jsx("span", { className: "font-semibold relative z-10 group-hover:translate-x-1 transition-transform duration-300", children: item.title }), isActive && (_jsx(motion.div, { className: "ml-auto w-3 h-3 bg-white rounded-full relative z-10", layoutId: "desktopActiveIndicator", initial: { scale: 0 }, animate: { scale: 1 }, transition: {
+                                                    type: "spring",
+                                                    stiffness: 500,
+                                                    damping: 30,
+                                                } })), _jsx(motion.div, { className: "absolute inset-0 bg-white/20 rounded-xl opacity-0", whileTap: { opacity: [0, 1, 0], scale: [1, 1.05, 1] }, transition: { duration: 0.3 } })] }) }, index));
+                            }) }), _jsx(motion.div, { className: "mt-8 pt-6 border-t border-gray-200", initial: { opacity: 0, y: 20 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.6, delay: 0.8 }, children: _jsxs("div", { className: "text-sm text-gray-500 text-center", children: [_jsxs("p", { className: "font-medium capitalize", children: [role, " Panel"] }), _jsx("p", { className: "text-xs mt-1", children: "v2.0.1" })] }) })] }) })] }));
+};
+export default SideBar;

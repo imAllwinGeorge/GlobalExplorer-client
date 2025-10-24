@@ -1,0 +1,11 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import './index.css';
+import { BrowserRouter } from 'react-router-dom';
+import App from './presentation/App';
+import { Provider } from 'react-redux';
+import { persistor, store } from './presentation/store';
+import { PersistGate } from 'redux-persist/integration/react';
+import { Toaster } from 'react-hot-toast';
+createRoot(document.getElementById('root')).render(_jsx(StrictMode, { children: _jsx(BrowserRouter, { children: _jsx(Provider, { store: store, children: _jsxs(PersistGate, { loading: null, persistor: persistor, children: [_jsx(App, {}), _jsx(Toaster, {})] }) }) }) }));

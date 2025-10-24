@@ -1,0 +1,4 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+export default function NotFoundPage() {
+    return (_jsx("main", { className: "min-h-screen grid place-items-center", children: _jsxs("section", { className: "px-6 py-16 text-center", children: [_jsx("p", { className: "text-muted-foreground text-xs md:text-sm uppercase tracking-[0.2em]", children: "Oops! Page not found" }), _jsxs("h1", { "aria-label": "404 \u2014 Page not found", className: "mt-3 font-black leading-none tracking-tight text-6xl sm:text-7xl md:text-8xl lg:text-9xl text-foreground", children: ["404", _jsx("span", { className: "sr-only", children: "Error" })] }), _jsx("p", { className: "mt-3 text-muted-foreground text-xs md:text-sm uppercase tracking-wide text-pretty", children: "We are sorry but the page you requested was not found" })] }) }));
+}
