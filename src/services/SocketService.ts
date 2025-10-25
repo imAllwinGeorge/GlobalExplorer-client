@@ -3,9 +3,9 @@ import { io, type Socket } from "socket.io-client";
 class SocketService {
 
     private socket: Socket | null = null;
-
     async connect(role: string): Promise<void> {
         if(!this.socket) {
+            console.log(import.meta.env.VITE_BASE_URL);
             this.socket = io(`${import.meta.env.VITE_BASE_URL}`, {
                 withCredentials: true,
                 query: {role}

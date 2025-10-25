@@ -201,7 +201,7 @@ export default function ActivityDetailsUser() {
     console.log("razorpay data: ", razorpayData);
     try {
       const res = await axiosInstance.post(
-        "/user/activity/booking",
+        "/api/user/activity/booking",
         razorpayData
       );
       const data = res.data as RazorpayResponse;
@@ -216,7 +216,7 @@ export default function ActivityDetailsUser() {
           console.log("handler response:   ", response);
           try {
             const verifyRes: ResponseType<AuthResponse> =
-              await axiosInstance.post("/user/payment/verify", {
+              await axiosInstance.post("/api/user/payment/verify", {
                 ...response,
                 ...data,
                 ...razorpayData,
