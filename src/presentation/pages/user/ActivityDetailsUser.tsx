@@ -88,6 +88,8 @@ export default function ActivityDetailsUser() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
+  const razorpay_api_keyId= import.meta.env.VITE_RAZORPAY_KEY_ID
+
   const formatDate = (date: Date | string | null | undefined) => {
     const parsedDate = typeof date === "string" ? new Date(date) : date;
     if (!parsedDate || isNaN(parsedDate.getTime())) {
@@ -205,9 +207,9 @@ export default function ActivityDetailsUser() {
         razorpayData
       );
       const data = res.data as RazorpayResponse;
-      console.log("razorpay response  : ", import.meta.env.VITE_RAZORPAY_KEY_ID);
+      console.log("razorpay response  : ", razorpay_api_keyId);
       const options: RazorpayOptions = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+        key: razorpay_api_keyId,
         amount: data.amount,
         currency: data.currency,
         name: activity.activityName,
