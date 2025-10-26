@@ -81,7 +81,7 @@ export default function BlogCard({ blog, onReadMore, className = "" }: BlogCardP
           <div className="relative overflow-hidden">
             <motion.div variants={imageVariants} className="relative">
               <img
-                src={`${import.meta.env.VITE_IMG_URL}${blog.image}` || "/placeholder.svg?height=300&width=500"}
+                src={`${blog.image}` || "/placeholder.svg?height=300&width=500"}
                 alt={blog.title}
                 className="w-full h-68 sm:h-76 md:h-84 object-cover cursor-pointer"
                 onClick={() => onReadMore?.(blog._id)}

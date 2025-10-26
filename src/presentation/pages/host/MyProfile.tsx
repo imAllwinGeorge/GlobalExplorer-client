@@ -175,7 +175,7 @@ export default function MyProfile({ initialData }: HostDetailsDisplayProps) {
               //     {file.name} ({formatFileSize(file.size)})
               //   </p>
               <img
-                src={`${import.meta.env.VITE_IMG_URL}${file}`}
+                src={`${file}`}
                 alt={label}
                 className="w-32 h-32 object-cover border roounded-md"
               />

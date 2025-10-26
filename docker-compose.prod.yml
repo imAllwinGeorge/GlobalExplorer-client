@@ -1,0 +1,46 @@
+version: "3.8"
+
+services:
+  backend:
+    image: alwngorg/backend:latest
+    container_name: backend
+    env_file:
+      - ./backend/.env.prod
+    depends_on:
+      - redis
+    networks:
+      - globalexplorer-network
+    restart: always
+    ports:
+      - "3000:3000"
+
+  frontend:
+    image: alwngorg/frontend:latest
+    container_name: frontend
+    env_file:
+      - ./frontend/.env.prod
+    depends_on:
+      - backend
+    networks:
+      - globalexplorer-network
+    restart: always
+    ports:
+      - "80:80"
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    volumes:
+      - redis_data:/data
+    networks:
+      - globalexplorer-network
+    restart: always
+    ports:
+      - "6379:6379"
+
+networks:
+  globalexplorer-network:
+    driver: bridge
+
+volumes:
+  redis_data:

@@ -134,7 +134,7 @@ export default function BlogRead() {
                 {blogPost.image && (
                   <div className="mb-4">
                     <img
-                      src={`${import.meta.env.VITE_IMG_URL}${blogPost.image}`}
+                      src={`${blogPost.image}`}
                       alt={blogPost.title}
                       className="w-full max-w-2xl mx-auto rounded-lg shadow-md"
                     />
@@ -157,7 +157,7 @@ export default function BlogRead() {
                   {section.image && (
                     <div className="mb-4">
                       <img
-                        src={`${import.meta.env.VITE_IMG_URL}${section.image}`}
+                        src={`${section.image}`}
                         alt={section.sectionTitle}
                         className="w-full max-w-2xl mx-auto rounded-lg shadow-md"
                       />

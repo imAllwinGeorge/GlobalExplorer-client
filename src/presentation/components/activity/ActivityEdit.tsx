@@ -661,7 +661,7 @@ export default function ActivityEdit({
                               className="h-full p-5"
                             >
                               <img
-                                src={`${import.meta.env.VITE_IMG_URL}${image}`}
+                                src={`${image}`}
                                 alt={image as string}
                                 width={400}
                                 height={300}

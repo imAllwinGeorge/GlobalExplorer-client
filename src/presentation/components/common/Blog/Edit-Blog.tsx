@@ -121,7 +121,7 @@ export default function BlogEdit({
     }
 
     if (originalImage) {
-      return `${import.meta.env.VITE_IMG_URL}${originalImage}`;
+      return `${originalImage}`;
     }
   };
 
@@ -133,7 +133,7 @@ export default function BlogEdit({
     }
 
     if (originalImage) {
-      return `${import.meta.env.VITE_IMG_URL}${originalImage}`;
+      return `${originalImage}`;
     }
 
     return "/placeholder.svg?height=200&width=400&text=No Image";

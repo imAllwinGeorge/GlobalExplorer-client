@@ -197,7 +197,7 @@ export default function ActivityDetails({
                           className="relative aspect-video rounded-lg overflow-hidden"
                         >
                           <img
-                            src={`${import.meta.env.VITE_IMG_URL}${image}`}
+                            src={`${image}`}
                             alt={`${activity.activityName} - Image ${
                               index + 1
                             }`}

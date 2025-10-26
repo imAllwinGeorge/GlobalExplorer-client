@@ -120,7 +120,7 @@ function ImageUploadField({
   };
 
   const displayImageSrc =
-    filePreviewUrl || `${import.meta.env.VITE_IMG_URL}${currentImageUrl}`;
+    filePreviewUrl || `${currentImageUrl}`;
 
   return (
     <motion.div className="space-y-2" variants={fieldVariants}>
