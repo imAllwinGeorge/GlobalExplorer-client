@@ -205,7 +205,7 @@ export default function ActivityDetailsUser() {
         razorpayData
       );
       const data = res.data as RazorpayResponse;
-      console.log("razorpay response  : ", res);
+      console.log("razorpay response  : ", res+ import.meta.env.VITE_RAZORPAY_KEY_ID);
       const options: RazorpayOptions = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
         amount: data.amount,

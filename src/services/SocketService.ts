@@ -6,7 +6,7 @@ class SocketService {
     async connect(role: string): Promise<void> {
         if(!this.socket) {
             console.log(import.meta.env.VITE_BASE_URL);
-            this.socket = io(`${import.meta.env.VITE_BASE_URL}`, {
+            this.socket = io(`${import.meta.env.VITE_BASE_URL}/socket`, {
                 withCredentials: true,
                 query: {role}
             });
