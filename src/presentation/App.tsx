@@ -81,8 +81,8 @@ const App = () => {
   useEffect(() => {
     let mounted = true;
     const connectSocket = async () => {
-      console.log("socker server connect called.....")
       if (isAuthenticated) {
+        console.log("socker server connect called.....")
         await socketService.connect(isAuthenticated.role);
         if (!mounted) return;
         setSocket(socketService.instance);

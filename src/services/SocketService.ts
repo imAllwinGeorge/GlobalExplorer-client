@@ -4,6 +4,7 @@ class SocketService {
 
     private socket: Socket | null = null;
     async connect(role: string): Promise<void> {
+        console.log("socket service connect function");
         if(!this.socket) {
             console.log(import.meta.env.VITE_BASE_URL);
             this.socket = io(`${import.meta.env.VITE_BASE_URL}/socket`, {
