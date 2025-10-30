@@ -7,7 +7,7 @@ class SocketService {
         console.log("socket service connect function");
         if(!this.socket) {
             console.log(import.meta.env.VITE_BASE_URL);
-            this.socket = io(`https://backend.purplestone-bcfbbc54.centralindia.azurecontainerapps.io/socket`, {
+            this.socket = io(`https://backend.purplestone-bcfbbc54.centralindia.azurecontainerapps.io`, {
                 withCredentials: true,
                 query: {role}
             });
