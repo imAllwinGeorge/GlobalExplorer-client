@@ -1,11 +1,8 @@
 FROM node:22-alpine AS build
 
 WORKDIR /app
-
 COPY package*.json ./
-
 RUN npm ci
-
 COPY . .
 
 ARG VITE_API_BASE_URL
@@ -24,12 +21,11 @@ ENV VITE_GET_GEOLOCATION=$VITE_GET_GEOLOCATION
 
 RUN npm run build
 
+# Production image
 FROM nginx:alpine
 
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-
+COPY nginx/default.conf.template /etc/nginx/templates/default.conf.template
 COPY --from=build /app/dist /usr/share/nginx/html
 
 EXPOSE 80
-
 CMD ["nginx", "-g", "daemon off;"]
