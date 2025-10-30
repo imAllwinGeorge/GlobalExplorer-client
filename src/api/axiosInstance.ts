@@ -4,7 +4,7 @@ import { HttpStatusCode } from "../shared/constants/constants";
 const baseUrl = import.meta.env.VITE_API_BASE_URL;
 console.log(baseUrl);
 export const axiosInstance = axios.create({
-  baseURL: baseUrl,
+  baseURL: "https://backend.purplestone-bcfbbc54.centralindia.azurecontainerapps.io",
   withCredentials: true,
 });
 

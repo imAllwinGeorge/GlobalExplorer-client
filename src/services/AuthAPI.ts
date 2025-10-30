@@ -105,6 +105,7 @@ export class AuthAPI {
 
   async login(data: LoginDTO): Promise<AxiosResponse<AuthResponse>> {
     try {
+      console.log(import.meta.env.VITE_API_BASE_URL)
       const response = await axiosInstance.post<AuthResponse>("/api/login", {
         data,
       });
