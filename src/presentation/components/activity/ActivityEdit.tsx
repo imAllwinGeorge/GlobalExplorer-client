@@ -35,6 +35,7 @@ interface ActivityEditProps {
   onSave?: (activity: Activity, images: File[]) => void;
   onCancel?: () => void;
   isLoading?: boolean;
+  onEditSuccess: (activity: Activity) => void
 }
 
 interface Props {
@@ -259,6 +260,7 @@ export default function ActivityEdit({
         toast.success(response.data.message || "status changed successfull");
         setStatusChange(selectedActivity.status);
         setFormData((prev) => ({ ...prev, isActive: selectedActivity.status }));
+        onEditSuccess(response.data.activty)
       }
     } catch (error) {
       if (error instanceof Error) {

@@ -6,7 +6,7 @@ import ActivityEdit from "./ActivityEdit";
 import toast from "react-hot-toast";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
 import { HttpStatusCode, LOCAL_STORAGE_KEYS, ROLE } from "../../../shared/constants/constants";
-import { useEffect } from "react";
+import { useState,useEffect } from "react";
 
 type ActivityListProps = {
   activities: Activity[];
@@ -15,6 +15,7 @@ type ActivityListProps = {
 };
 
 const AcitivityList = ({ activities, role, refetch }: ActivityListProps) => {
+  const [ListedActivities, setListedActivities] = useState(activities)
   const [selectedActivity, setSelectedActivity] =
     useLocalStorage<Activity | null>(
       LOCAL_STORAGE_KEYS.SELECTED_ACTIVITY,
@@ -96,7 +97,7 @@ const AcitivityList = ({ activities, role, refetch }: ActivityListProps) => {
             Activities
           </h1>
           <div className="space-y-6">
-            {activities?.map((activity) => (
+            {ListedActivities?.map((activity) => (
               <ActivityCard
                 key={activity._id}
                 activity={activity}
@@ -131,6 +132,10 @@ const AcitivityList = ({ activities, role, refetch }: ActivityListProps) => {
             activity={editActivity}
             onSave={updateActivity}
             onCancel={() => setEditActivity(null)}
+            onEditSuccess={ (activity) => {
+              const activities = ListedActivities.map((item) => item._id === activity._id ? activity: item)
+              setListedActivities(activities);
+            }}
           />
         </div>
       )}

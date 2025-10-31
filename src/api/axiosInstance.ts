@@ -34,7 +34,7 @@ axiosInstance.interceptors.response.use(
           // Split by "/" and get the second element
           const role = pathname.split("/")[1];
 
-          await axiosInstance.post("/auth/refresh-token", { role });
+          await axiosInstance.post("/api/auth/refresh-token", { role });
           console.log("retrying");
           return axiosInstance(originalRequest);
         } catch (retryError) {
