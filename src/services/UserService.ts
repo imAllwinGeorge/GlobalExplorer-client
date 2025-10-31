@@ -269,9 +269,9 @@ export class UserService {
     }
   }
 
-  async getImages (): Promise<AxiosResponse<AuthResponse>> {
+  async getHomeData (page: number, limit: number): Promise<AxiosResponse<AuthResponse>> {
     try {
-      const response = await axiosInstance.get<AuthResponse>("/api/user/get-images");
+      const response = await axiosInstance.get<AuthResponse>(`/api/user/get-homeData?page-${page}&limit=${limit}`);
       return response;
     } catch (error) {
       const message = (error as ErrorResponse).response?.data?.message ||

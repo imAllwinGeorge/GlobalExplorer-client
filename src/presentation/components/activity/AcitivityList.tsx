@@ -5,8 +5,12 @@ import ActivityDetails from "./ActvityDetails";
 import ActivityEdit from "./ActivityEdit";
 import toast from "react-hot-toast";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
-import { HttpStatusCode, LOCAL_STORAGE_KEYS, ROLE } from "../../../shared/constants/constants";
-import { useState,useEffect } from "react";
+import {
+  HttpStatusCode,
+  LOCAL_STORAGE_KEYS,
+  ROLE,
+} from "../../../shared/constants/constants";
+import { useState, useEffect } from "react";
 
 type ActivityListProps = {
   activities: Activity[];
@@ -15,7 +19,7 @@ type ActivityListProps = {
 };
 
 const AcitivityList = ({ activities, role, refetch }: ActivityListProps) => {
-  const [ListedActivities, setListedActivities] = useState(activities)
+  const [ListedActivities, setListedActivities] = useState(activities);
   const [selectedActivity, setSelectedActivity] =
     useLocalStorage<Activity | null>(
       LOCAL_STORAGE_KEYS.SELECTED_ACTIVITY,
@@ -69,7 +73,7 @@ const AcitivityList = ({ activities, role, refetch }: ActivityListProps) => {
     try {
       const response = await hostService.editActivity(activity._id, data);
       if (response.status === HttpStatusCode.OK) {
-        console.log("edit activity: ", response)
+        console.log("edit activity: ", response);
         toast.success("Activity Edited successfully.");
         setEditActivity(null);
         refetch();
@@ -85,9 +89,8 @@ const AcitivityList = ({ activities, role, refetch }: ActivityListProps) => {
   const showOverlay = selectedActivity || editActivity;
 
   useEffect(() => {
-    return () => 
-      localStorage.removeItem(LOCAL_STORAGE_KEYS.SELECTED_ACTIVITY)
-  }, [])
+    return () => localStorage.removeItem(LOCAL_STORAGE_KEYS.SELECTED_ACTIVITY);
+  }, []);
 
   return (
     <div className="container mx-auto px-4">
@@ -132,9 +135,12 @@ const AcitivityList = ({ activities, role, refetch }: ActivityListProps) => {
             activity={editActivity}
             onSave={updateActivity}
             onCancel={() => setEditActivity(null)}
-            onEditSuccess={ (activity) => {
-              const activities = ListedActivities.map((item) => item._id === activity._id ? activity: item)
-              setListedActivities(activities);
+            onEditSuccess={(activity) => {
+              setListedActivities((prev) =>
+                prev.map((item) =>
+                  item._id === activity._id ? activity : item
+                )
+              );
             }}
           />
         </div>

@@ -130,6 +130,7 @@ export default function ActivityEdit({
   onSave,
   onCancel,
   isLoading = false,
+  onEditSuccess,
 }: ActivityEditProps) {
   console.log(activity);
   const [formData, setFormData] = useState<Activity>({
@@ -260,7 +261,7 @@ export default function ActivityEdit({
         toast.success(response.data.message || "status changed successfull");
         setStatusChange(selectedActivity.status);
         setFormData((prev) => ({ ...prev, isActive: selectedActivity.status }));
-        onEditSuccess(response.data.activty)
+        onEditSuccess(response.data.activity as Activity)
       }
     } catch (error) {
       if (error instanceof Error) {

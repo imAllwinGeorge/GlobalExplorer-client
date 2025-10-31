@@ -21,6 +21,7 @@ import BlogWriter from "../presentation/pages/user/blog/Blog-Writer";
 import BlogRead from "../presentation/pages/user/blog/Read-Blog";
 import VideoChat from "../presentation/pages/user/Video-Chat";
 import NotFoundPage from "../presentation/pages/common/NotFoundPage";
+import AboutPage from "@/presentation/pages/user/AboutPage";
 
 
 const UserRoutes = () => {
@@ -53,6 +54,7 @@ const UserRoutes = () => {
         <Route path="bookings" element={<MyBookings />} />
         <Route path="chat" element={<ChatPage />} />
         <Route path="video/:receiverId" element={<VideoChat />} />
+        <Route path="about" element={<AboutPage />} />
       </Route>
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
