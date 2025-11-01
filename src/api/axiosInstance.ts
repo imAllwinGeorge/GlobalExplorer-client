@@ -1,10 +1,10 @@
 import axios from "axios";
 import { handleRoleBasedLogout } from "../utils/protected/authUtils";
 import { HttpStatusCode } from "../shared/constants/constants";
-const baseUrl = import.meta.env.VITE_API_BASE_URL;
-console.log(baseUrl);
+import { config } from "@/shared/constants/config";
+
 export const axiosInstance = axios.create({
-  baseURL: "https://backend.purplestone-bcfbbc54.centralindia.azurecontainerapps.io",
+  baseURL: config.VITE_API_BASE_URL,
   withCredentials: true,
 });
 

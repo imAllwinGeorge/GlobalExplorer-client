@@ -12,7 +12,7 @@ const HomePage = () => {
   const navigate = useNavigate();
   const [images, setImages] = useState<GalleryImages[]>();
   const [activities, setActivities] = useState<Activity[] >()
-  const [page, setPage] = useState(0)
+  const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
 
   useEffect(() => {

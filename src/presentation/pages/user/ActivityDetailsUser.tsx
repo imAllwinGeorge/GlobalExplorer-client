@@ -57,6 +57,7 @@ import axios from "axios";
 import { HttpStatusCode } from "../../../shared/constants/constants";
 import { averageRating, formateDate, totalRatings } from "../../../utils/helpers/helper";
 import { WriteReview } from "../../components/review/WriteReview";
+import { config } from "@/shared/constants/config";
 
 interface RazorpayResponse {
   amount: number;
@@ -88,7 +89,7 @@ export default function ActivityDetailsUser() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  const razorpay_api_keyId= 'rzp_test_BuBQsRf6LPIv87';
+  const razorpay_api_keyId= config.VITE_RAZORPAY_KEY_ID;
 
   const formatDate = (date: Date | string | null | undefined) => {
     const parsedDate = typeof date === "string" ? new Date(date) : date;
@@ -161,7 +162,7 @@ export default function ActivityDetailsUser() {
 
   useEffect(() => {
     const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.src = config.VITE_RAZORPAY_CHECKOUT_URL;
     script.async = true;
     document.body.appendChild(script);
 
