@@ -8,9 +8,9 @@ import { motion } from "framer-motion"
 import {
 
   ArrowRight,
-  Play,
 } from "lucide-react"
 import { Button } from "../ui/button"
+import { useNavigate } from "react-router-dom"
 
 const textVariant = {
   hidden: { opacity: 0, y: 20 },
@@ -29,7 +29,7 @@ const containerVariant = {
 
 
 export default function PrivateHeader() {
- 
+ const navigate = useNavigate();
 
   return (
     <section className="w-full py-8 md:py-12 lg:py-16">
@@ -63,14 +63,15 @@ export default function PrivateHeader() {
           </motion.p>
 
           <motion.div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start" variants={textVariant}>
-            <Button size="lg" className="inline-flex items-center gap-2">
+            <Button size="lg" className="inline-flex items-center gap-2"
+            onClick={() => navigate("/explorations")}>
               Explore Activities
               <ArrowRight className="h-4 w-4" />
             </Button>
-            <Button variant="outline" size="lg" className="inline-flex items-center gap-2 bg-transparent">
+            {/* <Button variant="outline" size="lg" className="inline-flex items-center gap-2 bg-transparent">
               <Play className="h-4 w-4" />
               Watch Video
-            </Button>
+            </Button> */}
           </motion.div>
         </motion.div>
 

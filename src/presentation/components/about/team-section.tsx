@@ -15,19 +15,19 @@ export default function TeamSection() {
               name: "Sarah Chen",
               role: "Founder & CEO",
               bio: "Travel enthusiast with 10+ years in the tourism industry.",
-              image: "/professional-woman-portrait.png",
+              image: "assets/about/imgi_61_images.jpg",
             },
             {
               name: "Marcus Johnson",
               role: "CTO",
               bio: "Full-stack developer passionate about building community platforms.",
-              image: "/professional-man-portrait.png",
+              image: "assets/about/imgi_38_portrait-young-investor-banker-workplace-260nw-2364566447.jpg",
             },
             {
               name: "Elena Rodriguez",
               role: "Head of Experiences",
               bio: "Expert in curating authentic local tour experiences.",
-              image: "/professional-woman-portrait.png",
+              image: "assets/about/imgi_44_images.jpg",
             },
           ].map((member, idx) => (
             <div key={idx} className="text-center">

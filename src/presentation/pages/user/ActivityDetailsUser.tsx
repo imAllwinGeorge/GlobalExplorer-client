@@ -88,7 +88,7 @@ export default function ActivityDetailsUser() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  const razorpay_api_keyId= import.meta.env.VITE_RAZORPAY_KEY_ID
+  const razorpay_api_keyId= 'rzp_test_BuBQsRf6LPIv87';
 
   const formatDate = (date: Date | string | null | undefined) => {
     const parsedDate = typeof date === "string" ? new Date(date) : date;

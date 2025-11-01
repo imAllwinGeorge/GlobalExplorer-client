@@ -23,7 +23,7 @@ export default function AboutHero() {
           <div className="relative">
             <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-accent/20 rounded-2xl blur-3xl"></div>
             <img
-              src="/adventure-travelers-hiking-mountains.jpg"
+              src="assets/about/DJI_20250411212235_0002_D.jpg"
               alt="Adventure travelers exploring nature"
               className="relative rounded-2xl shadow-2xl"
             />

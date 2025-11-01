@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Input from "../../components/ui/Input";
 import type { AddCategoryError } from "../../../shared/types/auth.type";
-import { isValidName } from "../../../shared/validation/validations";
 import { adminService } from "../../../services/AdminService";
 import type { Category } from "../../../shared/types/global";
 import ConfirmModal from "../../components/sharedElements/ConfirmModal";
@@ -14,7 +13,7 @@ import { Pencil, Plus, X } from "lucide-react";
 import Pagination from "../../components/common/Pagination";
 import { HttpStatusCode } from "../../../shared/constants/constants";
 import SearchBox from "../../components/sharedElements/Search-box";
-
+import { validateCategory } from "@/shared/validation/categoryFormValidation";
 
 const CategoryPage = () => {
   const [data, setData] = useState({
@@ -51,12 +50,8 @@ const CategoryPage = () => {
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     event.preventDefault();
-    const errors: AddCategoryError = {};
-    if (!isValidName(data.categoryName)) {
-      errors.categoryName = "category Name can only contain alphabets";
-    } else if (!data.description.trim()) {
-      errors.description = "This field cannot be empty";
-    }
+    const errors = validateCategory(data);
+
     if (Object.keys(errors).length > 0) {
       return setError(errors);
     }
@@ -105,6 +100,12 @@ const CategoryPage = () => {
       "sghiwghwsghhsgjksdhgkhasklghjklasdhgjklvasdjklfgjklsdhgjkhasdkjfg",
       editData
     );
+    const errors = validateCategory(editData);
+
+    if (Object.keys(errors).length > 0) {
+      return setError(errors);
+    }
+
     try {
       const response = await adminService.editCategory({
         _id: selectedCategory._id,
