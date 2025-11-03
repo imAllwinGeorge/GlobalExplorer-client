@@ -16,7 +16,7 @@ export class UserService {
   ): Promise<AxiosResponse<AuthResponse>> {
     try {
       const response = await this.http.get<AuthResponse>(
-        `/api/user/get-user?_id=${_id}&role=${role}`
+        `/api/user/get-user?userId=${_id}&role=${role}`
       );
       return response;
     } catch (error) {

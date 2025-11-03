@@ -76,7 +76,7 @@ const CategoryPage = () => {
     const toastId = toast.loading("Loading....");
     try {
       const response = await adminService.updateCategoryStatus({
-        _id: selectedCategory?._id,
+        categoryId: selectedCategory?._id,
         value: { isActive: !selectedCategory?.isActive },
       });
       if (response.status === HttpStatusCode.OK) {
@@ -108,7 +108,7 @@ const CategoryPage = () => {
 
     try {
       const response = await adminService.editCategory({
-        _id: selectedCategory._id,
+        categoryId: selectedCategory._id,
         value: {
           categoryName: editData.categoryName,
           description: editData.description,

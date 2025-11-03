@@ -31,7 +31,7 @@ export const adminService = {
     try {
       const response = await axiosInstance.post<AuthResponse>(
         `/api/admin/update-status/${role}`,
-        { _id, value }
+        { userId: _id, value }
       );
 
       return response;
@@ -75,7 +75,7 @@ export const adminService = {
     }
   },
 
-  editCategory: async (data: {_id: string; value: {categoryName: string, description: string}}) => {
+  editCategory: async (data: {categoryId: string; value: {categoryName: string, description: string}}) => {
     try {
       const response = await axiosInstance.put("/api/admin/edit-category",data);
       return response
@@ -86,7 +86,7 @@ export const adminService = {
     }
   },
   
-  updateCategoryStatus:async (data: {_id: string; value: object}) => {
+  updateCategoryStatus:async (data: {categoryId: string; value: object}) => {
     try {
       const response = await axiosInstance.patch("/api/admin/edit-category",data);
       return response

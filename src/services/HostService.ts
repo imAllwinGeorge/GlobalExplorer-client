@@ -87,7 +87,7 @@ export class HostService {
 
   async activityBookings(id: string, page: number, limit: number, search: string, filter: string | boolean): Promise<AxiosResponse<AuthResponse>> {
     try {
-      const response = await axiosInstance.get<AuthResponse>(`/api/host/get-bookings?id=${id}&page=${page}&limit=${limit}&search=${search}&filter=${filter}`);
+      const response = await axiosInstance.get<AuthResponse>(`/api/host/get-bookings?hostId=${id}&page=${page}&limit=${limit}&search=${search}&filter=${filter}`);
       return response;
     } catch (error) {
       const message = (error as ErrorResponse).response?.data?.message ||
