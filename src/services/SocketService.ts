@@ -1,3 +1,4 @@
+import { config } from "@/shared/constants/config";
 import { io, type Socket } from "socket.io-client";
 
 class SocketService {
@@ -7,7 +8,7 @@ class SocketService {
         console.log("socket service connect function");
         if(!this.socket) {
             console.log(import.meta.env.VITE_BASE_URL);
-            this.socket = io(`https://backend.purplestone-bcfbbc54.centralindia.azurecontainerapps.io`, {
+            this.socket = io(`${config.VITE_API_BASE_URL}`, {
                 withCredentials: true,
                 query: {role}
             });
