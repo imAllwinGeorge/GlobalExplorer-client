@@ -104,8 +104,8 @@ export const API_ROUTES = {
       `/api/user/get-chat/${conversationId}`,
     MARK_READ_MESSAGE: (conversationId: string, userId: string) =>
       `/api/user/mark-read-message/${conversationId}/${userId}`,
-    GET_NOTIFICATION: (userId: string) =>
-      `/api/user/get-notification/${userId}`,
+    GET_NOTIFICATION: (userId: string, page: number, limit: number) =>
+      `/api/user/get-notification/${userId}?page=${page}&limit=${limit}`,
     WRITE_REVIEW: "/api/user/review/write-review",
     DASHBOARD: (page: number, limit: number) =>
       `/api/user/get-homeData?page${page}&limit=${limit}`,

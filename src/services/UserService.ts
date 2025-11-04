@@ -248,9 +248,9 @@ export class UserService {
     }
   }
 
-  async fetchNotification (userId: string): Promise<AxiosResponse<AuthResponse>> {
+  async fetchNotification (userId: string, page: number): Promise<AxiosResponse<AuthResponse>> {
     try {
-      const response = await axiosInstance.get<AuthResponse>(API_ROUTES.USER.GET_NOTIFICATION(userId));
+      const response = await axiosInstance.get<AuthResponse>(API_ROUTES.USER.GET_NOTIFICATION(userId, page, 10));
       return response
     } catch (error) {
       const message = (error as ErrorResponse).response?.data?.message ||

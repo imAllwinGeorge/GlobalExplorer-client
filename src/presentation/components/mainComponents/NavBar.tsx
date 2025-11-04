@@ -1,5 +1,5 @@
 import { Menu, X, LogOut, UserIcon, Bell } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../hooks/useAppHooks";
@@ -10,11 +10,9 @@ import { adminLogout } from "../../store/slices/adminSlice";
 import toast from "react-hot-toast";
 import { AuthAPI } from "../../../services/AuthAPI";
 import { Link } from "react-router-dom";
-import { userService } from "../../../services/UserService";
-import type { Notification } from "../../../shared/types/global";
-import { useSocket } from "../../../contexts/SocketContext";
-import { HttpStatusCode, NOTIFICATION_EVENT, ROLE } from "../../../shared/constants/constants";
-import NotificationMessages from "../notification/NotificationMessage";
+import { HttpStatusCode, ROLE } from "../../../shared/constants/constants";
+import NotificationMenu from "../notification/NotificationMenu";
+import { useNotifications } from "@/presentation/hooks/useNotification";
 
 // // Mock user type for demonstration
 // interface User {
@@ -29,13 +27,11 @@ type NavBarPropsType = {
 
 const NavBar = ({ role }: NavBarPropsType) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isOpenNoti, setIsOpenNoti] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const pathname = location.pathname;
-  const socket = useSocket();
 
   const authAPI = new AuthAPI();
 
@@ -48,6 +44,12 @@ const NavBar = ({ role }: NavBarPropsType) => {
       return state.auth.user;
     }
   });
+
+  const { notifications } = useNotifications(user?._id);
+  const unreadCount = useMemo(
+    () => notifications?.filter((n) => !n.isRead).length ?? 0,
+    [notifications]
+  );
 
   const items = navitems[role as "user" | "admin" | "host"];
 
@@ -168,49 +170,49 @@ const NavBar = ({ role }: NavBarPropsType) => {
     },
   };
 
-  useEffect(() => {
-    if (!socket) return;
+  // useEffect(() => {
+  //   if (!socket) return;
 
-    socket.on(NOTIFICATION_EVENT.SEND_NOTIFICATION, (data) => {
-      console.log("recieved notification: ", data);
-      setNotifications((prev) => [...prev, data]);
-    });
+  //   socket.on(NOTIFICATION_EVENT.SEND_NOTIFICATION, (data) => {
+  //     console.log("recieved notification: ", data);
+  //     setNotifications((prev) => [...prev, data]);
+  //   });
 
-    socket.on(NOTIFICATION_EVENT.READ_NOTIFICATION, (data) => {
-      console.log("received notification result:", data);
-      setNotifications((prev) =>
-        prev.map((noti) =>
-          noti._id === data._id ? data : noti
-        )
-      );
-    });
+  //   socket.on(NOTIFICATION_EVENT.READ_NOTIFICATION, (data) => {
+  //     console.log("received notification result:", data);
+  //     setNotifications((prev) =>
+  //       prev.map((noti) =>
+  //         noti._id === data._id ? data : noti
+  //       )
+  //     );
+  //   });
 
-    return () => {
-      socket.off(NOTIFICATION_EVENT.SEND_NOTIFICATION);
-      socket.off(NOTIFICATION_EVENT.READ_NOTIFICATION);
-    };
-  }, [socket]);
+  //   return () => {
+  //     socket.off(NOTIFICATION_EVENT.SEND_NOTIFICATION);
+  //     socket.off(NOTIFICATION_EVENT.READ_NOTIFICATION);
+  //   };
+  // }, [socket]);
 
-  useEffect(() => {
-    const fetchNotification = async () => {
-      try {
-        if (!user) return;
-        const response = await userService.fetchNotification(user._id);
-        if (response.status === HttpStatusCode.OK) {
-          console.log("navbar notification response : ", response);
-          setNotifications(
-            response.data.notifications as unknown as Notification[]
-          );
-        }
-      } catch (error) {
-        console.log(error);
-        if (error instanceof Error) {
-          toast.error(error.message);
-        }
-      }
-    };
-    setTimeout(() => fetchNotification(), 500)
-  }, [user]);
+  // useEffect(() => {
+  //   const fetchNotification = async () => {
+  //     try {
+  //       if (!user) return;
+  //       const response = await userService.fetchNotification(user._id);
+  //       if (response.status === HttpStatusCode.OK) {
+  //         console.log("navbar notification response : ", response);
+  //         setNotifications(
+  //           response.data.notifications as unknown as Notification[]
+  //         );
+  //       }
+  //     } catch (error) {
+  //       console.log(error);
+  //       if (error instanceof Error) {
+  //         toast.error(error.message);
+  //       }
+  //     }
+  //   };
+  //   setTimeout(() => fetchNotification(), 500)
+  // }, [user]);
 
   return (
     <>
@@ -331,13 +333,20 @@ const NavBar = ({ role }: NavBarPropsType) => {
                         fill="white"
                         strokeWidth={0}
                       />
+                      {unreadCount > 0 && (
+                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] rounded-full px-1">
+                          {unreadCount}
+                        </span>
+                      )}
                     </button>
-                    {(notifications ?? []).filter((noti) => noti.isRead === false)
-                      .length > 0 && (
+                    {(notifications ?? []).filter(
+                      (noti) => noti.isRead === false
+                    ).length > 0 && (
                       <span className="absolute -top-2 -right-2 bg-blue-500 text-white text-[10px] rounded-full px-1.5 py-[1px] min-w-[18px] text-center">
                         {
-                          (notifications ?? []).filter((noti) => noti.isRead === false)
-                            .length
+                          (notifications ?? []).filter(
+                            (noti) => noti.isRead === false
+                          ).length
                         }
                       </span>
                     )}
@@ -385,16 +394,23 @@ const NavBar = ({ role }: NavBarPropsType) => {
                         fill="white"
                         strokeWidth={0}
                       />
+                      {unreadCount > 0 && (
+                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] rounded-full px-1">
+                          {unreadCount}
+                        </span>
+                      )}
                     </button>
-                    {(notifications ?? []).filter((noti) => noti.isRead === false)
-                      .length > 0 && (
+                    {/* {(notifications ?? []).filter(
+                      (noti) => noti.isRead === false
+                    ).length > 0 && (
                       <span className="absolute -top-2 -right-2 bg-blue-500 text-white text-[10px] rounded-full px-1.5 py-[1px] min-w-[18px] text-center">
                         {
-                          (notifications ?? []).filter((noti) => noti.isRead === false)
-                            .length
+                          (notifications ?? []).filter(
+                            (noti) => noti.isRead === false
+                          ).length
                         }
                       </span>
-                    )}
+                    )} */}
                   </div>
                   <motion.button
                     onClick={handleLogout}
@@ -541,8 +557,16 @@ const NavBar = ({ role }: NavBarPropsType) => {
           </motion.div>
         )}
       </AnimatePresence>
-      {isOpenNoti && (
-        <NotificationMessages notifications={notifications} receiverId={user?._id as string} onLeave={() => setIsOpenNoti(false)} />
+      {isOpenNoti && user && (
+        // <NotificationMessages
+        //   notifications={notifications}
+        //   receiverId={user?._id as string}
+        //   onLeave={() => setIsOpenNoti(false)}
+        // />
+        <NotificationMenu
+          userId={user?._id}
+          onClose={() => setIsOpenNoti(false)}
+        />
       )}
     </>
   );
