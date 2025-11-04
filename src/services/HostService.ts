@@ -2,12 +2,13 @@ import type { AxiosResponse } from "axios";
 import { axiosInstance } from "../api/axiosInstance";
 import type { ErrorResponse } from "../shared/types/auth.type";
 import type { AuthResponse } from "../shared/types/global";
+import { API_ROUTES } from "@/shared/constants/apiRoutes";
 
 export class HostService {
   async getActivities(id: string, page: number, limit: number, search: string, filter: string | boolean): Promise<AxiosResponse<AuthResponse>> {
     try {
       const response = await axiosInstance.get<AuthResponse>(
-        `/api/host/get-activity/${id}?page=${page}&limit=${limit}&search=${search}&filter=${filter}`
+       API_ROUTES.HOST.GET_ACTIVITIES(id, page, limit, search, filter)
       );
       return response;
     } catch (error) {
@@ -22,7 +23,7 @@ export class HostService {
   async getCategories(): Promise<AxiosResponse<AuthResponse>> {
     try {
       const response = await axiosInstance.get<AuthResponse>(
-        "/api/host/get-categories"
+        API_ROUTES.HOST.GET_CATEGORIES,
       );
       return response;
     } catch (error) {
@@ -36,7 +37,7 @@ export class HostService {
   async addActivity(data: FormData): Promise<AxiosResponse<AuthResponse>> {
     try {
       const response = await axiosInstance.post<AuthResponse>(
-        "/api/host/add-Activity",
+        API_ROUTES.HOST.ADD_ACTIVITY,
         data
       );
       return response;
@@ -51,7 +52,7 @@ export class HostService {
   async editActivity(id: string, data: FormData): Promise<AxiosResponse<AuthResponse>> {
     try {
       const response = await axiosInstance.put<AuthResponse>(
-        `/api/host/edit-activity/${id}`,
+        API_ROUTES.HOST.EDIT_ACTIVITY(id),
         data
       )
       return response
@@ -64,7 +65,7 @@ export class HostService {
 
   async updateStatus(id: string, data: object): Promise<AxiosResponse<AuthResponse>> {
     try {
-      const response = await axiosInstance.patch<AuthResponse>(`/api/host/edit-activity/${id}`,{data})
+      const response = await axiosInstance.patch<AuthResponse>(API_ROUTES.HOST.UPDATE_ACTIVITY(id),{data})
       return response
     } catch (error) {
       const message = (error as ErrorResponse).response?.data?.message || 
@@ -75,7 +76,7 @@ export class HostService {
 
   async editProfile(id: string, data: object): Promise<AxiosResponse<AuthResponse>> {
     try {
-      const response = await axiosInstance.post<AuthResponse>(`/api/host/update-profile/${id}`, data)
+      const response = await axiosInstance.post<AuthResponse>(API_ROUTES.HOST.EDIT_PROFILE(id), data)
       return response
     } catch (error) {
       console.log(error)
@@ -87,7 +88,7 @@ export class HostService {
 
   async activityBookings(id: string, page: number, limit: number, search: string, filter: string | boolean): Promise<AxiosResponse<AuthResponse>> {
     try {
-      const response = await axiosInstance.get<AuthResponse>(`/api/host/get-bookings?hostId=${id}&page=${page}&limit=${limit}&search=${search}&filter=${filter}`);
+      const response = await axiosInstance.get<AuthResponse>(API_ROUTES.HOST.GET_BOOKINGS(id, page, limit, search, filter));
       return response;
     } catch (error) {
       const message = (error as ErrorResponse).response?.data?.message ||
@@ -98,7 +99,7 @@ export class HostService {
 
   async dashboardData(id: string): Promise<AxiosResponse<AuthResponse>> {
     try {
-      const response = await axiosInstance.get<AuthResponse>(`/api/host/dashboard/${id}`);
+      const response = await axiosInstance.get<AuthResponse>(API_ROUTES.HOST.DASHBOARD(id));
       return response;
     } catch (error) {
       const message = (error as ErrorResponse).response?.data?.message ||
@@ -109,7 +110,7 @@ export class HostService {
 
   async getConverSations(id: string): Promise<AxiosResponse<AuthResponse>> {
     try {
-      const response = await axiosInstance.get<AuthResponse>(`/api/host/chat/get-conversation/${id}`);
+      const response = await axiosInstance.get<AuthResponse>(API_ROUTES.HOST.GET_CONVERSATION(id));
       return response;
     } catch (error) {
       const message = (error as ErrorResponse).response?.data?.message ||
@@ -120,7 +121,7 @@ export class HostService {
 
   async MarkReadMessage (conversationId: string, userId: string): Promise<AxiosResponse<AuthResponse>> {
     try {
-      const response = await axiosInstance.patch<AuthResponse>(`/api/host/mark-read-message/${conversationId}/${userId}`);
+      const response = await axiosInstance.patch<AuthResponse>(API_ROUTES.HOST.MARK_READ_MESSAGE(conversationId, userId));
       return response
     } catch (error) {
       const message = (error as ErrorResponse).response?.data?.message ||
@@ -131,7 +132,7 @@ export class HostService {
 
   async salesData(id: string):Promise<AxiosResponse<AuthResponse>> {
       try {
-        const response = axiosInstance.get<AuthResponse>(`/api/host/sales/${id}`);
+        const response = axiosInstance.get<AuthResponse>(API_ROUTES.HOST.SALES(id));
         return response;
       } catch (error) {
         const message = (error as ErrorResponse).response?.data?.message ||

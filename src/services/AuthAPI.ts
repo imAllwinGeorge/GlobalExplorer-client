@@ -5,13 +5,8 @@ import { axiosInstance } from "../api/axiosInstance";
 import { socketService } from "./SocketService";
 import type { AxiosResponse } from "axios";
 import { HttpStatusCode } from "../shared/constants/constants";
-
-// interface SignupDTO {
-//   firstName: string;
-//   lastName: string;
-//   email: string;
-//   password: string;
-// }
+import { API_ROUTES } from "@/shared/constants/apiRoutes";
+import { config } from "@/shared/constants/config";
 
 export class AuthAPI {
   async register(
@@ -19,7 +14,7 @@ export class AuthAPI {
   ): Promise<AxiosResponse<AuthResponse>> {
     try {
       const response = await axiosInstance.post<AuthResponse>(
-        "/api/send-otp",
+        API_ROUTES.AUTH.SEND_OTP,
         data
       );
 
@@ -35,7 +30,7 @@ export class AuthAPI {
 
   async verify(otp: string): Promise<AxiosResponse<AuthResponse>> {
     try {
-      const response = await axiosInstance.post<AuthResponse>("/api/register", {
+      const response = await axiosInstance.post<AuthResponse>(API_ROUTES.AUTH.REGISTER, {
         otp,
       });
       return response;
@@ -45,7 +40,7 @@ export class AuthAPI {
         (error as ErrorResponse).response?.data?.message ||
         "something went wrong!. Please try again";
 
-      throw new Error(message); // ✅ Throw a proper error
+      throw new Error(message);
     }
   }
 
@@ -55,7 +50,7 @@ export class AuthAPI {
   ): Promise<AxiosResponse<AuthResponse>> {
     try {
       const response = await axiosInstance.post<AuthResponse>(
-        "/api/forgot-password",
+        API_ROUTES.AUTH.FORGOT_PASSWORD,
         { email, role }
       );
 
@@ -77,7 +72,7 @@ export class AuthAPI {
   ): Promise<AxiosResponse<AuthResponse>> {
     try {
       const response = await axiosInstance.patch<AuthResponse>(
-        `/api/reset-password/${role}/${id}/${token}`,
+        API_ROUTES.AUTH.RESET_PASSWORD(role, id, token),
         { password }
       );
       return response;
@@ -93,7 +88,7 @@ export class AuthAPI {
 
   async resendOtp(): Promise<AxiosResponse<unknown>> {
     try {
-      const response = await axiosInstance.post("/api/resend-otp");
+      const response = await axiosInstance.post(API_ROUTES.AUTH.RESEND_OTP);
       return response;
     } catch (error) {
       const message =
@@ -106,7 +101,7 @@ export class AuthAPI {
   async login(data: LoginDTO): Promise<AxiosResponse<AuthResponse>> {
     try {
       console.log(import.meta.env.VITE_API_BASE_URL)
-      const response = await axiosInstance.post<AuthResponse>("/api/login", {
+      const response = await axiosInstance.post<AuthResponse>(API_ROUTES.AUTH.LOGIN, {
         data,
       });
       return response;
@@ -121,8 +116,7 @@ export class AuthAPI {
 
   async verifyToken(): Promise<AxiosResponse<AuthResponse>> {
     try {
-      const response = await axiosInstance.post<AuthResponse>("/api/verify-token");
-      // if (!response) throw new Error("something went wrong");
+      const response = await axiosInstance.post<AuthResponse>(API_ROUTES.AUTH.VERIFY_TOKEN);
       return response;
     } catch (error) {
       const message =
@@ -134,7 +128,7 @@ export class AuthAPI {
 
   async googleLogin(role: string) {
     try {
-      window.location.href = `${import.meta.env.VITE_API_BASE_URL}/api/auth/google?role=${role}`;
+      window.location.href = `${config.VITE_API_BASE_URL}${API_ROUTES.AUTH.GOOGLE_LOGIN(role)}`;
     } catch (error) {
       if (error) {
         throw new Error("something went wrong please try again");
@@ -145,7 +139,7 @@ export class AuthAPI {
   async logout(role: string) {
     try {
       const response = await axiosInstance.post<AuthResponse>(
-        `/api/logout/${role}`
+        API_ROUTES.AUTH.LOGOUT(role)
       );
       if(response.status === HttpStatusCode.OK) {
         socketService.disconnect();
@@ -161,7 +155,7 @@ export class AuthAPI {
   }
   async getUserProfile(id: string, role: string): Promise<AxiosResponse<AuthResponse>> {
     try {
-      const response = await axiosInstance.get<AuthResponse>(`/api/get-profile?role=${role}&id=${id}`);
+      const response = await axiosInstance.get<AuthResponse>(API_ROUTES.AUTH.GET_PROFILE(role, id));
       return response
     } catch (error) {
       console.log(error)
