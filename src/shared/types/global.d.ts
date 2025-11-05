@@ -217,6 +217,7 @@ export interface AuthResponse {
   activity?: Activity
   reviews?: Review[]
   totalPages?: number,
+  totalNotification?: number,
   razorpayAccountId?: string,
   availability?: {date: string, availableSeats: number}[]
   booking?: Booking,

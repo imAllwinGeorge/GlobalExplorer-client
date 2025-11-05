@@ -1,5 +1,5 @@
 import { Menu, X, LogOut, UserIcon, Bell } from "lucide-react";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../hooks/useAppHooks";
@@ -32,7 +32,6 @@ const NavBar = ({ role }: NavBarPropsType) => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const pathname = location.pathname;
-
   const authAPI = new AuthAPI();
 
   const user = useAppSelector((state) => {
@@ -44,12 +43,7 @@ const NavBar = ({ role }: NavBarPropsType) => {
       return state.auth.user;
     }
   });
-
-  const { notifications } = useNotifications(user?._id);
-  const unreadCount = useMemo(
-    () => notifications?.filter((n) => !n.isRead).length ?? 0,
-    [notifications]
-  );
+  const { unreadCount } = useNotifications(user?._id);
 
   const items = navitems[role as "user" | "admin" | "host"];
 
@@ -339,17 +333,6 @@ const NavBar = ({ role }: NavBarPropsType) => {
                         </span>
                       )}
                     </button>
-                    {(notifications ?? []).filter(
-                      (noti) => noti.isRead === false
-                    ).length > 0 && (
-                      <span className="absolute -top-2 -right-2 bg-blue-500 text-white text-[10px] rounded-full px-1.5 py-[1px] min-w-[18px] text-center">
-                        {
-                          (notifications ?? []).filter(
-                            (noti) => noti.isRead === false
-                          ).length
-                        }
-                      </span>
-                    )}
                   </div>
                   <div className="flex items-center space-x-2 px-3 py-2 rounded-xl bg-gray-50">
                     <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">

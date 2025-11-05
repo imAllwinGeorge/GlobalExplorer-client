@@ -10,6 +10,7 @@ export function useNotifications(userId?: string) {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(false);
 
   // Fetch notifications with pagination
@@ -23,6 +24,7 @@ export function useNotifications(userId?: string) {
           const fetched = res.data.notifications as unknown as Notification[];
           setNotifications((prev) => [...prev, ...fetched]);
           setHasMore(fetched.length >= 10);
+          setUnreadCount(res.data.totalNotification as number)
         }
       } catch (err) {
         console.error("Failed to fetch notifications:", err);
@@ -56,5 +58,5 @@ export function useNotifications(userId?: string) {
     };
   }, [socket]);
 
-  return { notifications, setPage, hasMore, loading };
+  return { notifications, unreadCount, setPage, hasMore, loading };
 }
