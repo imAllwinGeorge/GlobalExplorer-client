@@ -1531,7 +1531,7 @@ const VideoChat = () => {
       )}
 
       {/* Video Container */}
-      <div className="relative flex-1 overflow-hidden">
+      <div className="relative flex-1 overflow-hidden z-10">
         {/* Remote Video - Full Screen */}
         {onCall && remoteStream ? (
           <div className="relative w-full h-full">
@@ -1565,7 +1565,7 @@ const VideoChat = () => {
       </div>
 
       {/* Control Bar */}
-      <div className="shrink-0 bg-neutral-950 border-t border-neutral-800 px-4 py-4">
+      <div className="shrink-0 bg-neutral-950 border-t border-neutral-800 px-4 py-4 z-50 relative">
         {onCall && (
           <div className="flex items-center justify-between max-w-7xl mx-auto">
             {/* Left: Timer */}
