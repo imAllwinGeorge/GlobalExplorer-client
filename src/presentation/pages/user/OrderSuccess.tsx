@@ -166,6 +166,7 @@ import toast from 'react-hot-toast';
 import type { Booking } from '../../../shared/types/global';
 import { UserService } from '../../../services/UserService';
 import { HttpStatusCode } from '../../../shared/constants/constants';
+import Loader from '@/presentation/components/mainComponents/Loader';
 
 
 const OrderSuccess = () => {
@@ -205,11 +206,7 @@ const OrderSuccess = () => {
   }, [orderId, location.state]);
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen text-gray-600">
-        Loading order details...
-      </div>
-    );
+    return <Loader isLoading={loading} />
   }
 
   if (!order) {

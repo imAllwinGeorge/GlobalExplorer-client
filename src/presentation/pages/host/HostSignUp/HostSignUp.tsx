@@ -2,18 +2,13 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthAPI } from "../../../../services/AuthAPI";
 import toast from "react-hot-toast";
-import { validateHostSignupForm } from "../../../../shared/validation/validateSignupFrom";
+import { stepThreeHostSignupValidation, stepTwoHostSignupValidation, validateHostSignupForm } from "../../../../shared/validation/validateSignupFrom";
 import type { HostSignupFormErrors } from "../../../../shared/types/auth.type";
 import Input from "../../../components/ui/Input";
 import { Banknote, Eye, EyeOff, Phone } from "lucide-react";
 import { Button } from "../../../components/ui/button";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import {
-  isValidAccontNumber,
-  isValidIFSC,
-  isValidName,
-} from "../../../../shared/validation/validations";
 import { HttpStatusCode, ROLE } from "../../../../shared/constants/constants";
 
 export type HostFormData = {
@@ -103,7 +98,7 @@ const HostSignUp = () => {
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     event.preventDefault();
-    const errors: HostSignupFormErrors = validateHostSignupForm(data);
+    let errors: HostSignupFormErrors = validateHostSignupForm(data);
 
     if (data.password !== confirmPassword) {
       errors.confirmPassword = "both password and cofirm should be same";
@@ -117,28 +112,7 @@ const HostSignUp = () => {
     }
 
     if (step === 2) {
-      if (!isValidName(data.accountHolderName)) {
-        errors.accountHolderName = "name should only contain alphabets";
-      }
-      if (!isValidIFSC(data.ifsc)) {
-        errors.ifsc =
-          "IFSC's first 4 charecters should be alphabets, 5th charecter should be 0, rest 6 should be numbers.";
-      }
-      if (!isValidAccontNumber(data.accountNumber)) {
-        errors.accountNumber = "Account number should 11 to 17 numbers.";
-      }
-      if (!isValidName(data.branch)) {
-        errors.branch = "Branch can only contain alphabets.";
-      }
-      if (data.kyc_panCard === null) {
-        errors.kyc_panCard = "PAN card must be uploaded.";
-      }
-      if (data.kyc_idProof === null) {
-        errors.kyc_idProof = "ID proof shold not be empty";
-      }
-      if (data.kyc_addressProof === null) {
-        errors.kyc_addressProof = "Address proof must be uploaded.";
-      }
+      errors = stepTwoHostSignupValidation(data);
 
       if (Object.values(errors).length > 0) {
         return setError(errors);
@@ -147,19 +121,8 @@ const HostSignUp = () => {
     }
 
     if (step === 3) {
-      if (data.registrationCertificate === null) {
-        errors.registrationCertificate =
-          "Please upload registration certificate.";
-      }
-      if (data.safetyCertificate === null) {
-        errors.safetyCertificate = "Please upload safety certificate.";
-      }
-      if (data.license === null) {
-        errors.license = "Please upload License.";
-      }
-      if (data.insurance === null) {
-        errors.insurance = "Please upload insurance.";
-      }
+      errors = stepThreeHostSignupValidation(data);
+      
       if (Object.values(errors).length > 0) {
         console.log(Object.values(errors));
         return setError(errors);

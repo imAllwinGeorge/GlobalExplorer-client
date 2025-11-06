@@ -8,11 +8,13 @@ import ActivityCard from "../../components/common/ActivityCard";
 import { useNavigate } from "react-router-dom";
 import { HttpStatusCode } from "../../../shared/constants/constants";
 import SearchBox from "../../components/sharedElements/Search-box";
+import Loader from "@/presentation/components/mainComponents/Loader";
 const ActivityPageUser = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [activities, setActivities] = useState<Activity[] | null>(null);
-  const [searchQuery, setSearchQuery] = useState("")
+  const [searchQuery, setSearchQuery] = useState("");
 
   const navigate = useNavigate();
 
@@ -25,7 +27,12 @@ const ActivityPageUser = () => {
   useEffect(() => {
     const fetchActivities = async () => {
       try {
-        const response = await userService.getAllActivities(page, 6, searchQuery);
+        setIsLoading(true);
+        const response = await userService.getAllActivities(
+          page,
+          6,
+          searchQuery
+        );
         if (response.status === HttpStatusCode.OK) {
           setActivities(response.data.activities as Activity[]);
           setTotalPages(response.data.totalPages as number);
@@ -34,13 +41,22 @@ const ActivityPageUser = () => {
         if (error instanceof Error) {
           toast.error("error fetching data...");
         }
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchActivities();
   }, [page, searchQuery]);
+
+  if (isLoading) {
+    <Loader isLoading={isLoading} />;
+  }
   return (
     <div>
-      <SearchBox placeholder="Search for activities....." onSearch={(query) => setSearchQuery(query)} />
+      <SearchBox
+        placeholder="Search for activities....."
+        onSearch={(query) => setSearchQuery(query)}
+      />
       {activities && (
         <div className="min-h-screen bg-gray-50 py-8">
           <Carousel
@@ -58,9 +74,7 @@ const ActivityPageUser = () => {
             <ActivityCard
               key={activity._id}
               activity={activity}
-              onEdit={() =>
-                navigate(`/activity-details/${activity._id}`)
-              }
+              onEdit={() => navigate(`/activity-details/${activity._id}`)}
               onViewDetails={() =>
                 navigate(`/activity-details/${activity._id}`)
               }

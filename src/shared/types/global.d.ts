@@ -37,6 +37,11 @@ export interface Host {
   updatedAt: Date,
 }
 
+export interface AdminProfile {
+  email: string;
+  password?: string;
+}
+
 export interface Category {
   _id: string,
   categoryName: string,
@@ -217,7 +222,7 @@ export interface AuthResponse {
   activity?: Activity
   reviews?: Review[]
   totalPages?: number,
-  totalNotification?: number,
+  unreadCount?: number,
   razorpayAccountId?: string,
   availability?: {date: string, availableSeats: number}[]
   booking?: Booking,

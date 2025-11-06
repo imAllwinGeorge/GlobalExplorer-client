@@ -7,9 +7,11 @@ import type{ Activity, GalleryImages } from "../../../../shared/types/global";
 import Pagination from "@/presentation/components/common/Pagination";
 import ActivityCard from "@/presentation/components/common/ActivityCard";
 import { useNavigate } from "react-router-dom";
+import Loader from "@/presentation/components/mainComponents/Loader";
 
 const HomePage = () => {
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false)
   const [images, setImages] = useState<GalleryImages[]>();
   const [activities, setActivities] = useState<Activity[] >()
   const [page, setPage] = useState(1)
@@ -18,6 +20,7 @@ const HomePage = () => {
   useEffect(() => {
     const getHomePageData = async () => {
       try {
+        setIsLoading(true)
         const response = await userService.getHomeData(page, 6);
         console.log(response);
         if (response.status === HttpStatusCode.OK) {
@@ -27,10 +30,14 @@ const HomePage = () => {
         }
       } catch (error) {
         console.log(error);
+      } finally {
+        setIsLoading(false)
       }
     };
     getHomePageData();
   }, [page]);
+
+  if (isLoading) return <Loader isLoading={isLoading} />
   return (
     <div>
       <PrivateHeader />

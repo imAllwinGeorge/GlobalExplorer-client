@@ -7,6 +7,8 @@ export const validateLoginForm = (data: LoginDTO) => {
 
   if (!isValidEmail(data.email)) {
     errors.email = "please enter valid email address";
+  } else if (!data.email.trim()){
+    errors.email = "Please enter a eamil address"
   }
 
   if (!isValidPassword(data.password)) {

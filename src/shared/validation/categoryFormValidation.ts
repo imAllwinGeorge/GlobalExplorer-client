@@ -9,6 +9,11 @@ export const validateCategory = (data: {
     if (!isValidName(data.categoryName)) {
       errors.categoryName = "category Name can only contain alphabets";
     }
+
+    if (!data.categoryName.trim()) {
+      errors.categoryName = "category Name cannot be empty"
+    }
+
     const description = data.description.trim();
 
     // Check if empty

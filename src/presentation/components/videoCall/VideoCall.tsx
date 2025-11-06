@@ -47,7 +47,7 @@
 
 
 // VideoCall.tsx
-import { useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { cn } from "../../../lib/tiptap-utils";
 
 type VideoProp = {
@@ -88,4 +88,4 @@ const VideoCall = ({ stream, className, isLocal }: VideoProp) => {
   );
 };
 
-export default VideoCall;
+export default React.memo(VideoCall);

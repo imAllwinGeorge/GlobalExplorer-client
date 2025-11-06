@@ -14,13 +14,13 @@ import {
   CardHeader,
   CardTitle,
 } from "../../../components/ui/card";
-import type { Host, User } from "../../../shared/types/global";
-
-// Define interfaces for different profile types
-interface AdminProfile {
-  email: string;
-  password?: string; // Password is optional for display, but required for update
-}
+import type { AdminProfile, Host, User } from "../../../shared/types/global";
+import { ROLE } from "@/shared/constants/constants";
+import {
+  validateAdminProfile,
+  validateHostProfile,
+  validateUserProfile,
+} from "@/shared/validation/editProfileValidation";
 
 // Union type for all possible profile data
 type ProfileData = AdminProfile | User | Host;
@@ -119,8 +119,7 @@ function ImageUploadField({
     setShowUrlInput(true);
   };
 
-  const displayImageSrc =
-    filePreviewUrl || `${currentImageUrl}`;
+  const displayImageSrc = filePreviewUrl || `${currentImageUrl}`;
 
   return (
     <motion.div className="space-y-2" variants={fieldVariants}>
@@ -215,6 +214,9 @@ export default function MyProfile({
   const [formData, setFormData] = useState<ProfileData>(initialData);
   const [isSaving, setIsSaving] = useState(false);
   const [newImgFields, setNewImgFields] = useState<NewImgFields>({});
+  const [errors, setErrors] = useState<
+    Partial<User> | Partial<Host> | Partial<AdminProfile>
+  >({});
 
   // Reset formData when role changes to ensure correct initial data for the new role
   useEffect(() => {
@@ -245,6 +247,20 @@ export default function MyProfile({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    let error = {};
+
+    if (role === ROLE.USER) {
+      error = validateUserProfile(formData);
+    } else if (role === ROLE.HOST) {
+      error = validateHostProfile(formData);
+    } else if (role === ROLE.ADMIN) {
+      error = validateAdminProfile(formData);
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setErrors(error);
+      return;
+    }
     setIsSaving(true);
     console.log(newImgFields);
     // Simulate API call
@@ -290,25 +306,16 @@ export default function MyProfile({
                 onChange={handleChange}
                 required
               />
-            </motion.div>
-            <motion.div
-              key="admin-password"
-              className="space-y-2"
-              variants={fieldVariants}
-            >
-              <label htmlFor="password">Password</label>
-              <Input
-                id="password"
-                type="password"
-                value={adminData.password || ""}
-                onChange={handleChange}
-              />
+              {errors.email && (
+                <span className="text-red-700">{errors.email}</span>
+              )}
             </motion.div>
           </>
         );
       }
       case "user": {
         const userData = formData as User;
+        const userErrors = errors as User;
         return (
           <>
             <motion.div
@@ -325,6 +332,9 @@ export default function MyProfile({
                   onChange={handleChange}
                   required
                 />
+                {userErrors.firstName && (
+                  <span className="text-red-700">{userErrors.firstName}</span>
+                )}
               </div>
               <div className="space-y-2">
                 <label htmlFor="lastName">Last Name</label>
@@ -335,6 +345,9 @@ export default function MyProfile({
                   onChange={handleChange}
                   required
                 />
+                {userErrors.lastName && (
+                  <span className="text-red-700">{userErrors.lastName}</span>
+                )}
               </div>
             </motion.div>
             <motion.div
@@ -350,6 +363,9 @@ export default function MyProfile({
                 onChange={handleChange}
                 required
               />
+              {userErrors.email && (
+                  <span className="text-red-700">{userErrors.email}</span>
+                )}
             </motion.div>
             <motion.div
               key="user-phone"
@@ -364,6 +380,9 @@ export default function MyProfile({
                 onChange={handleChange}
                 required
               />
+              {userErrors.phoneNumber && (
+                  <span className="text-red-700">{userErrors.phoneNumber}</span>
+                )}
             </motion.div>
             {/* <motion.div key="user-password" className="space-y-2" variants={fieldVariants}>
               <label htmlFor="password">Password</label>
@@ -374,6 +393,7 @@ export default function MyProfile({
       }
       case "host": {
         const hostData = formData as Host;
+        const hostErrors = errors as Host;
         return (
           <>
             <motion.div
@@ -390,6 +410,9 @@ export default function MyProfile({
                   onChange={handleChange}
                   required
                 />
+                {hostErrors.firstName && (
+                  <span className="text-red-700">{hostErrors.firstName}</span>
+                )}
               </div>
               <div className="space-y-2">
                 <label htmlFor="lastName">Last Name</label>
@@ -400,6 +423,9 @@ export default function MyProfile({
                   onChange={handleChange}
                   required
                 />
+                {hostErrors.lastName && (
+                  <span className="text-red-700">{hostErrors.lastName}</span>
+                )}
               </div>
             </motion.div>
             <motion.div
@@ -415,6 +441,9 @@ export default function MyProfile({
                 onChange={handleChange}
                 required
               />
+              {hostErrors.email && (
+                  <span className="text-red-700">{hostErrors.email}</span>
+                )}
             </motion.div>
             <motion.div
               key="host-phone"
@@ -429,6 +458,9 @@ export default function MyProfile({
                 onChange={handleChange}
                 required
               />
+              {hostErrors.phoneNumber && (
+                  <span className="text-red-700">{hostErrors.phoneNumber}</span>
+                )}
             </motion.div>
             {/* <motion.div key="host-password" className="space-y-2" variants={fieldVariants}>
               <label htmlFor="password">Password</label>
@@ -472,6 +504,9 @@ export default function MyProfile({
                   onChange={handleChange}
                   required
                 />
+                {hostErrors.accountNumber && (
+                  <span className="text-red-700">{hostErrors.accountNumber}</span>
+                )}
               </div>
               <div className="space-y-2">
                 <label htmlFor="accountHolderName">Account Holder Name</label>
@@ -502,6 +537,9 @@ export default function MyProfile({
                   onChange={handleChange}
                   required
                 />
+                {hostErrors.ifsc && (
+                  <span className="text-red-700">{hostErrors.ifsc}</span>
+                )}
               </div>
             </div>
 

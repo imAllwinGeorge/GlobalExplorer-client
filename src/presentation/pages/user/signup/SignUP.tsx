@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import { HttpStatusCode, ROLE } from "../../../../shared/constants/constants";
+import Loader from "@/presentation/components/mainComponents/Loader";
 
 const SignUP = () => {
   const [data, setData] = useState({
@@ -20,6 +21,7 @@ const SignUP = () => {
     password: "",
     role: ROLE.USER,
   });
+  const [isLoading, setIsLoading] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -50,6 +52,7 @@ const SignUP = () => {
       return setError(errors);
     }
     try {
+      setIsLoading(true);
       const response = await authAPI.register(data);
       if (response.status === HttpStatusCode.OK) {
         navigate("/verify_otp");
@@ -59,8 +62,14 @@ const SignUP = () => {
       if (error instanceof Error) {
         toast.error(error.message);
       }
+    } finally {
+      setIsLoading(false);
     }
   };
+
+  if(isLoading) {
+    <Loader isLoading={isLoading} />
+  }
   return (
     <div
       className="flex min-h-screen bg-cover bg-center"

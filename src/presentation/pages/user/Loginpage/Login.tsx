@@ -10,6 +10,7 @@ import { login, setGoogleUser } from "../../../store/slices/authSlice";
 import { AuthAPI } from "../../../../services/AuthAPI";
 import toast from "react-hot-toast";
 import { ROLE } from "../../../../shared/constants/constants";
+import Loader from "../../../components/mainComponents/Loader";
 
 const Login = () => {
   const [data, setData] = useState({
@@ -17,6 +18,7 @@ const Login = () => {
     password: "",
     role: ROLE.USER,
   });
+  const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<LoginFormError>({});
   const dispatch = useAppDispatch();
@@ -40,6 +42,7 @@ const Login = () => {
       return setError(errors);
     }
     try {
+      setIsLoading(true)
       const response = await dispatch(login(data));
       if (login.fulfilled.match(response)) {
         navigate("/home");
@@ -48,6 +51,8 @@ const Login = () => {
       }
     } catch (error) {
       console.log("dispatch error message: ", error);
+    } finally{
+      setIsLoading(false)
     }
   };
 
@@ -71,6 +76,11 @@ const Login = () => {
       navigate("/home");
     }
   }, [navigate, dispatch]);
+
+  if(isLoading){
+    return <Loader isLoading={isLoading} />
+  }
+
   return (
     <div
       className="flex min-h-screen bg-cover bg-center"
@@ -144,10 +154,10 @@ const Login = () => {
             <button
               type="button"
               onClick={handleLogin}
-              disabled={!data.email || !data.password}
+              disabled={isLoading}
               className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-md mt-2"
             >
-              Login
+              {isLoading ? "Logging in...." : "Login"}
             </button>
             <Link
               to="/forgot-password/user"

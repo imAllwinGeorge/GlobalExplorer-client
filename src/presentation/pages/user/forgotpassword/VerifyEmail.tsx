@@ -6,6 +6,7 @@ import { AuthAPI } from "../../../../services/AuthAPI"
 import { useNavigate, useParams } from "react-router-dom"
 import toast from "react-hot-toast"
 import { HttpStatusCode } from "../../../../shared/constants/constants"
+import Loader from "@/presentation/components/mainComponents/Loader"
 export default function VerifyEmail() {
   const [email, setEmail] = useState("")
   const [isLoading, setIsLoading] = useState(false)
@@ -36,8 +37,13 @@ export default function VerifyEmail() {
       if(error instanceof Error){
         toast.error(error.message)
       }
+    } finally {
       setIsLoading(false)
     }
+  }
+
+  if(isLoading) {
+    <Loader isLoading={isLoading} />
   }
 
   if (isSubmitted) {

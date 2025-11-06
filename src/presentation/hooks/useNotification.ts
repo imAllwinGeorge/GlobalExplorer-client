@@ -21,10 +21,11 @@ export function useNotifications(userId?: string) {
       try {
         const res = await userService.fetchNotification(userId, page);
         if (res.status === HttpStatusCode.OK) {
+          console.log("notification result:", res)
           const fetched = res.data.notifications as unknown as Notification[];
           setNotifications((prev) => [...prev, ...fetched]);
           setHasMore(fetched.length >= 10);
-          setUnreadCount(res.data.totalNotification as number)
+          setUnreadCount(res.data.unreadCount as number)
         }
       } catch (err) {
         console.error("Failed to fetch notifications:", err);
@@ -47,6 +48,7 @@ export function useNotifications(userId?: string) {
       setNotifications((prev) =>
         prev.map((n) => (n._id === data._id ? data : n))
       );
+      setUnreadCount((prev) => prev-1)
     };
 
     socket.on(NOTIFICATION_EVENT.SEND_NOTIFICATION, handleNew);

@@ -16,10 +16,12 @@ import {
 } from "../../../../shared/constants/constants";
 // import BlogRead from "../../../components/common/Blog/Read-Blog";
 import { useNavigate } from "react-router-dom";
+import Loader from "@/presentation/components/mainComponents/Loader";
 
 const Blogs = () => {
   const navigate = useNavigate();
   // const [openModal, setOpenModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const user = useSelector((state: RootState) => state.auth.user);
   const [blogs, setBlogs] = useState<BlogPost[] | null>(null);
   const [page, setPage] = useState(1);
@@ -66,6 +68,7 @@ const Blogs = () => {
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
+        setIsLoading(true)
         const response = await userService.getBlogs(page, 9);
         if (response.status === HttpStatusCode.OK) {
           setBlogs(response.data.blogs as BlogPost[]);
@@ -76,10 +79,16 @@ const Blogs = () => {
         if (error instanceof Error) {
           toast.error(error.message);
         }
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchBlogs();
   }, [page, triggerFetch]);
+
+  if(isLoading) {
+    <Loader isLoading={isLoading} />
+  }
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header Section */}

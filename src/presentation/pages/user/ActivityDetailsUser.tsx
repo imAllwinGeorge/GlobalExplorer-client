@@ -58,6 +58,7 @@ import { HttpStatusCode } from "../../../shared/constants/constants";
 import { averageRating, formateDate, totalRatings } from "../../../utils/helpers/helper";
 import { WriteReview } from "../../components/review/WriteReview";
 import { config } from "@/shared/constants/config";
+import Loader from "@/presentation/components/mainComponents/Loader";
 
 interface RazorpayResponse {
   amount: number;
@@ -73,6 +74,7 @@ interface RazorpayVerifyResponse {
 type Availability = { date: string; availableSeats: number };
 
 export default function ActivityDetailsUser() {
+  const [isLoading, setIsLoading] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
   const [activity, setActivity] = useState<Activity | null>(null);
@@ -130,35 +132,6 @@ export default function ActivityDetailsUser() {
       transition: { duration: 0.5 },
     },
   };
-
-  // const handleBooking = async () => {
-  //   if (!activity) return;
-  //   const data = {
-  //     userId: user?._id,
-  //     activityId: activity?._id,
-  //     date: selectedDate,
-  //     participantCount: count,
-  //     pricePerParticipant: activity?.pricePerHead,
-  //     activityTitle: activity?.activityName,
-  //     paymentId: "686f66f374574b1a51ed47f0",
-  //     paymentStatus: "pending",
-  //     bookingStatus: "pending",
-  //     hostId: activity?.userId,
-  //     razorpayAccountId,
-  //   };
-  //   console.log("booking data   :", data);
-
-  //   try {
-  //     const response = await userService.BookActivit(data);
-  //     if (response.status === HttpStatusCode.CREATED) {
-  //       toast.success("activityBooking success");
-  //     }
-  //   } catch (error) {
-  //     if (error instanceof Error) {
-  //       toast.error(error.message);
-  //     }
-  //   }
-  // };
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -267,21 +240,13 @@ export default function ActivityDetailsUser() {
   useEffect(() => {
     const fetchActivity = async () => {
       try {
+        setIsLoading(true)
         const response = await userService.getActivityDetails(id as string);
         console.log(response);
         if (response.status === HttpStatusCode.OK) {
           setActivity(response.data.activity as Activity);
           setReviews(response.data.reviews as Review[]);
           setRazorpayAccountId(response.data.razorpayAccountId as string);
-          // const mockAvailabilityData = [
-          //   { date: "2025-07-12", availableSeats: 10 },
-          //   { date: "2025-07-13", availableSeats: 8 },
-          //   { date: "2025-07-14", availableSeats: 1 },
-          //   { date: "2025-07-15", availableSeats: 5 },
-          //   { date: "2025-07-16", availableSeats: 12 },
-          //   { date: "2025-07-17", availableSeats: 7 },
-          //   { date: "2025-07-18", availableSeats: 3 },
-          // ];
           console.log(response);
           const map: Record<string, number> = {};
           (response.data.availability as Availability[]).forEach(
@@ -297,14 +262,12 @@ export default function ActivityDetailsUser() {
         if (error instanceof Error) {
           toast.error(error.message);
         }
+      } finally {
+        setIsLoading(false)
       }
     };
     fetchActivity();
   }, [id]);
-
-  useEffect(() => {
-    console.log(activity);
-  }, [activity]);
 
   // Calendar logic
   const monthStart = startOfMonth(currentMonth);
@@ -340,8 +303,8 @@ export default function ActivityDetailsUser() {
   };
 
   // 🔐 Prevent render until activity is loaded
-  if (!activity) {
-    return <div className="p-10 text-center">Loading activity details...</div>;
+  if (!activity || isLoading) {
+    return <Loader isLoading={isLoading} />;
   }
 
   return (
