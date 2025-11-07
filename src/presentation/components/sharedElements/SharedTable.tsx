@@ -1,15 +1,15 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
-import type React from "react"
+import { motion } from "framer-motion";
+import type React from "react";
 
 type ReusableTableProps<T, ExtraColumn extends string = never> = {
-  data: T[]
-  columns: (keyof T | ExtraColumn)[]
-  columnHeaders: Partial<Record<keyof T | ExtraColumn, string>>
-  renderCell?: (col: keyof T | ExtraColumn, row: T) => React.ReactNode
-  title?: string
-}
+  data: T[];
+  columns: (keyof T | ExtraColumn)[];
+  columnHeaders: Partial<Record<keyof T | ExtraColumn, string>>;
+  renderCell?: (col: keyof T | ExtraColumn, row: T) => React.ReactNode;
+  title?: string;
+};
 
 const ReusableTable = <T, ExtraColumn extends string = never>({
   data,
@@ -66,8 +66,13 @@ const ReusableTable = <T, ExtraColumn extends string = never>({
                 }`}
               >
                 {columns.map((col) => (
-                  <td key={String(col)} className="px-6 py-4 text-sm text-gray-900">
-                    {renderCell ? renderCell(col, row) : String(row[col as keyof T])}
+                  <td
+                    key={String(col)}
+                    className="px-6 py-4 text-sm text-gray-900"
+                  >
+                    {renderCell
+                      ? renderCell(col, row)
+                      : String(row[col as keyof T])}
                   </td>
                 ))}
               </motion.tr>
@@ -91,9 +96,13 @@ const ReusableTable = <T, ExtraColumn extends string = never>({
                 key={String(col)}
                 className="flex justify-between items-center py-2 border-b border-gray-100 last:border-b-0"
               >
-                <span className="text-sm font-medium text-amber-700">{columnHeaders[col]}:</span>
+                <span className="text-sm font-medium text-amber-700">
+                  {columnHeaders[col]}:
+                </span>
                 <span className="text-sm text-gray-900 text-right max-w-[60%]">
-                  {renderCell ? renderCell(col, row) : String(row[col as keyof T])}
+                  {renderCell
+                    ? renderCell(col, row)
+                    : String(row[col as keyof T])}
                 </span>
               </div>
             ))}
@@ -101,7 +110,7 @@ const ReusableTable = <T, ExtraColumn extends string = never>({
         ))}
       </div>
     </motion.div>
-  )
-}
+  );
+};
 
-export default ReusableTable
+export default ReusableTable;

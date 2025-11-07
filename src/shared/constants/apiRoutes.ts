@@ -68,6 +68,7 @@ export const API_ROUTES = {
     MARK_READ_MESSAGE: (conversationId: string, userId: string) =>
       `/api/host/mark-read-message/${conversationId}/${userId}`,
     SALES: (id: string) => `/api/host/sales/${id}`,
+    VERIFY_BOOKING: `/api/host/booking/qr-verification`
   },
   USER: {
     GET_USER: (_id: string, role: string) =>

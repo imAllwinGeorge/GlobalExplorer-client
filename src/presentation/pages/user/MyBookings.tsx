@@ -5,14 +5,18 @@ import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../store";
-import type { Booking } from "../../../shared/types/global";
+import type { Booking, BookingWithUser } from "../../../shared/types/global";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
-import { HttpStatusCode, LOCAL_STORAGE_KEYS } from "../../../shared/constants/constants";
+import {
+  HttpStatusCode,
+  LOCAL_STORAGE_KEYS,
+} from "../../../shared/constants/constants";
 import { userService } from "../../../services/UserService";
 import ReusableTable from "../../components/sharedElements/SharedTable";
 import Pagination from "../../components/common/Pagination";
 import RejectionModal from "../../components/sharedElements/RejectionModal";
-
+import BookingDetails from "@/presentation/components/sharedElements/Booking-details-modal";
+import { useNavigate } from "react-router-dom";
 
 const columns = [
   "index",
@@ -21,6 +25,8 @@ const columns = [
   "date",
   "paymentStatus",
   "actions",
+  "viewDetails",
+  "talkToHost",
 ];
 
 const columnHeaders = {
@@ -30,11 +36,13 @@ const columnHeaders = {
   date: "Date",
   paymentStatus: "Payment Status",
   actions: "Actions",
+  viewDetails: "View Details",
+  talkToHost: "Talk To Host",
 };
 
 const MyBookings = () => {
   const user = useSelector((state: RootState) => state.auth.user);
-  const [data, setData] = useState<Booking[]>();
+  const [data, setData] = useState<BookingWithUser[]>();
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useLocalStorage(
     LOCAL_STORAGE_KEYS.MY_BOOKING_PAGE,
@@ -42,7 +50,10 @@ const MyBookings = () => {
   );
   const [totalPages, setTotalPages] = useState(1);
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedBooking, setSelectedBooking] = useState<Booking | null>();
+  const [selectedBooking, setSelectedBooking] =
+    useState<BookingWithUser | null>();
+  const [openDetails, setOpenDetails] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!user) return;
@@ -57,7 +68,7 @@ const MyBookings = () => {
         );
         if (response.status === HttpStatusCode.OK) {
           console.log(response, user._id);
-          setData(response.data.bookings);
+          setData(response.data.bookings as BookingWithUser[]);
           setTotalPages(response.data.totalPages as number);
         }
       } catch (error) {
@@ -94,6 +105,14 @@ const MyBookings = () => {
         message
       );
       if (response.status === HttpStatusCode.OK) {
+        const cancelledBooking = response.data.booking as Booking;
+        const bookings = data?.map((booking) =>
+          booking._id === cancelledBooking._id
+            ? { ...booking, isCancelled: !booking.isCancelled }
+            : booking
+        );
+
+        setData(bookings);
         toast.success("Booking cancellation requested");
       }
     } catch (error) {
@@ -131,7 +150,9 @@ const MyBookings = () => {
       className="min-h-screen bg-gray-50 p-4 md:p-6"
     >
       <div className="max-w-7xl mx-auto">
-        <h3 className="text-2xl font-bold text-amber-700 mb-6 pl-3">My Bookings</h3>
+        <h3 className="text-2xl font-bold text-amber-700 mb-6 pl-3">
+          My Bookings
+        </h3>
         {data && (
           <>
             <ReusableTable
@@ -168,25 +189,52 @@ const MyBookings = () => {
                   const isDisabled = row.isCancelled || daysUntilBooking < 1;
 
                   return (
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      disabled={isDisabled}
-                      onClick={() => {
-                        setSelectedBooking(row);
-                        setIsOpen(true);
-                      }}
-                      className={`px-4 py-2 text-sm font-medium rounded-md transition-colors duration-200 ${
-                        isDisabled
-                          ? "bg-gray-100 text-gray-500 cursor-not-allowed"
-                          : "bg-yellow-500 text-white hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
-                      }`}
-                    >
-                      {row.isCancelled ? "Cancelled" : "Cancel"}
-                    </motion.button>
+                    <div className="flex gap2">
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        disabled={isDisabled}
+                        onClick={() => {
+                          setSelectedBooking(row);
+                          setIsOpen(true);
+                        }}
+                        className={`px-4 py-2 text-sm font-medium rounded-md transition-colors duration-200 ${
+                          isDisabled
+                            ? "bg-gray-100 text-gray-500 cursor-not-allowed"
+                            : "bg-yellow-500 text-white hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
+                        }`}
+                      >
+                        {row.isCancelled ? "Cancelled" : "Cancel"}
+                      </motion.button>
+                    </div>
                   );
                 }
-
+                if (col === "viewDetials") {
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => {
+                      setSelectedBooking(row);
+                      setOpenDetails(true);
+                    }}
+                    className="px-3 py-2 text-xs font-medium rounded-md transition-colors duration-200 bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  >
+                    View Details
+                  </motion.button>;
+                }
+                
+                if (col === "talkToHost") {
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => {
+                      navigate("/chat")
+                    }}
+                    className="px-3 py-2 text-xs font-medium rounded-md transition-colors duration-200 bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  >
+                    View Details
+                  </motion.button>;
+                }
                 return String(row[col as keyof Booking]);
               }}
             />
@@ -214,6 +262,12 @@ const MyBookings = () => {
           </motion.div>
         )}
       </div>
+      {openDetails && selectedBooking && (
+        <BookingDetails
+          booking={selectedBooking}
+          onClose={() => setOpenDetails(false)}
+        />
+      )}
       <RejectionModal
         isOpen={isOpen}
         onclose={() => setIsOpen(false)}

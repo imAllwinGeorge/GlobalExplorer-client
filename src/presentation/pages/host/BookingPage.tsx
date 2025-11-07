@@ -5,7 +5,11 @@ import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../store";
-import type { Booking } from "../../../shared/types/global";
+import type {
+  ActivityData,
+  Booking,
+  BookingWithUser,
+} from "../../../shared/types/global";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
 import {
   HttpStatusCode,
@@ -19,11 +23,12 @@ import RejectionModal from "../../components/sharedElements/RejectionModal";
 import { hostService } from "../../../services/HostService";
 import SearchBox from "../../components/sharedElements/Search-box";
 import RadioGroup from "../../../components/ui/RadioGroup";
-
+import ActivitySlotsTable from "@/presentation/components/common/booking/AvailableSlotTable";
 
 const columns = [
   "index",
   "activityTitle",
+  "userName",
   "participantCount",
   "date",
   "paymentStatus",
@@ -33,6 +38,7 @@ const columns = [
 const columnHeaders = {
   index: "#",
   activityTitle: "Activity Name",
+  userName: "User Name",
   participantCount: "Booking For",
   date: "Date",
   paymentStatus: "Payment Status",
@@ -41,7 +47,7 @@ const columnHeaders = {
 
 const BookingPage = () => {
   const user = useSelector((state: RootState) => state.host.host);
-  const [data, setData] = useState<Booking[]>();
+  const [data, setData] = useState<BookingWithUser[]>();
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useLocalStorage(
     LOCAL_STORAGE_KEYS.MY_BOOKING_PAGE,
@@ -54,6 +60,7 @@ const BookingPage = () => {
   const [selected, setSelected] = useState<string | boolean>(
     OPTIONS.booking[0].value
   );
+  const [availableSlots, setAvailableSlots] = useState<ActivityData[]>();
   useEffect(() => {
     if (!user) return;
 
@@ -69,8 +76,9 @@ const BookingPage = () => {
         );
         if (response.status === HttpStatusCode.OK) {
           console.log(response, user._id);
-          setData(response.data.bookings);
+          setData(response.data.bookings as BookingWithUser[]);
           setTotalPages(response.data.totalPages as number);
+          setAvailableSlots(response.data.availableSlots);
         }
       } catch (error) {
         console.log(error);
@@ -142,6 +150,7 @@ const BookingPage = () => {
       className="min-h-screen bg-gray-50 p-4 md:p-6"
     >
       <div className="max-w-7xl mx-auto">
+        <ActivitySlotsTable data={availableSlots} />
         <SearchBox
           placeholder="Search for activities....."
           onSearch={(query) => setSearchQuery(query)}
@@ -161,6 +170,8 @@ const BookingPage = () => {
               title="My Bookings"
               renderCell={(col, row) => {
                 if (col === "index") return data.indexOf(row) + 1;
+                if (col === "userName")
+                  return `${row.user.firstName} ${row.user.lastName}`;
                 if (col === "date") {
                   return new Date(row.date).toLocaleDateString();
                 }

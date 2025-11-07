@@ -124,8 +124,10 @@ export interface Booking {
   pricePerParticipant: number;
   paymentStatus: "pending" | "paid" | "failed" | "refunded";
   razorpayPaymentId?: string;
-  razporpayOrderId?: string;
+  razorpayOrderId?: string;
   razorpaySignatue?: string;
+  qrCode: string;
+  qrToken: string;
   bookingStatus: "pending" | "cancelled" | "completed";
   hostId: string;
   isCancelled: boolean;
@@ -210,6 +212,17 @@ export interface Review {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface ActivityData {
+  activityId: string;
+  activityName: string;
+  availability: Array<{
+    date: string;
+    availableSeats: number;
+    totalSeats: number;
+    bookedSeats: number;
+  }>;
+}
  
 export interface AuthResponse {
   user?: User | Host | null | undefined,
@@ -225,8 +238,10 @@ export interface AuthResponse {
   unreadCount?: number,
   razorpayAccountId?: string,
   availability?: {date: string, availableSeats: number}[]
+  availableSlots?: ActivityData[];
   booking?: Booking,
-  bookings?: Booking[],
+  bookings?: Booking[] | BookingWithUser[],
+  bookingsWithUser?: BookingWithUser[];
   conversations?: ConversationResponse [],
   conversation?: Conversation,
   messages?: Message[],
@@ -272,4 +287,8 @@ export type GalleryImages = {
     _id: string;
     url: string;
   }
+
+export interface BookingWithUser extends Booking {
+  user: Omit<User, "password">;
+}
 

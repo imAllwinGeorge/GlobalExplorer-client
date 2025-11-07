@@ -12,6 +12,7 @@ import BookingPage from "../presentation/pages/host/BookingPage"
 import Chat from "../presentation/pages/host/ChatPage"
 import SalesPage from "../presentation/pages/host/SalesPage"
 import NotFoundPage from "../presentation/pages/common/NotFoundPage"
+import QRVerification from "@/presentation/pages/host/QRVerification"
 
 
 
@@ -26,6 +27,7 @@ const HostRoutes = () => {
         <Route  element={<ProtectedRoute element={<HostLayout />} allowedRoles={["host"]} />}>
           <Route path="home" element={<HostHome />} />
           <Route path="activity" element={<ActivityPage />} />
+          <Route path="booking/verification" element={<QRVerification />} />
           <Route path="profile" element={<Profile />} />
           <Route path="bookings" element={<BookingPage />} />
           <Route path="chat" element={<Chat />} />

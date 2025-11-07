@@ -13,6 +13,7 @@ import {
   NotebookPen,
   NotebookText,
   ShieldUser,
+  Ticket,
   User,
   Users,
 } from "lucide-react";
@@ -119,6 +120,11 @@ export const SideBarItems = {
       title: "Profile",
       path: "/host/profile",
       icon: Notebook,
+    },
+    {
+      title: "Booking Verification",
+      path: "/host/booking/verification",
+      icon: Ticket,
     },
     {
       title: "Activity Booking",
