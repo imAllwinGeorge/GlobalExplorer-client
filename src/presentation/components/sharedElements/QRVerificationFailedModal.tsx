@@ -12,7 +12,7 @@ export default function QRVerificationFailedModal({ isOpen, onClose, errorMessag
 
   return (
     <div
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4"
+      className="inset-0 bg-black/50 flex items-center justify-center z-50 px-4"
       onClick={onClose}
     >
       <div

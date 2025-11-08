@@ -200,6 +200,17 @@ export class HostService {
         throw new Error(message);
     }
   }
+
+  async getTodayBookings (hostId: string, page: number, limit: number): Promise<AxiosResponse<AuthResponse>> {
+    try {
+      const response = await axiosInstance.get<AuthResponse>(API_ROUTES.HOST.TODAY_BOOKING(hostId, page, limit));
+      return response;
+    } catch (error) {
+      const message = (error as ErrorResponse).response?.data?.message ||
+      "Something went wrong!. Please try again";
+      throw new Error(message)
+    }
+  }
 }
 
 export const hostService = new HostService();

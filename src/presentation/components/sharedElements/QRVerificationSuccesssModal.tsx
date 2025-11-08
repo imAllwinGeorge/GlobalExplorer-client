@@ -22,7 +22,7 @@ export default function QRVerificationSuccessModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50 p-4">
+    <div className="inset-0 flex items-center justify-center z-50 bg-black/50 p-4">
       <div className="bg-white rounded-2xl shadow-lg max-w-md sm:max-w-lg w-full p-6 animate-fadeIn">
         {/* Header */}
         <div className="flex flex-col items-center text-center space-y-4">

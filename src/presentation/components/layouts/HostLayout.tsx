@@ -16,7 +16,7 @@ const HostLayout = () => {
           <Outlet />
         </main>
       </div>
-      <div className="z-50">
+      <div className="z-40">
         <Footer />
       </div>
     </div>

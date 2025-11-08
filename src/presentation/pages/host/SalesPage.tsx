@@ -1,32 +1,37 @@
-
 import { Users } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../store";
-import type { SalesData } from "../../../shared/types/global";
+import type { Booking, SalesData } from "../../../shared/types/global";
 import { hostService } from "../../../services/HostService";
 import { HttpStatusCode } from "../../../shared/constants/constants";
 import { calculateGrowth } from "../../../utils/helpers/helper";
 import RevanueChart from "../../components/common/Sales/RevanueChart";
 import GrowthGauge from "../../components/common/Sales/GrowthGauge";
 import StatsCard from "../../components/common/Dashboard/StatsCard";
-
+import SalesReportPage from "@/presentation/components/sales/Sales.report";
 
 const SalesPage = () => {
-    const host = useSelector((state: RootState) => state.host.host)
+  const host = useSelector((state: RootState) => state.host.host);
   const [salesData, setSalesData] = useState<SalesData>();
-  const [value, setValue] = useState<{growth: number; currentTotalSales: number; previousTotalSales: number}>({growth:0, currentTotalSales: 0, previousTotalSales: 0});
+  const [bookings, setBookings] = useState<Booking[]>();
+  const [value, setValue] = useState<{
+    growth: number;
+    currentTotalSales: number;
+    previousTotalSales: number;
+  }>({ growth: 0, currentTotalSales: 0, previousTotalSales: 0 });
   const currentYear = new Date().getFullYear();
 
   useEffect(() => {
     const fetchSalesData = async () => {
       try {
-        if(!host) return
+        if (!host) return;
         const response = await hostService.salesData(host._id);
         console.log(response);
         if (response.status === HttpStatusCode.OK) {
           setSalesData(response.data as SalesData);
           setValue(calculateGrowth(response.data as SalesData));
+          setBookings(response.data.bookings);
         }
       } catch (error) {
         console.error("Failed to fetch sales data:", error);
@@ -46,7 +51,7 @@ const SalesPage = () => {
       gradient: "bg-gradient-to-r from-blue-500 to-cyan-400",
     },
     {
-      title: (currentYear-1).toString(),
+      title: (currentYear - 1).toString(),
       value: value.previousTotalSales,
       icon: Users,
       progress: "75%",
@@ -71,6 +76,8 @@ const SalesPage = () => {
           <StatsCard stats={stats} cols={{ base: 1, md: 2, xl: 2 }} />
         </div>
       </div>
+
+      {bookings && <SalesReportPage bookings={bookings} />}
     </div>
   );
 };

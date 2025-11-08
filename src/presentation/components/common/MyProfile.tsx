@@ -257,7 +257,7 @@ export default function MyProfile({
       error = validateAdminProfile(formData);
     }
 
-    if (Object.keys(errors).length > 0) {
+    if (Object.keys(error).length > 0) {
       setErrors(error);
       return;
     }
