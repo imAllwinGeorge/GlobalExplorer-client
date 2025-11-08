@@ -209,8 +209,9 @@ const MyBookings = () => {
                     </div>
                   );
                 }
-                if (col === "viewDetials") {
-                  <motion.button
+                if (col === "viewDetails") {
+                  return (
+                    <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => {
@@ -220,11 +221,12 @@ const MyBookings = () => {
                     className="px-3 py-2 text-xs font-medium rounded-md transition-colors duration-200 bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                   >
                     View Details
-                  </motion.button>;
+                  </motion.button>
+                  )
                 }
                 
                 if (col === "talkToHost") {
-                  <motion.button
+                  return (<motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => {
@@ -232,8 +234,8 @@ const MyBookings = () => {
                     }}
                     className="px-3 py-2 text-xs font-medium rounded-md transition-colors duration-200 bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                   >
-                    View Details
-                  </motion.button>;
+                    Tolk to host
+                  </motion.button>)
                 }
                 return String(row[col as keyof Booking]);
               }}

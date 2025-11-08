@@ -73,9 +73,9 @@ export default function SalesReportPage({bookings}: SalesReportPageProps) {
       "Activity Name": booking.activityTitle,
       Date: new Date(booking.date).toLocaleDateString(),
       Participants: booking.participantCount,
-      "Price per Person": `$${booking.pricePerParticipant.toFixed(2)}`,
+      "Price per Person": `₹${booking.pricePerParticipant.toFixed(2)}`,
       "Payment Status": booking.paymentStatus.charAt(0).toUpperCase() + booking.paymentStatus.slice(1),
-      "Total Revenue": `$${(booking.participantCount * booking.pricePerParticipant).toFixed(2)}`,
+      "Total Revenue": `₹${(booking.participantCount * booking.pricePerParticipant).toFixed(2)}`,
     }))
 
     const filename = `sales-report-${filterPeriod}-${new Date().toISOString().split("T")[0]}.xlsx`
@@ -96,7 +96,7 @@ export default function SalesReportPage({bookings}: SalesReportPageProps) {
 
         {/* Metrics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <MetricCard title="Total Revenue" value={`$${metrics.totalRevenue.toFixed(2)}`} subtitle={`${filterPeriod} period`} />
+          <MetricCard title="Total Revenue" value={`₹${metrics.totalRevenue.toFixed(2)}`} subtitle={`${filterPeriod} period`} />
           <MetricCard title="Total Bookings" value={metrics.totalBookings} subtitle={`${metrics.paidBookings} paid`} />
           <MetricCard
             title="Total Participants"
@@ -149,7 +149,7 @@ export default function SalesReportPage({bookings}: SalesReportPageProps) {
             title="Sales Data"
             renderCell={(col, row) => {
               if (col === "date") return new Date(row.date).toLocaleDateString()
-              if (col === "pricePerParticipant") return `$${row.pricePerParticipant.toFixed(2)}`
+              if (col === "pricePerParticipant") return `₹${row.pricePerParticipant.toFixed(2)}`
               if (col === "paymentStatus") {
                 return (
                   <span
@@ -166,7 +166,7 @@ export default function SalesReportPage({bookings}: SalesReportPageProps) {
                 )
               }
               if (col === "totalRevenue") {
-                return `$${(row.participantCount * row.pricePerParticipant).toFixed(2)}`
+                return `₹${(row.participantCount * row.pricePerParticipant).toFixed(2)}`
               }
               return String(row[col as keyof Booking])
             }}
