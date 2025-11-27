@@ -76,6 +76,11 @@ export interface Activity {
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
+  //-----
+  basePrice: number;
+  dynamicPricingEnabled: boolean;
+  maxDynamicPercentage: number;
+  offerPercentage: number;
 }
 
 export interface Review {
@@ -292,3 +297,12 @@ export interface BookingWithUser extends Booking {
   user: Omit<User, "password">;
 }
 
+export type DateFilterType = "single" | "today" | "yesterday" | "range" | "week" | "month" | "year" | "all"
+
+export interface SalesFilters {
+  dateFilterType: DateFilterType
+  fromDate?: string // ISO string
+  toDate?: string // ISO string
+  minPrice?: number
+  maxPrice?: number
+}

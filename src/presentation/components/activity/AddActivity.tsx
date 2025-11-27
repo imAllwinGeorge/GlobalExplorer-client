@@ -267,7 +267,7 @@ export default function AddActivity({ onClose }: AddActivityProps) {
       try {
         const response = await hostService.getCategories();
         if (response.status === HttpStatusCode.OK) {
-          setCategories(response.data.categories as Category[]);
+          setCategories(response.data.categories as Category[] || []);
           console.log(response);
         }
       } catch (error) {

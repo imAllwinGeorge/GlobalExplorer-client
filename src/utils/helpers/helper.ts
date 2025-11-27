@@ -1,3 +1,4 @@
+import type { ErrorResponse } from "@/shared/types/auth.type";
 import type { Review, SalesData } from "../../shared/types/global";
 
 export function formateDate(isoString: string) {
@@ -37,5 +38,15 @@ export function calculateGrowth(salesData: SalesData) {
       ? 100
       : ((totalCurrent - totalPrevious) / totalPrevious) * 100;
 
-  return {growth: Math.round(growth), currentTotalSales: totalCurrent, previousTotalSales: totalPrevious }
+  return {
+    growth: Math.round(growth),
+    currentTotalSales: totalCurrent,
+    previousTotalSales: totalPrevious,
+  };
+}
+
+export function extractErrorMessage(error: ErrorResponse): string {
+  return (
+    error.response?.data?.message || "Something Went wrong! please try again.."
+  );
 }
