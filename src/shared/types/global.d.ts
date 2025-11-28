@@ -242,6 +242,7 @@ export interface AuthResponse {
   totalPages?: number,
   unreadCount?: number,
   razorpayAccountId?: string,
+  availabilities?: Availability[],
   availability?: {date: string, availableSeats: number}[]
   availableSlots?: ActivityData[];
   booking?: Booking,
@@ -305,4 +306,14 @@ export interface SalesFilters {
   toDate?: string // ISO string
   minPrice?: number
   maxPrice?: number
+}
+
+export interface Availability {
+  _id: string;
+  date: string;
+  activityId: string;
+  availableSeats: number;
+  totalSeats: number;
+  createdAt: string;
+  updatedAt: string;
 }

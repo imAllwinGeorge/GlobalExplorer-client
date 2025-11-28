@@ -42,7 +42,8 @@ export const API_ROUTES = {
     ACTIVITY_STATUS: (id: string) => `/api/admin/activity/status/${id}`,
     DASHBOARD: `/api/admin/dashboard`,
     SALES: "/api/admin/sales",
-    SALES_REPORT: (filter: SalesFilters, page: number, limit: number) => `/api/admin/sales/filter?dateType=${filter.dateFilterType}&fromDate=${filter.fromDate}&toDate=${filter.toDate}&minPrice=${filter.minPrice}&maxPrice=${filter.maxPrice}&page=${page}&limit=${limit}`,
+    SALES_REPORT: (filter: SalesFilters, page: number, limit: number) =>
+      `/api/admin/sales/filter?dateType=${filter.dateFilterType}&fromDate=${filter.fromDate}&toDate=${filter.toDate}&minPrice=${filter.minPrice}&maxPrice=${filter.maxPrice}&page=${page}&limit=${limit}`,
   },
   HOST: {
     GET_ACTIVITIES: (
@@ -73,11 +74,28 @@ export const API_ROUTES = {
       `/api/host/mark-read-message/${conversationId}/${userId}`,
     SALES: (id: string) => `/api/host/sales/${id}`,
     VERIFY_BOOKING: `/api/host/booking/qr-verification`,
-    TODAY_BOOKING: (id: string, page: number, limit: number) => `/api/host/booking/today/${id}?page=${page}&limit=${limit}`,
-    UPDATE_DYNAMIC_PRICING: (activityId: string) => `/api/host/activity/update-dynamic-pricing/${activityId}`,
-    UPDATE_PRICING:(activityId: string) => `/api/host/activity/update-pricing/${activityId}`,
-    SALES_REPORT:(hostId: string, filter: SalesFilters, page: number, limit: number) => `/api/host/sales/filter/${hostId}?dateType=${filter.dateFilterType}&fromDate=${filter.fromDate}&toDate=${filter.toDate}&minPrice=${filter.minPrice}&maxPrice=${filter.maxPrice}&page=${page}&limit=${limit}`,
-    ACTIVITY_SALES: (activityId: string, filter: SalesFilters, page: number, limit: number) => `/api/host/activity/sales/filter/${activityId}?dateType=${filter.dateFilterType}&fromDate=${filter.fromDate}&toDate=${filter.toDate}&minPrice=${filter.minPrice}&maxPrice=${filter.maxPrice}&page=${page}&limit=${limit}`
+    TODAY_BOOKING: (id: string, page: number, limit: number) =>
+      `/api/host/booking/today/${id}?page=${page}&limit=${limit}`,
+    UPDATE_DYNAMIC_PRICING: (activityId: string) =>
+      `/api/host/activity/update-dynamic-pricing/${activityId}`,
+    UPDATE_PRICING: (activityId: string) =>
+      `/api/host/activity/update-pricing/${activityId}`,
+    SALES_REPORT: (
+      hostId: string,
+      filter: SalesFilters,
+      page: number,
+      limit: number
+    ) =>
+      `/api/host/sales/filter/${hostId}?dateType=${filter.dateFilterType}&fromDate=${filter.fromDate}&toDate=${filter.toDate}&minPrice=${filter.minPrice}&maxPrice=${filter.maxPrice}&page=${page}&limit=${limit}`,
+    ACTIVITY_SALES: (
+      activityId: string,
+      filter: SalesFilters,
+      page: number,
+      limit: number
+    ) =>
+      `/api/host/activity/sales/filter/${activityId}?dateType=${filter.dateFilterType}&fromDate=${filter.fromDate}&toDate=${filter.toDate}&minPrice=${filter.minPrice}&maxPrice=${filter.maxPrice}&page=${page}&limit=${limit}`,
+    ACTIVITY_AVAILABILITY: (activityId: string, date: Date) =>
+      `/api/host/activity/availability?activityId=${activityId}&date=${date}`,
   },
   USER: {
     GET_USER: (_id: string, role: string) =>

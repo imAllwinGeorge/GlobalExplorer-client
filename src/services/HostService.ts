@@ -297,6 +297,16 @@ export class HostService {
       throw new Error(message);
     }
   }
+
+  async activityAvailability(activityId: string, date: Date): Promise<AxiosResponse<AuthResponse>> {
+    try {
+      const response = await axiosInstance.get<AuthResponse>(API_ROUTES.HOST.ACTIVITY_AVAILABILITY(activityId, date));
+      return response
+    } catch (error) {
+      const message = extractErrorMessage(error as ErrorResponse);
+      throw new Error(message)
+    }
+  }
 }
 
 export const hostService = new HostService();
