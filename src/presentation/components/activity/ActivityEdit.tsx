@@ -1,6 +1,795 @@
+// import type React from "react";
+
+// import { useState } from "react";
+// import { easeOut, motion } from "framer-motion";
+// import {
+//   Save,
+//   ArrowLeft,
+//   MapPin,
+//   DollarSign,
+//   Clock,
+//   ImageIcon,
+//   X,
+// } from "lucide-react";
+// import { Button } from "../ui/button";
+// import {
+//   Card,
+//   CardContent,
+//   CardHeader,
+//   CardTitle,
+// } from "../../../components/ui/card";
+// import Input from "../ui/Input";
+// import { Textarea } from "../../../components/ui/textarea";
+// import { Separator } from "../../../components/ui/separator";
+// import { Switch } from "../../../components/ui/switch";
+// import type { Activity } from "../../../shared/types/global";
+// import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
+// import type { LatLngExpression } from "leaflet";
+// import toast from "react-hot-toast";
+// import { HostService } from "../../../services/HostService";
+// import ConfirmModal from "../sharedElements/ConfirmModal";
+// import { HttpStatusCode } from "../../../shared/constants/constants";
+
+// interface ActivityEditProps {
+//   activity: Activity;
+//   onSave?: (activity: Activity, images: File[]) => void;
+//   onCancel?: () => void;
+//   isLoading?: boolean;
+//   onEditSuccess: (activity: Activity) => void;
+// }
+
+// interface Props {
+//   center: LatLngExpression;
+// }
+
+// // Placeholder function for getting coordinates from address
+// const getLocationFromAddress = async (
+//   address: string
+// ): Promise<[number, number]> => {
+//   // This is a placeholder function - you can integrate with your preferred geocoding API
+//   // For example: Google Maps Geocoding API, Mapbox, or OpenStreetMap Nominatim
+//   try {
+//     // Simulated API call
+//     console.log("Getting location for address:", address);
+//     // Return default coordinates for now
+//     const response = await fetch(
+//       `${import.meta.env.VITE_GET_GEOLOCATION}${encodeURIComponent(
+//         address
+//       )}&key=${import.meta.env.VITE_MAP_API}`
+//     );
+//     const result = await response.json();
+//     // console.log(result);
+//     const { lat, lng } = result.results[0].geometry;
+//     // setPosition([lat, lng])
+
+//     return [lat, lng];
+//   } catch (error) {
+//     console.error("Error getting location:", error);
+//     return [0, 0];
+//   }
+// };
+
+// type ActivityErrors = {
+//   activityName?: string;
+//   itenary?: string;
+//   maxCapacity?: string;
+//   categoryId?: string;
+//   pricePerHead?: string;
+//   userId?: string;
+//   street?: string;
+//   city?: string;
+//   district?: string;
+//   state?: string;
+//   postalCode?: string;
+//   country?: string;
+//   reportingPlace?: string;
+//   reportingTime?: string;
+//   location?: {
+//     coordinates?: string;
+//   };
+//   images?: string;
+//   recurrenceDays?: string;
+// };
+
+// const validateActivityForm = (data: Activity): ActivityErrors => {
+//   const errors: ActivityErrors = {};
+
+//   if (!data.activityName.trim())
+//     errors.activityName = "Please provide a valid Activity Name";
+//   if (data.itenary.trim().split(/\s+/).length <= 20)
+//     errors.itenary =
+//       "Please provide valid itenary. Itenary should atleast 20 words";
+
+//   if (data.maxCapacity <= 0)
+//     errors.maxCapacity = "Max capacity must be greater than 0";
+//   if (!data.categoryId) errors.categoryId = "";
+//   if (data.pricePerHead <= 0)
+//     errors.pricePerHead = "Price per head must be greater than 0";
+
+//   if (!data.street.trim()) errors.street = "Street is required";
+//   if (!data.city.trim()) errors.city = "city is required";
+//   if (!data.district.trim()) errors.district = "District is required";
+//   if (!data.state.trim()) errors.state = "State is required";
+//   if (!data.postalCode.trim()) errors.postalCode = "Postal Code is required";
+//   if (!data.country.trim()) errors.country = "Country is required";
+
+//   if (!data.reportingPlace.trim())
+//     errors.reportingPlace = "Please mention a reporting place";
+//   if (!data.reportingTime.trim())
+//     errors.reportingTime = "Select a reporting time";
+
+//   if (!data.images || data.images.length === 0) {
+//     errors.images = "At least one image is required";
+//   }
+
+//   return errors;
+// };
+
+// export default function ActivityEdit({
+//   activity,
+//   onSave,
+//   onCancel,
+//   isLoading = false,
+//   onEditSuccess,
+// }: ActivityEditProps) {
+//   console.log(activity);
+//   const [formData, setFormData] = useState<Activity>({
+//     ...activity,
+//     location: {
+//       ...activity.location,
+//       coordinates: [...activity.location.coordinates].reverse() as [
+//         number,
+//         number
+//       ],
+//     },
+//     updatedAt: new Date(),
+//   });
+//   console.log(formData);
+//   const [images, setImages] = useState<File[]>([]);
+//   const [statusChange, setStatusChange] = useState(activity.isActive);
+//   const [isModalOpen, setIsModelOpen] = useState(false);
+//   const [selectedActivity, setSelectedActivity] = useState<{
+//     activityId: string;
+//     status: boolean;
+//   } | null>(null);
+//   const [errors, setErrors] = useState<ActivityErrors>();
+//   const hostService = new HostService();
+
+//   const handleInputChange = (
+//     field: keyof Activity,
+//     value: string | number | boolean
+//   ) => {
+//     setFormData((prev) => ({
+//       ...prev,
+//       [field]:
+//         field === "maxCapacity" || field === "pricePerHead"
+//           ? Number(value)
+//           : value,
+//     }));
+//   };
+
+//   const handleLocationChange = (index: 0 | 1, value: string) => {
+//     const newLocation = [...formData.location.coordinates] as [number, number];
+//     newLocation[index] = Number.parseFloat(value) || 0;
+//     setFormData((prev) => ({
+//       ...prev,
+//       location: {
+//         ...prev.location,
+//         coordinates: newLocation,
+//       },
+//     }));
+//   };
+
+//   const removeImage = (index: number) => {
+//     setFormData((prev) => ({
+//       ...prev,
+//       images: prev.images.filter((_, i) => i !== index),
+//     }));
+//   };
+
+//   const handleSubmit = (e: React.FormEvent) => {
+//     e.preventDefault();
+
+//     const newErrors = validateActivityForm(formData);
+
+//     if (Object.keys(newErrors).length > 0) {
+//       setErrors(newErrors);
+//       return;
+//     }
+
+//     onSave?.(formData, images);
+//   };
+
+//   const containerVariants = {
+//     hidden: { opacity: 0 },
+//     visible: {
+//       opacity: 1,
+//       transition: {
+//         staggerChildren: 0.1,
+//       },
+//     },
+//   };
+
+//   const itemVariants = {
+//     hidden: { opacity: 0, y: 20 },
+//     visible: {
+//       opacity: 1,
+//       y: 0,
+//       transition: { duration: 0.5 },
+//     },
+//   };
+
+//   const imageVariants = {
+//     hover: {
+//       scale: 1.05,
+//       transition: { duration: 0.3, ease: easeOut },
+//     },
+//   };
+
+//   const ChangeView = ({ center }: Props) => {
+//     const map = useMap();
+//     map.setView(center); // This moves the map to the new center
+//     return null;
+//   };
+
+//   const handleAddressChange = async () => {
+//     const address = `${formData.street}, ${formData.city}, ${formData.district}, ${formData.state}, ${formData.postalCode}, ${formData.country}`;
+//     if (address.trim().length > 10) {
+//       try {
+//         const coordinates = await getLocationFromAddress(address);
+//         setFormData((prev) => ({
+//           ...prev,
+//           location: {
+//             ...prev.location,
+//             coordinates: coordinates,
+//           },
+//         }));
+//       } catch (error) {
+//         console.error("Failed to get location:", error);
+//       }
+//     }
+//   };
+
+//   const updateStatus = async () => {
+//     if (!selectedActivity) return;
+//     try {
+//       const response = await hostService.updateStatus(
+//         selectedActivity?.activityId,
+//         { isActive: selectedActivity?.status }
+//       );
+//       if (response.status === HttpStatusCode.OK) {
+//         toast.success(response.data.message || "status changed successfull");
+//         setStatusChange(selectedActivity.status);
+//         setFormData((prev) => ({ ...prev, isActive: selectedActivity.status }));
+//         onEditSuccess(response.data.activity as Activity);
+//       }
+//     } catch (error) {
+//       if (error instanceof Error) {
+//         toast.error(error.message);
+//       }
+//     }
+//   };
+
+//   return (
+//     <div className="min-h-screen bg-gray-50 py-6">
+//       <div className="container mx-auto px-4 max-w-4xl">
+//         {/* Header */}
+//         <motion.div
+//           className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4"
+//           initial={{ opacity: 0, y: -20 }}
+//           animate={{ opacity: 1, y: 0 }}
+//           transition={{ duration: 0.5 }}
+//         >
+//           <div className="flex items-center gap-4">
+//             {onCancel && (
+//               <Button variant="outline" size="sm" onClick={onCancel}>
+//                 <ArrowLeft className="w-4 h-4 mr-2" />
+//                 Cancel
+//               </Button>
+//             )}
+//             <div>
+//               <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
+//                 Edit Activity
+//               </h1>
+//               <p className="text-gray-600 mt-1">
+//                 Activity Name: {activity.activityName}
+//               </p>
+//             </div>
+//           </div>
+
+//           <div className="flex items-center gap-3">
+//             <div className="flex items-center space-x-2">
+//               <Switch
+//                 id="active-status"
+//                 checked={statusChange}
+//                 onCheckedChange={(checked: boolean) => {
+//                   setSelectedActivity({
+//                     activityId: activity._id,
+//                     status: checked,
+//                   });
+//                   setIsModelOpen(true);
+//                   // updateStatus(activity._id, checked)
+//                 }}
+//               />
+//               <label htmlFor="active-status">
+//                 {formData.isActive ? "Active" : "Inactive"}
+//               </label>
+//             </div>
+//           </div>
+//         </motion.div>
+
+//         <form onSubmit={handleSubmit}>
+//           <motion.div
+//             variants={containerVariants}
+//             initial="hidden"
+//             animate="visible"
+//             className="space-y-6"
+//           >
+//             {/* Basic Information */}
+//             <motion.div variants={itemVariants}>
+//               <Card>
+//                 <CardHeader>
+//                   <CardTitle>Basic Information</CardTitle>
+//                 </CardHeader>
+//                 <CardContent className="space-y-4">
+//                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+//                     <div>
+//                       <label htmlFor="activityName">Activity Name *</label>
+//                       <Input
+//                         id="activityName"
+//                         value={formData.activityName}
+//                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+//                           handleInputChange("activityName", e.target.value)
+//                         }
+//                       />
+//                       {errors?.activityName && (
+//                         <span className="text-red-500">
+//                           {errors.activityName}
+//                         </span>
+//                       )}
+//                     </div>
+//                     {/* <div>
+//                       <label htmlFor="categoryId">Category ID *</label>
+//                       <Input
+//                         id="categoryId"
+//                         value={formData.categoryId}
+//                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+//                           handleInputChange("categoryId", e.target.value)
+//                         }
+//                         required
+//                       />
+//                     </div> */}
+//                   </div>
+
+//                   <div>
+//                     <label htmlFor="itenary">Activity Description</label>
+//                     <Textarea
+//                       id="itenary"
+//                       value={formData.itenary}
+//                       onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+//                         handleInputChange("itenary", e.target.value)
+//                       }
+//                       rows={4}
+//                       placeholder="Describe the activity, what's included, and what guests can expect..."
+//                     />
+//                     {errors?.itenary && (
+//                       <span className="text-red-500">{errors.itenary}</span>
+//                     )}
+//                   </div>
+//                 </CardContent>
+//               </Card>
+//             </motion.div>
+
+//             {/* Pricing & Capacity */}
+//             <motion.div variants={itemVariants}>
+//               <Card>
+//                 <CardHeader>
+//                   <CardTitle className="flex items-center gap-2">
+//                     <DollarSign className="w-5 h-5" />
+//                     Pricing & Capacity
+//                   </CardTitle>
+//                 </CardHeader>
+//                 <CardContent className="space-y-4">
+//                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+//                     <div>
+//                       <label htmlFor="pricePerHead">
+//                         Price per Head (USD) *
+//                       </label>
+//                       <Input
+//                         id="pricePerHead"
+//                         type="number"
+//                         min="0"
+//                         step="0.01"
+//                         value={formData.pricePerHead}
+//                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+//                           handleInputChange(
+//                             "pricePerHead",
+//                             Number.parseFloat(e.target.value) || 0
+//                           )
+//                         }
+//                       />
+//                       {errors?.pricePerHead && (
+//                         <span className="text-red-500">
+//                           {errors.pricePerHead}
+//                         </span>
+//                       )}
+//                     </div>
+//                     <div>
+//                       <label htmlFor="maxCapacity">Maximum Capacity *</label>
+//                       <Input
+//                         id="maxCapacity"
+//                         type="number"
+//                         min="1"
+//                         value={formData.maxCapacity}
+//                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+//                           handleInputChange(
+//                             "maxCapacity",
+//                             Number.parseInt(e.target.value) || 1
+//                           )
+//                         }
+//                       />
+//                       {errors?.maxCapacity && (
+//                         <span className="text-red-500">
+//                           {errors.maxCapacity}
+//                         </span>
+//                       )}
+//                     </div>
+//                   </div>
+//                 </CardContent>
+//               </Card>
+//             </motion.div>
+
+//             {/* Location Information */}
+//             <motion.div variants={itemVariants}>
+//               <Card>
+//                 <CardHeader>
+//                   <CardTitle className="flex items-center gap-2">
+//                     <MapPin className="w-5 h-5" />
+//                     Location Information
+//                   </CardTitle>
+//                 </CardHeader>
+//                 <CardContent className="space-y-4">
+//                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+//                     <div>
+//                       <label htmlFor="street">Street Address *</label>
+//                       <Input
+//                         id="street"
+//                         value={formData.street}
+//                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+//                           handleInputChange("street", e.target.value)
+//                         }
+//                         onBlur={handleAddressChange}
+//                       />
+//                       {errors?.street && (
+//                         <span className="text-red-500">{errors.street}</span>
+//                       )}
+//                     </div>
+//                     <div>
+//                       <label htmlFor="city">City *</label>
+//                       <Input
+//                         id="city"
+//                         value={formData.city}
+//                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+//                           handleInputChange("city", e.target.value)
+//                         }
+//                         onBlur={handleAddressChange}
+//                       />
+//                       {errors?.city && (
+//                         <span className="text-red-500">{errors.city}</span>
+//                       )}
+//                     </div>
+//                     <div>
+//                       <label htmlFor="district">District</label>
+//                       <Input
+//                         id="district"
+//                         value={formData.district}
+//                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+//                           handleInputChange("district", e.target.value)
+//                         }
+//                         onBlur={handleAddressChange}
+//                       />
+//                       {errors?.district && (
+//                         <span className="text-red-500">{errors.district}</span>
+//                       )}
+//                     </div>
+//                     <div>
+//                       <label htmlFor="state">State *</label>
+//                       <Input
+//                         id="state"
+//                         value={formData.state}
+//                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+//                           handleInputChange("state", e.target.value)
+//                         }
+//                         onBlur={handleAddressChange}
+//                       />
+//                       {errors?.state && (
+//                         <span className="text-red-500">{errors.state}</span>
+//                       )}
+//                     </div>
+//                     <div>
+//                       <label htmlFor="postalCode">Postal Code</label>
+//                       <Input
+//                         id="postalCode"
+//                         value={formData.postalCode}
+//                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+//                           handleInputChange("postalCode", e.target.value)
+//                         }
+//                         onBlur={handleAddressChange}
+//                       />
+//                       {errors?.postalCode && (
+//                         <span className="text-red-500">
+//                           {errors.postalCode}
+//                         </span>
+//                       )}
+//                     </div>
+//                     <div>
+//                       <label htmlFor="country">Country *</label>
+//                       <Input
+//                         id="country"
+//                         value={formData.country}
+//                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+//                           handleInputChange("country", e.target.value)
+//                         }
+//                         onBlur={handleAddressChange}
+//                       />
+//                       {errors?.country && (
+//                         <span className="text-red-500">{errors.country}</span>
+//                       )}
+//                     </div>
+//                     <div className="w-full bg-gray-50 p-4 rounded-lg">
+//                       <MapContainer
+//                         center={formData.location.coordinates}
+//                         zoom={13}
+//                         scrollWheelZoom={false}
+//                         style={{ height: "300px", width: "200%" }}
+//                       >
+//                         <ChangeView center={formData.location.coordinates} />
+//                         <TileLayer
+//                           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+//                           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+//                         />
+//                         <Marker position={formData.location.coordinates}>
+//                           <Popup>
+//                             A pretty CSS3 popup. <br /> Easily customizable.
+//                           </Popup>
+//                         </Marker>
+//                       </MapContainer>
+//                     </div>
+//                   </div>
+
+//                   <Separator />
+
+//                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+//                     <div>
+//                       <label htmlFor="latitude">Latitude</label>
+//                       <Input
+//                         id="latitude"
+//                         type="number"
+//                         step="any"
+//                         value={formData.location.coordinates[0]}
+//                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+//                           handleLocationChange(0, e.target.value)
+//                         }
+//                       />
+//                     </div>
+//                     <div>
+//                       <label htmlFor="longitude">Longitude</label>
+//                       <Input
+//                         id="longitude"
+//                         type="number"
+//                         step="any"
+//                         value={formData.location.coordinates[1]}
+//                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+//                           handleLocationChange(1, e.target.value)
+//                         }
+//                       />
+//                     </div>
+//                   </div>
+//                 </CardContent>
+//               </Card>
+//             </motion.div>
+
+//             {/* Reporting Details */}
+//             <motion.div variants={itemVariants}>
+//               <Card>
+//                 <CardHeader>
+//                   <CardTitle className="flex items-center gap-2">
+//                     <Clock className="w-5 h-5" />
+//                     Reporting Details
+//                   </CardTitle>
+//                 </CardHeader>
+//                 <CardContent className="space-y-4">
+//                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+//                     <div>
+//                       <label htmlFor="reportingPlace">Reporting Place *</label>
+//                       <Input
+//                         id="reportingPlace"
+//                         value={formData.reportingPlace}
+//                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+//                           handleInputChange("reportingPlace", e.target.value)
+//                         }
+//                       />
+//                       {errors?.reportingPlace && (
+//                         <span className="text-red-500">
+//                           {errors.reportingPlace}
+//                         </span>
+//                       )}
+//                     </div>
+//                     <div>
+//                       <label htmlFor="reportingTime">Reporting Time *</label>
+//                       <Input
+//                         id="reportingTime"
+//                         value={formData.reportingTime}
+//                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+//                           handleInputChange("reportingTime", e.target.value)
+//                         }
+//                         placeholder="e.g., 2:00 PM"
+//                       />
+//                       {errors?.reportingPlace && (
+//                         <span className="text-red-500">
+//                           {errors.reportingPlace}
+//                         </span>
+//                       )}
+//                     </div>
+//                   </div>
+//                 </CardContent>
+//               </Card>
+//             </motion.div>
+
+//             {/* Images */}
+//             <motion.div variants={itemVariants}>
+//               <Card>
+//                 <CardHeader>
+//                   <CardTitle className="flex items-center gap-2">
+//                     <ImageIcon className="w-5 h-5" />
+//                     Activity Images
+//                   </CardTitle>
+//                   {errors?.images && (
+//                     <span className="text-red-500">{errors.images}</span>
+//                   )}
+//                 </CardHeader>
+//                 <CardContent className="space-y-4">
+//                   {/* Existing Images */}
+//                   {formData.images.length > 0 && (
+//                     <div className="space-y-2">
+//                       <label>Current Images</label>
+//                       <div className="space-y-2">
+//                         {formData.images.map((image, index) => (
+//                           <div
+//                             key={index}
+//                             className="flex items-center gap-2 p-2 border rounded"
+//                           >
+//                             <motion.div
+//                               variants={imageVariants}
+//                               className="h-full p-5"
+//                             >
+//                               <img
+//                                 src={`${image}`}
+//                                 alt={image as string}
+//                                 width={400}
+//                                 height={300}
+//                                 className="w-full h-64 lg:h-full object-cover rounded-3xl"
+//                               />
+//                             </motion.div>
+//                             <Button
+//                               type="button"
+//                               variant="outline"
+//                               size="sm"
+//                               className="hover:bg-red-500"
+//                               onClick={() => removeImage(index)}
+//                             >
+//                               <X className="w-4 h-4 " />
+//                             </Button>
+//                           </div>
+//                         ))}
+//                       </div>
+//                     </div>
+//                   )}
+
+//                   {/* images */}
+//                   <motion.section
+//                     initial={{ opacity: 0, x: -20 }}
+//                     animate={{ opacity: 1, x: 0 }}
+//                     transition={{ delay: 0.4 }}
+//                     className="space-y-6"
+//                   >
+//                     <h2 className="text-xl font-semibold text-gray-900 border-b pb-2">
+//                       Activity images
+//                     </h2>
+
+//                     <div>
+//                       <label className="block text-sm font-medium text-gray-700 mb-2">
+//                         Upload images
+//                       </label>
+//                       <input
+//                         type="file"
+//                         multiple
+//                         accept="image/*"
+//                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+//                           const files = e.target.files
+//                             ? Array.from(e.target.files)
+//                             : [];
+//                           setImages((prev) => [...prev, ...files]);
+//                         }}
+//                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+//                       />
+//                     </div>
+
+//                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+//                       {images.map((image, index) => (
+//                         <motion.div
+//                           key={index}
+//                           initial={{ opacity: 0, scale: 0.8 }}
+//                           animate={{ opacity: 1, scale: 1 }}
+//                           className="relative group"
+//                         >
+//                           <img
+//                             src={URL.createObjectURL(image as File)}
+//                             alt={`Activity ${index + 1}`}
+//                             className="w-full h-24 object-cover rounded-lg"
+//                           />
+//                           <button
+//                             type="button"
+//                             onClick={() =>
+//                               setImages((prev) =>
+//                                 prev.filter((_, i) => i !== index)
+//                               )
+//                             }
+//                             className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+//                           >
+//                             ×
+//                           </button>
+//                         </motion.div>
+//                       ))}
+//                     </div>
+//                   </motion.section>
+//                 </CardContent>
+//               </Card>
+//             </motion.div>
+
+//             {/* Submit Button */}
+//             <motion.div
+//               variants={itemVariants}
+//               className="flex justify-end gap-4 pt-6"
+//             >
+//               {onCancel && (
+//                 <Button type="button" variant="outline" onClick={onCancel}>
+//                   Cancel
+//                 </Button>
+//               )}
+//               <Button
+//                 type="submit"
+//                 disabled={isLoading}
+//                 className="bg-green-600 hover:bg-green-700"
+//               >
+//                 <Save className="w-4 h-4 mr-2" />
+//                 {isLoading ? "Saving..." : "Save Changes"}
+//               </Button>
+//             </motion.div>
+//           </motion.div>
+//         </form>
+//       </div>
+//       <ConfirmModal
+//         isOpen={isModalOpen}
+//         onClose={() => setIsModelOpen(false)}
+//         onConfirm={updateStatus}
+//         title={`${selectedActivity?.status ? "Unblock" : "Block"} Activity`}
+//         message={`Are you sure you want to ${
+//           selectedActivity?.status ? "Unblock" : "Block"
+//         } This Activity?`}
+//         confirmText="Confirm"
+//         cancelText="Cancel"
+//         variant="warning"
+//       />
+//     </div>
+//   );
+// }
+
+
+
 import type React from "react";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { easeOut, motion } from "framer-motion";
 import {
   Save,
@@ -10,7 +799,9 @@ import {
   Clock,
   ImageIcon,
   X,
+  Loader2, // Added for loading state
 } from "lucide-react";
+// Assuming 'Input' and 'Button' are correctly imported relative to your project structure
 import { Button } from "../ui/button";
 import {
   Card,
@@ -22,26 +813,32 @@ import Input from "../ui/Input";
 import { Textarea } from "../../../components/ui/textarea";
 import { Separator } from "../../../components/ui/separator";
 import { Switch } from "../../../components/ui/switch";
+// Assuming 'Activity' type is correct
 import type { Activity } from "../../../shared/types/global";
 import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
 import type { LatLngExpression } from "leaflet";
 import toast from "react-hot-toast";
-import { HostService } from "../../../services/HostService";
+// Assuming 'HostService' is correctly imported and has a 'getActivity' method
+import { hostService } from "../../../services/HostService";
 import ConfirmModal from "../sharedElements/ConfirmModal";
 import { HttpStatusCode } from "../../../shared/constants/constants";
+// New imports for routing
 
+// --- Interface Modifications ---
 interface ActivityEditProps {
-  activity: Activity;
+  activity?: Activity; // Made optional
+  activityId?: string;
   onSave?: (activity: Activity, images: File[]) => void;
   onCancel?: () => void;
   isLoading?: boolean;
-  onEditSuccess: (activity: Activity) => void
+  onEditSuccess: (activity: Activity) => void;
 }
 
 interface Props {
   center: LatLngExpression;
 }
 
+// --- Utility Functions (Kept as is) ---
 // Placeholder function for getting coordinates from address
 const getLocationFromAddress = async (
   address: string
@@ -59,7 +856,7 @@ const getLocationFromAddress = async (
     );
     const result = await response.json();
     // console.log(result);
-    const { lat, lng } = result.results[0].geometry;
+    const { lat, lng } = result.results[0].geometry.location;
     // setPosition([lat, lng])
 
     return [lat, lng];
@@ -125,70 +922,141 @@ const validateActivityForm = (data: Activity): ActivityErrors => {
   return errors;
 };
 
+// --- Component Definition ---
 export default function ActivityEdit({
   activity,
+  activityId,
   onSave,
   onCancel,
   isLoading = false,
   onEditSuccess,
 }: ActivityEditProps) {
-  console.log(activity);
-  const [formData, setFormData] = useState<Activity>({
-    ...activity,
-    location: {
-      ...activity.location,
-      coordinates: [...activity.location.coordinates].reverse() as [
-        number,
-        number
-      ],
-    },
-    updatedAt: new Date(),
+
+  // 2. Initialize formData and loading state
+  const [loadingInitialData, setLoadingInitialData] = useState<boolean>(!activity && !!activityId);
+  const [formData, setFormData] = useState<Activity | null>(() => {
+    if (activity) {
+      // Initialize formData if activity is passed as a prop
+      return {
+        ...activity,
+        location: {
+          ...activity.location,
+          coordinates: [...activity.location.coordinates].reverse() as [
+            number,
+            number
+          ],
+        },
+        updatedAt: new Date(),
+      };
+    }
+    return null;
   });
-  console.log(formData);
+
   const [images, setImages] = useState<File[]>([]);
-  const [statusChange, setStatusChange] = useState(activity.isActive);
+  const [statusChange, setStatusChange] = useState<boolean | undefined>(activity?.isActive);
   const [isModalOpen, setIsModelOpen] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState<{
     activityId: string;
     status: boolean;
   } | null>(null);
   const [errors, setErrors] = useState<ActivityErrors>();
-  const hostService = new HostService();
+
+  // 3. Effect to fetch activity data if prop is missing
+  useEffect(() => {
+    if (!activity && activityId) {
+      setLoadingInitialData(true);
+      hostService
+        .getActivity(activityId)
+        .then((response) => {
+          if (response.status === HttpStatusCode.OK && response.data.activity) {
+            const fetchedActivity: Activity = response.data.activity;
+            // Map coordinates from [longitude, latitude] to [latitude, longitude] for leaflet
+            const initialActivity: Activity = {
+              ...fetchedActivity,
+              location: {
+                ...fetchedActivity.location,
+                coordinates: [...fetchedActivity.location.coordinates].reverse() as [
+                  number,
+                  number
+                ],
+              },
+            };
+            setFormData(initialActivity);
+            setStatusChange(initialActivity.isActive);
+            toast.success("Activity loaded successfully");
+          } else {
+            toast.error("Failed to load activity details.");
+            onCancel?.(); // Go back if data can't be fetched
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching activity:", error);
+          toast.error("An error occurred while fetching activity data.");
+          onCancel?.();
+        })
+        .finally(() => {
+          setLoadingInitialData(false);
+        });
+    }
+  }, [activity, activityId, onCancel]); // Depend on activity prop and activityId
+
+  // Show loading state if data is being fetched or hasn't been initialized
+  if (loadingInitialData || !formData) {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-gray-50">
+        <Loader2 className="w-8 h-8 animate-spin text-orange-500" />
+        <span className="ml-3 text-lg font-medium text-gray-700">Loading Activity...</span>
+      </div>
+    );
+  }
+  
+  // Now formData is guaranteed to be an Activity object if we pass this check
 
   const handleInputChange = (
     field: keyof Activity,
     value: string | number | boolean
   ) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]:
-        field === "maxCapacity" || field === "pricePerHead"
-          ? Number(value)
-          : value,
-    }));
+    setFormData((prev) => {
+      if (!prev) return null;
+      return {
+        ...prev,
+        [field]:
+          field === "maxCapacity" || field === "pricePerHead"
+            ? Number(value)
+            : value,
+      };
+    });
   };
 
   const handleLocationChange = (index: 0 | 1, value: string) => {
-    const newLocation = [...formData.location.coordinates] as [number, number];
-    newLocation[index] = Number.parseFloat(value) || 0;
-    setFormData((prev) => ({
-      ...prev,
-      location: {
-        ...prev.location,
-        coordinates: newLocation,
-      },
-    }));
+    setFormData((prev) => {
+      if (!prev) return null;
+      const newLocation = [...prev.location.coordinates] as [number, number];
+      newLocation[index] = Number.parseFloat(value) || 0;
+      return {
+        ...prev,
+        location: {
+          ...prev.location,
+          coordinates: newLocation,
+        },
+      };
+    });
   };
 
   const removeImage = (index: number) => {
-    setFormData((prev) => ({
-      ...prev,
-      images: prev.images.filter((_, i) => i !== index),
-    }));
+    setFormData((prev) => {
+      if (!prev) return null;
+      return {
+        ...prev,
+        images: prev.images.filter((_, i) => i !== index),
+      };
+    });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!formData) return; // Should not happen after the loading check
 
     const newErrors = validateActivityForm(formData);
 
@@ -233,17 +1101,21 @@ export default function ActivityEdit({
   };
 
   const handleAddressChange = async () => {
+    if (!formData) return;
     const address = `${formData.street}, ${formData.city}, ${formData.district}, ${formData.state}, ${formData.postalCode}, ${formData.country}`;
     if (address.trim().length > 10) {
       try {
         const coordinates = await getLocationFromAddress(address);
-        setFormData((prev) => ({
-          ...prev,
-          location: {
-            ...prev.location,
-            coordinates: coordinates,
-          },
-        }));
+        setFormData((prev) => {
+          if (!prev) return null;
+          return {
+            ...prev,
+            location: {
+              ...prev.location,
+              coordinates: coordinates,
+            },
+          };
+        });
       } catch (error) {
         console.error("Failed to get location:", error);
       }
@@ -251,24 +1123,32 @@ export default function ActivityEdit({
   };
 
   const updateStatus = async () => {
-    if (!selectedActivity) return;
+    if (!selectedActivity || !formData) return;
     try {
       const response = await hostService.updateStatus(
         selectedActivity?.activityId,
         { isActive: selectedActivity?.status }
       );
       if (response.status === HttpStatusCode.OK) {
-        toast.success(response.data.message || "status changed successfull");
+        toast.success(response.data.message || "Status changed successfully");
         setStatusChange(selectedActivity.status);
-        setFormData((prev) => ({ ...prev, isActive: selectedActivity.status }));
-        onEditSuccess(response.data.activity as Activity)
+        setFormData((prev) => {
+            if (!prev) return null;
+            return { ...prev, isActive: selectedActivity.status }
+        });
+        onEditSuccess(response.data.activity as Activity);
       }
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message);
       }
+    } finally {
+        setIsModelOpen(false); // Close modal on success or failure
     }
   };
+
+  // The rest of the component uses 'formData'
+  const currentCoordinates: LatLngExpression = formData.location.coordinates;
 
   return (
     <div className="min-h-screen bg-gray-50 py-6">
@@ -292,7 +1172,7 @@ export default function ActivityEdit({
                 Edit Activity
               </h1>
               <p className="text-gray-600 mt-1">
-                Activity Name: {activity.activityName}
+                Activity Name: {formData.activityName}
               </p>
             </div>
           </div>
@@ -304,11 +1184,10 @@ export default function ActivityEdit({
                 checked={statusChange}
                 onCheckedChange={(checked: boolean) => {
                   setSelectedActivity({
-                    activityId: activity._id,
+                    activityId: formData._id,
                     status: checked,
                   });
                   setIsModelOpen(true);
-                  // updateStatus(activity._id, checked)
                 }}
               />
               <label htmlFor="active-status">
@@ -348,6 +1227,7 @@ export default function ActivityEdit({
                         </span>
                       )}
                     </div>
+                    {/* Category ID is commented out in original, keeping it that way */}
                     {/* <div>
                       <label htmlFor="categoryId">Category ID *</label>
                       <Input
@@ -538,22 +1418,23 @@ export default function ActivityEdit({
                     </div>
                     <div className="w-full bg-gray-50 p-4 rounded-lg">
                       <MapContainer
-                        center={formData.location.coordinates}
+                        center={currentCoordinates}
                         zoom={13}
                         scrollWheelZoom={false}
                         style={{ height: "300px", width: "200%" }}
                       >
-                        <ChangeView center={formData.location.coordinates} />
+                        <ChangeView center={currentCoordinates} />
                         <TileLayer
                           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                         />
-                        <Marker position={formData.location.coordinates}>
+                        <Marker position={currentCoordinates}>
                           <Popup>
-                            A pretty CSS3 popup. <br /> Easily customizable.
+                            Activity Location
                           </Popup>
                         </Marker>
                       </MapContainer>
+                      
                     </div>
                   </div>
 
@@ -625,9 +1506,9 @@ export default function ActivityEdit({
                         }
                         placeholder="e.g., 2:00 PM"
                       />
-                      {errors?.reportingPlace && (
+                      {errors?.reportingTime && (
                         <span className="text-red-500">
-                          {errors.reportingPlace}
+                          {errors.reportingTime}
                         </span>
                       )}
                     </div>
@@ -694,7 +1575,7 @@ export default function ActivityEdit({
                     className="space-y-6"
                   >
                     <h2 className="text-xl font-semibold text-gray-900 border-b pb-2">
-                      Activity images
+                      New Images
                     </h2>
 
                     <div>
@@ -725,7 +1606,7 @@ export default function ActivityEdit({
                         >
                           <img
                             src={URL.createObjectURL(image as File)}
-                            alt={`Activity ${index + 1}`}
+                            alt={`New Image ${index + 1}`}
                             className="w-full h-24 object-cover rounded-lg"
                           />
                           <button
@@ -737,7 +1618,7 @@ export default function ActivityEdit({
                             }
                             className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
                           >
-                            ×
+                            &times;
                           </button>
                         </motion.div>
                       ))}

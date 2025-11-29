@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import AddActivity from "../../components/activity/AddActivity";
-import AcitivityList from "../../components/activity/AcitivityList";
+// import AcitivityList from "../../components/activity/AcitivityList";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../store";
 import { hostService } from "../../../services/HostService";
@@ -9,9 +9,27 @@ import Pagination from "../../components/common/Pagination";
 import { Plus } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
-import { HttpStatusCode, LOCAL_STORAGE_KEYS, OPTIONS, ROLE } from "../../../shared/constants/constants";
+import { HttpStatusCode, LOCAL_STORAGE_KEYS, OPTIONS } from "../../../shared/constants/constants";
 import SearchBox from "../../components/sharedElements/Search-box";
 import RadioGroup from "../../../components/ui/RadioGroup";
+import ReusableTable from "@/presentation/components/sharedElements/SharedTable";
+import { useNavigate } from "react-router-dom";
+
+const columns = [
+  "index",
+  "activityName",
+  "pricePerHead",
+  "maxCapacity",
+  "action"
+]
+
+const columnheaders = {
+  index: "#",
+  activityName: "Activity Name",
+  pricePerHead: "Price",
+  maxCapacity: "Capacity",
+  action: "Action"
+}
 
 
 const ActivityPage = () => {
@@ -26,6 +44,7 @@ const ActivityPage = () => {
   const [triggerFetch, setTriggerFetch] = useState(true);
   const user = useSelector((state: RootState) => state.host.host);
   const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchActivity = async () => {
@@ -47,8 +66,7 @@ const ActivityPage = () => {
       localStorage.removeItem(LOCAL_STORAGE_KEYS.HOST_ACTIVITY_PAGE);
     };
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, triggerFetch, searchQuery, selected]);
+  }, [page, triggerFetch, searchQuery, selected, user]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -85,11 +103,20 @@ const ActivityPage = () => {
         {/* Activity List */}
         {activities && (
           <div className="mb-8">
-            <AcitivityList
+            {/* <AcitivityList
               activities={activities}
               role={ROLE.HOST}
               refetch={() => setTriggerFetch((prev) => !prev)}
-            />
+            /> */}
+
+            <ReusableTable title="Activities" data={activities} columnHeaders={columnheaders} columns={columns} renderCell={
+              (col, row) => {
+                if(col === "index") return activities.indexOf(row) +1
+                if(col === "activityName") return <button className="text-blue-600" onClick={() => navigate(`/host/activity/dashboard/${row._id}`)}>{row.activityName}</button>
+                if(col === "action") return <button>{row.isActive === true? "Block": "Unblock"}</button>
+                return String(row[col as keyof Activity]);
+              }
+            } />
           </div>
         )}
 

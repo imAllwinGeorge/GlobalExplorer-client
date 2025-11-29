@@ -2,8 +2,9 @@ import { API_ROUTES } from "@/shared/constants/apiRoutes";
 import { axiosInstance } from "../api/axiosInstance";
 import { HttpStatusCode } from "../shared/constants/constants";
 import type { ErrorResponse } from "../shared/types/auth.type";
-import type { AuthResponse, Host, User } from "../shared/types/global";
+import type { AuthResponse, Host, SalesFilters, User } from "../shared/types/global";
 import type { AxiosResponse } from "axios";
+import { extractErrorMessage } from "@/utils/helpers/helper";
 
 export const adminService = {
   getAllUsers: async <T extends User | Host>(page: number, limit: number, role: "user" | "host", query: string, filter: string | boolean): Promise<{users:T[], totalPages: number}> => {
@@ -141,4 +142,14 @@ export const adminService = {
         throw new Error(message)
       }
     },
+
+    filterBookings: async(filter: SalesFilters, page: number, limit: number): Promise<AxiosResponse<AuthResponse>> => {
+      try {
+        const response = await axiosInstance.get<AuthResponse>(API_ROUTES.ADMIN.SALES_REPORT(filter, page, limit));
+        return response
+      } catch (error) {
+        const message = extractErrorMessage(error as ErrorResponse);
+        throw new Error(message)
+      }
+    }
 };

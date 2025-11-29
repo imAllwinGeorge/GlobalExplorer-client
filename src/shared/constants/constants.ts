@@ -88,5 +88,11 @@ booking:[
   {label: "Up Comming", value: "upcomming"},
   {label: "Completed", value: "completed"},
   {label: "Cancelled", value: "cancelled"}
+],
+activityPage: [
+  {label: "Edit Activity", value: "edit"},
+  {label: "Pricing Management", value: "pricing"},
+  {label: "availability", value: "availability"},
+  {label: "sales", value: "sales"}
 ]
 }

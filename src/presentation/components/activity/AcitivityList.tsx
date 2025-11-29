@@ -89,6 +89,10 @@ const AcitivityList = ({ activities, role, refetch }: ActivityListProps) => {
   const showOverlay = selectedActivity || editActivity;
 
   useEffect(() => {
+    setListedActivities(activities)
+  }, [activities])
+
+  useEffect(() => {
     return () => localStorage.removeItem(LOCAL_STORAGE_KEYS.SELECTED_ACTIVITY);
   }, []);
 

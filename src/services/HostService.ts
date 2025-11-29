@@ -1,8 +1,9 @@
 import type { AxiosResponse } from "axios";
 import { axiosInstance } from "../api/axiosInstance";
 import type { ErrorResponse } from "../shared/types/auth.type";
-import type { AuthResponse } from "../shared/types/global";
+import type { AuthResponse, SalesFilters } from "../shared/types/global";
 import { API_ROUTES } from "@/shared/constants/apiRoutes";
+import { extractErrorMessage } from "@/utils/helpers/helper";
 
 export class HostService {
   async getActivities(
@@ -22,6 +23,21 @@ export class HostService {
       const message =
         (error as ErrorResponse).response?.data?.message ||
         "something went wrong! Please try again later..";
+      throw new Error(message);
+    }
+  }
+
+  async getActivity(id: string): Promise<AxiosResponse<AuthResponse>> {
+    try {
+      const response = await axiosInstance.get<AuthResponse>(
+        API_ROUTES.HOST.GET_ACTIVITY(id)
+      );
+      return response;
+    } catch (error) {
+      console.log(error);
+      const message =
+        (error as ErrorResponse).response?.data?.message ||
+        "Something went wrong! Please try again later..";
       throw new Error(message);
     }
   }
@@ -144,6 +160,26 @@ export class HostService {
     }
   }
 
+  async filterBookings(hostId: string, filter: SalesFilters, page: number, limit: number): Promise<AxiosResponse<AuthResponse>> {
+    try {
+      const response = await axiosInstance.get<AuthResponse>(API_ROUTES.HOST.SALES_REPORT(hostId,filter, page, limit));
+      return response
+    } catch (error) {
+      const message = extractErrorMessage(error as ErrorResponse);
+      throw new Error(message);
+    }
+  }
+
+  async filterActivityBookings(activityId: string, filter: SalesFilters, page: number, limit: number): Promise<AxiosResponse<AuthResponse>> {
+    try {
+      const response = await axiosInstance.get<AuthResponse>(API_ROUTES.HOST.ACTIVITY_SALES(activityId, filter, page, limit));
+      return response
+    } catch (error) {
+      const message = extractErrorMessage(error as ErrorResponse);
+      throw new Error(message);
+    }
+  }
+
   async getConverSations(id: string): Promise<AxiosResponse<AuthResponse>> {
     try {
       const response = await axiosInstance.get<AuthResponse>(
@@ -191,23 +227,83 @@ export class HostService {
 
   async verifyBooking(token: string): Promise<AxiosResponse<AuthResponse>> {
     try {
-      const response = await axiosInstance.post<AuthResponse>( API_ROUTES.HOST.VERIFY_BOOKING, { token });
+      const response = await axiosInstance.post<AuthResponse>(
+        API_ROUTES.HOST.VERIFY_BOOKING,
+        { token }
+      );
       return response;
     } catch (error) {
       const message =
         (error as ErrorResponse).response?.data?.message ||
         "Something went wrong!. Please try again";
-        throw new Error(message);
+      throw new Error(message);
     }
   }
 
-  async getTodayBookings (hostId: string, page: number, limit: number): Promise<AxiosResponse<AuthResponse>> {
+  async getTodayBookings(
+    hostId: string,
+    page: number,
+    limit: number
+  ): Promise<AxiosResponse<AuthResponse>> {
     try {
-      const response = await axiosInstance.get<AuthResponse>(API_ROUTES.HOST.TODAY_BOOKING(hostId, page, limit));
+      const response = await axiosInstance.get<AuthResponse>(
+        API_ROUTES.HOST.TODAY_BOOKING(hostId, page, limit)
+      );
       return response;
     } catch (error) {
-      const message = (error as ErrorResponse).response?.data?.message ||
-      "Something went wrong!. Please try again";
+      const message =
+        (error as ErrorResponse).response?.data?.message ||
+        "Something went wrong!. Please try again";
+      throw new Error(message);
+    }
+  }
+
+  async updateDynamicPricing(
+    activityId: string,
+    data: { dynamicPricingEnabled: boolean; maxDynamicPercentage: number }
+  ): Promise<AxiosResponse<AuthResponse>> {
+    try {
+      const response = await axiosInstance.put<AuthResponse>(
+        API_ROUTES.HOST.UPDATE_DYNAMIC_PRICING(activityId),
+        { data }
+      );
+      return response;
+    } catch (error) {
+      const message =
+        (error as ErrorResponse).response?.data?.message ||
+        "Something went wrong!. Please try again";
+      throw new Error(message);
+    }
+  }
+
+  async updatePricing(
+    activityId: string,
+    data: {
+      pricePerHead: number;
+      offerPercentage: number;
+      basePrice: number;
+    }
+  ): Promise<AxiosResponse<AuthResponse>> {
+    try {
+      const response = await axiosInstance.put<AuthResponse>(
+        API_ROUTES.HOST.UPDATE_PRICING(activityId),
+        { data }
+      );
+      return response;
+    } catch (error) {
+      const message =
+        (error as ErrorResponse).response?.data?.message ||
+        "Something went wrong!. Please try again";
+      throw new Error(message);
+    }
+  }
+
+  async activityAvailability(activityId: string, date: Date): Promise<AxiosResponse<AuthResponse>> {
+    try {
+      const response = await axiosInstance.get<AuthResponse>(API_ROUTES.HOST.ACTIVITY_AVAILABILITY(activityId, date));
+      return response
+    } catch (error) {
+      const message = extractErrorMessage(error as ErrorResponse);
       throw new Error(message)
     }
   }

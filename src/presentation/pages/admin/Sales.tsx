@@ -1,8 +1,8 @@
 import { Users } from "lucide-react";
 import { useEffect, useState } from "react";
-import type{ Booking, SalesData } from "../../../shared/types/global";
+import type{ SalesData } from "../../../shared/types/global";
 import { adminService } from "../../../services/AdminService";
-import { HttpStatusCode } from "../../../shared/constants/constants";
+import { HttpStatusCode, ROLE } from "../../../shared/constants/constants";
 import { calculateGrowth } from "../../../utils/helpers/helper";
 import RevanueChart from "../../components/common/Sales/RevanueChart";
 import GrowthGauge from "../../components/common/Sales/GrowthGauge";
@@ -11,7 +11,6 @@ import SalesReportPage from "@/presentation/components/sales/Sales.report";
 
 const Sales = () => {
   const [salesData, setSalesData] = useState<SalesData>();
-  const [bookings, setBookings] = useState<Booking[]>();
   const [value, setValue] = useState<{
     growth: number;
     currentTotalSales: number;
@@ -27,7 +26,6 @@ const Sales = () => {
         if (response.status === HttpStatusCode.OK) {
           setSalesData(response.data as SalesData);
           setValue(calculateGrowth(response.data as SalesData));
-          setBookings(response.data.bookings);
         }
       } catch (error) {
         console.error("Failed to fetch sales data:", error);
@@ -72,7 +70,7 @@ const Sales = () => {
           <StatsCard stats={stats} cols={{ base: 1, md: 2, xl: 2 }} />
         </div>
       </div>
-      { bookings && <SalesReportPage bookings={bookings} />}
+      <SalesReportPage role={ROLE.ADMIN}  />
     </div>
   );
 };

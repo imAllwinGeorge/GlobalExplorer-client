@@ -2,9 +2,9 @@ import { Users } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../store";
-import type { Booking, SalesData } from "../../../shared/types/global";
+import type { SalesData } from "../../../shared/types/global";
 import { hostService } from "../../../services/HostService";
-import { HttpStatusCode } from "../../../shared/constants/constants";
+import { HttpStatusCode, ROLE } from "../../../shared/constants/constants";
 import { calculateGrowth } from "../../../utils/helpers/helper";
 import RevanueChart from "../../components/common/Sales/RevanueChart";
 import GrowthGauge from "../../components/common/Sales/GrowthGauge";
@@ -14,7 +14,6 @@ import SalesReportPage from "@/presentation/components/sales/Sales.report";
 const SalesPage = () => {
   const host = useSelector((state: RootState) => state.host.host);
   const [salesData, setSalesData] = useState<SalesData>();
-  const [bookings, setBookings] = useState<Booking[]>();
   const [value, setValue] = useState<{
     growth: number;
     currentTotalSales: number;
@@ -31,7 +30,6 @@ const SalesPage = () => {
         if (response.status === HttpStatusCode.OK) {
           setSalesData(response.data as SalesData);
           setValue(calculateGrowth(response.data as SalesData));
-          setBookings(response.data.bookings);
         }
       } catch (error) {
         console.error("Failed to fetch sales data:", error);
@@ -77,7 +75,7 @@ const SalesPage = () => {
         </div>
       </div>
 
-      {bookings && <SalesReportPage bookings={bookings} />}
+      { host && <SalesReportPage hostId={host?._id} role={ROLE.HOST} />}
     </div>
   );
 };
