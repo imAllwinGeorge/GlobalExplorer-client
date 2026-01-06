@@ -1,33 +1,30 @@
-"use client"
+"use client";
 
-import { easeOut, motion } from "framer-motion"
+import { easeOut, motion } from "framer-motion";
 // import { Star } from "lucide-react"
-import type { Activity } from "../../../shared/types/global"
-import { Card, CardContent } from "../../../components/ui/card"
-import { Badge } from "../../../components/ui/badge"
-import { MapPin, Users } from "lucide-react"
+import type { Activity } from "../../../shared/types/global";
+import { Card, CardContent } from "../../../components/ui/card";
+import { Badge } from "../../../components/ui/badge";
+import { MapPin, Users } from "lucide-react";
+import { highestPrice, lowestPrice } from "@/utils/helpers/helper";
 
 interface UserActivityCardProps {
-  activity: Activity
-  onCardClick?: (activity: Activity) => void
-  currencySymbol?: string
-  exchangeRate?: number
-  secondaryCurrency?: string
-  discountPercentage?: number
+  activity: Activity;
+  onCardClick?: (activity: Activity) => void;
+  currencySymbol?: string;
+  exchangeRate?: number;
+  secondaryCurrency?: string;
+  discountPercentage?: number;
 }
 
 export default function ActivtyCardUser({
   activity,
   onCardClick,
-  // currencySymbol = "₹",
-  // exchangeRate = 83.5,
+}: // currencySymbol = "₹",
+// exchangeRate = 83.5,
 //   secondaryCurrency = "INR",
-  // discountPercentage = 20,
-}: UserActivityCardProps) {
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("en-IN").format(price)
-  }
-
+// discountPercentage = 20,
+UserActivityCardProps) {
   // const getConvertedPrice = (price: number) => {
   //   return Math.round(price * exchangeRate)
   // }
@@ -55,62 +52,62 @@ export default function ActivtyCardUser({
   // const convertedPrice = getConvertedPrice(activity.pricePerHead)
   // const discountedPrice = getDiscountedPrice(convertedPrice)
 
-const cardVariants = {
-  hidden: {
-    opacity: 0,
-    y: 20,
-    scale: 0.95,
-  },
-  visible: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: {
-      duration: 0.5,
-      ease: easeOut,
+  const cardVariants = {
+    hidden: {
+      opacity: 0,
+      y: 20,
+      scale: 0.95,
     },
-  },
-  hover: {
-    y: -8,
-    scale: 1.02,
-    transition: {
-      duration: 0.3,
-      ease: easeOut,
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: {
+        duration: 0.5,
+        ease: easeOut,
+      },
     },
-  },
-}
+    hover: {
+      y: -8,
+      scale: 1.02,
+      transition: {
+        duration: 0.3,
+        ease: easeOut,
+      },
+    },
+  };
 
-const imageVariants = {
-  hidden: { scale: 1.1, opacity: 0 },
-  visible: {
-    scale: 1,
-    opacity: 1,
-    transition: {
-      duration: 0.6,
-      ease: easeOut,
+  const imageVariants = {
+    hidden: { scale: 1.1, opacity: 0 },
+    visible: {
+      scale: 1,
+      opacity: 1,
+      transition: {
+        duration: 0.6,
+        ease: easeOut,
+      },
     },
-  },
-  hover: {
-    scale: 1.05,
-    transition: {
-      duration: 0.4,
-      ease: easeOut,
+    hover: {
+      scale: 1.05,
+      transition: {
+        duration: 0.4,
+        ease: easeOut,
+      },
     },
-  },
-}
+  };
 
-const contentVariants = {
-  hidden: { opacity: 0, y: 10 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.4,
-      delay: 0.2,
-      ease: easeOut,
+  const contentVariants = {
+    hidden: { opacity: 0, y: 10 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.4,
+        delay: 0.2,
+        ease: easeOut,
+      },
     },
-  },
-}
+  };
 
   return (
     <div className="w-full max-w-sm mx-auto p-2">
@@ -126,7 +123,10 @@ const contentVariants = {
           <CardContent className="p-0">
             {/* Image Section - Increased height and improved responsiveness */}
             <div className="relative w-full h-[280px] sm:h-[320px] md:h-[280px] overflow-hidden rounded-t-2xl">
-              <motion.div variants={imageVariants} className="w-full h-full relative">
+              <motion.div
+                variants={imageVariants}
+                className="w-full h-full relative"
+              >
                 <img
                   src={`${activity.images[0]}`}
                   alt={activity.activityName}
@@ -168,7 +168,10 @@ const contentVariants = {
             </div>
 
             {/* Content Section - Enhanced spacing and typography */}
-            <motion.div variants={contentVariants} className="p-5 sm:p-6 space-y-4">
+            <motion.div
+              variants={contentVariants}
+              className="p-5 sm:p-6 space-y-4"
+            >
               {/* Title */}
               <motion.h3
                 className="text-lg sm:text-xl font-bold text-gray-900 line-clamp-2 min-h-[1 rem] leading-tight"
@@ -202,36 +205,33 @@ const contentVariants = {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5, duration: 0.4 }}
               >
-                {/* Original Price */}
-                <div className="flex items-center space-x-2">
-                  <span className="text-2xl font-bold text-gray-500 ">
-                    ₹
-                    {formatPrice(activity.pricePerHead)}
-                  </span>
-                  <span className="text-sm text-gray-600 font-medium">per person</span>
-                </div>
-
+                {/* Original Price */}₹
+                {lowestPrice(activity.basePrice, activity.offerPercentage)} - ₹
+                {highestPrice(
+                  activity.basePrice,
+                  activity.maxDynamicPercentage
+                )}
                 {/* Max capacity */}
                 <div className="flex items-center text-gray-600 text-sm">
-                    <MapPin className="w-4 h-4 mr-1" />
-                    <span>
-                      {activity.city}, {activity.state}, {activity.country}
-                    </span>
-                  </div>
+                  <MapPin className="w-4 h-4 mr-1" />
+                  <span>
+                    {activity.city}, {activity.state}, {activity.country}
+                  </span>
+                </div>
               </motion.div>
 
               {/* Activity Details */}
-                <motion.div
-                  className="space-y-2"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.3 }}
-                >
-                  <div className="flex items-center text-sm text-gray-600">
-                    <Users className="w-4 h-4 mr-2" />
-                    <span>Max Capacity: {activity.maxCapacity} people</span>
-                  </div>
-                </motion.div>
+              <motion.div
+                className="space-y-2"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3 }}
+              >
+                <div className="flex items-center text-sm text-gray-600">
+                  <Users className="w-4 h-4 mr-2" />
+                  <span>Max Capacity: {activity.maxCapacity} people</span>
+                </div>
+              </motion.div>
 
               {/* Action hint */}
               <motion.div
@@ -240,7 +240,9 @@ const contentVariants = {
                 animate={{ opacity: 1 }}
               >
                 <div className="text-center ">
-                  <span className="text-sm text-blue-600 font-medium">Click to view details →</span>
+                  <span className="text-sm text-blue-600 font-medium">
+                    Click to view details →
+                  </span>
                 </div>
               </motion.div>
             </motion.div>
@@ -248,5 +250,5 @@ const contentVariants = {
         </Card>
       </motion.div>
     </div>
-  )
+  );
 }

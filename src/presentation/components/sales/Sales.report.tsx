@@ -40,7 +40,7 @@ type SalesReportPageProps = {
 export default function SalesReportPage({ role, hostId, activityId }: SalesReportPageProps) {
   const [bookings, setBookings] = useState<BookingWithUser[]>([]);
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalpages] = useState(0);
+  const [totalPages, setTotalpages] = useState(1);
   const [filters, setFilters] = useState<SalesFilters>({
     dateFilterType: "all",
   });

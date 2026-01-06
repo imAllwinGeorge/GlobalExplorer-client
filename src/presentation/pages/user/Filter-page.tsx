@@ -102,7 +102,7 @@ export default function FilterPage({
   );
 
   const [showMobileFilters, setShowMobileFilters] = useState(false);
-  const [triggerFetch, setTriggerFetch] = useState(true);
+  const [triggerFetch] = useState(true);
 
   // Load categories on mount
   useEffect(() => {
@@ -221,7 +221,7 @@ export default function FilterPage({
     onFiltersChange?.(clearedFilters);
   };
 
-  const hasActiveFilters = Object.values(filters).some((value) => value !== "");
+  const hasActiveFilters = filters.search !== "" && filters.category !== "" && filters.distance !== "" ? true : false
 
   const updateFilter = (key: keyof FilterState, value: string) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
@@ -346,15 +346,7 @@ export default function FilterPage({
 
                 {/* Filter Actions */}
                 <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-100">
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => setTriggerFetch((prev) => !prev)}
-                    disabled={isLoading}
-                    className="flex-1 sm:flex-none px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
-                  >
-                    {isLoading ? "Searching..." : "Apply Filters"}
-                  </motion.button>
+                  
 
                   {hasActiveFilters && (
                     <motion.button

@@ -216,6 +216,7 @@ const GlobalCallListener = () => {
     });
 
     socket.on(VIDEO_CALL_EVENT.CALL_END, (data: CallEndPayload) => {
+      console.log("socket.on(video call end): => ", data);
       eventBus.emit("CALL_END", data);
     });
 

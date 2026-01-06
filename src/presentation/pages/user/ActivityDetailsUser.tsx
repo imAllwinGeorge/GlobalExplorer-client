@@ -55,7 +55,7 @@ import { axiosInstance } from "../../../api/axiosInstance";
 import { formatInTimeZone } from "date-fns-tz";
 import axios from "axios";
 import { HttpStatusCode } from "../../../shared/constants/constants";
-import { averageRating, formateDate, totalRatings } from "../../../utils/helpers/helper";
+import { averageRating, formateDate, highestPrice, lowestPrice, totalRatings } from "../../../utils/helpers/helper";
 import { WriteReview } from "../../components/review/WriteReview";
 import { config } from "@/shared/constants/config";
 import Loader from "@/presentation/components/mainComponents/Loader";
@@ -71,7 +71,7 @@ interface RazorpayVerifyResponse {
   razorpay_order_id: string;
   razorpay_signature: string;
 }
-type Availability = { date: string; availableSeats: number };
+type Availability = { date: string; availableSeats: number; price: number };
 
 export default function ActivityDetailsUser() {
   const [isLoading, setIsLoading] = useState(false);
@@ -80,6 +80,7 @@ export default function ActivityDetailsUser() {
   const [activity, setActivity] = useState<Activity | null>(null);
   const [reviews, setReviews] = useState<Review[] | null>(null);
   const [availability, setAvailability] = useState<Record<string, number>>({});
+  const [pricePerDate, setPricePerDate] = useState<Record<string, number>>({});
   const [checkAvailability, setCheckAvailability] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [formattedDate, setFormattedDate] = useState<string>();
@@ -105,13 +106,6 @@ export default function ActivityDetailsUser() {
       hour: "2-digit",
       minute: "2-digit",
     }).format(parsedDate);
-  };
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(price);
   };
 
   const containerVariants = {
@@ -254,8 +248,15 @@ export default function ActivityDetailsUser() {
               map[d.date] = d.availableSeats;
             }
           );
-          console.log(map);
+          const priceMap: Record<string, number> = {};
+          (response.data.availability as Availability[]).forEach(
+            (d: { date: string; price: number}) => {
+              priceMap[d.date] = d.price;
+            }
+          )
+          console.log("date: availableseates",map, "date: price", priceMap);
           setAvailability(map);
+          setPricePerDate(priceMap);
         }
       } catch (error) {
         console.log(error);
@@ -581,7 +582,10 @@ export default function ActivityDetailsUser() {
                     <div className="flex items-center justify-between">
                       <div>
                         <div className="text-3xl font-bold text-gray-900">
-                          {formatPrice(activity.pricePerHead)}
+                          {lowestPrice(activity.basePrice, activity.offerPercentage)}
+                        </div>
+                        <div className="text-3xl font-bold text-gray-900">
+                          - {highestPrice(activity.basePrice, activity.maxDynamicPercentage)}
                         </div>
                         <div className="text-sm text-gray-600">per person</div>
                       </div>
@@ -750,6 +754,17 @@ export default function ActivityDetailsUser() {
                           >
                             {seats > 0 ? `${seats} seats` : "No seats"}
                           </span>
+                          <span
+                            className={`text-sm font-medium ${
+                              isSelected
+                                ? "text-white"
+                                : isToday
+                                ? "text-blue-600"
+                                : ""
+                            }`}
+                          >
+                            {pricePerDate[format(date, "yyyy-MM-dd")]}
+                          </span>
                         </div>
                       </div>
                     );
@@ -824,7 +839,7 @@ export default function ActivityDetailsUser() {
                       </div>
                     </div>
                     <h1>
-                      Total Payable Amount : ₹ {count * activity.pricePerHead}
+                      Total Payable Amount : ₹ {count * Number(pricePerDate[format(selectedDate,"yyyy-MM-dd")])}
                     </h1>
                     <Button
                       className="w-full mt-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 rounded-lg"

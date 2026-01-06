@@ -27,6 +27,7 @@ import { Switch } from "../../../components/ui/switch";
 import toast from "react-hot-toast";
 import ConfirmModal from "../sharedElements/ConfirmModal";
 import { HttpStatusCode, ROLE } from "../../../shared/constants/constants";
+import { highestPrice, lowestPrice } from "@/utils/helpers/helper";
 
 interface ActivityViewProps {
   role: string;
@@ -61,13 +62,6 @@ export default function ActivityDetails({
       hour: "2-digit",
       minute: "2-digit",
     }).format(parsedDate);
-  };
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(price);
   };
 
   const containerVariants = {
@@ -311,7 +305,16 @@ export default function ActivityDetails({
                     <div>
                       <p className="text-sm text-gray-500">Price per Head</p>
                       <p className="font-semibold text-lg">
-                        {formatPrice(activity.pricePerHead)}
+                        ₹
+                        {lowestPrice(
+                          activity.basePrice,
+                          activity.offerPercentage
+                        )}{" "}
+                        - ₹
+                        {highestPrice(
+                          activity.basePrice,
+                          activity.maxDynamicPercentage
+                        )}
                       </p>
                     </div>
                   </div>
