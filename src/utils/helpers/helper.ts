@@ -50,3 +50,14 @@ export function extractErrorMessage(error: ErrorResponse): string {
     error.response?.data?.message || "Something Went wrong! please try again.."
   );
 }
+
+export function lowestPrice(basePrice: number, offerPercentage: number) {
+  const price = basePrice - basePrice * (offerPercentage / 100);
+  return Math.max(0, Math.round(price));
+}
+
+export function highestPrice(basePrice: number, maxDynamicPercentage: number) {
+  if (maxDynamicPercentage < 0)
+    throw new Error("maxDynamicPercentage cannot be negative");
+  return Math.round(basePrice + basePrice * (maxDynamicPercentage / 100));
+}

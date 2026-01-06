@@ -14,6 +14,7 @@ export const API_ROUTES = {
     LOGOUT: (role: string) => `/api/logout/${role}`,
     GET_PROFILE: (role: string, id: string) =>
       `/api/get-profile?role=${role}&id=${id}`,
+    REFRESH_TOKEN: `/api/auth/refresh-token`
   },
   ADMIN: {
     GET_USERS: (
@@ -136,6 +137,6 @@ export const API_ROUTES = {
       `/api/user/get-notification/${userId}?page=${page}&limit=${limit}`,
     WRITE_REVIEW: "/api/user/review/write-review",
     DASHBOARD: (page: number, limit: number) =>
-      `/api/user/get-homeData?page${page}&limit=${limit}`,
+      `/api/user/get-homeData?page=${page}&limit=${limit}`,
   },
 };

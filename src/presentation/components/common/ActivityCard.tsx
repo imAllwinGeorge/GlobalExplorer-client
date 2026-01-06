@@ -1,23 +1,22 @@
-"use client"
+"use client";
 
-import { easeOut, motion } from "framer-motion"
-import { MapPin, Clock, Users, Calendar, Pencil } from "lucide-react"
-import { Card, CardContent } from "../../../components/ui/card"
-import { Button } from "../ui/button"
-import { Badge } from "../../../components/ui/badge"
-import type { Activity } from "../../../shared/types/global"
-
-
+import { easeOut, motion } from "framer-motion";
+import { MapPin, Clock, Users, Calendar, Pencil } from "lucide-react";
+import { Card, CardContent } from "../../../components/ui/card";
+import { Button } from "../ui/button";
+import { Badge } from "../../../components/ui/badge";
+import type { Activity } from "../../../shared/types/global";
+import { highestPrice, lowestPrice } from "@/utils/helpers/helper";
 
 interface ActivityCardProps {
-  activity: Activity
-  onEdit?: (activity: Activity) => void
-  onViewDetails?: (activity: Activity) => void
-  showDates?: boolean
-  currencySymbol?: string
-  exchangeRate?: number
-  secondaryCurrency?: string
-  buttonTitle?: string
+  activity: Activity;
+  onEdit?: (activity: Activity) => void;
+  onViewDetails?: (activity: Activity) => void;
+  showDates?: boolean;
+  currencySymbol?: string;
+  exchangeRate?: number;
+  secondaryCurrency?: string;
+  buttonTitle?: string;
 }
 
 export default function ActivityCard({
@@ -25,19 +24,8 @@ export default function ActivityCard({
   onEdit,
   onViewDetails,
   showDates = true,
-  currencySymbol = "$",
-  exchangeRate = 83.5,
-  secondaryCurrency = "INR",
   buttonTitle,
 }: ActivityCardProps) {
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("en-US").format(price)
-  }
-
-  const getSecondaryPrice = (price: number) => {
-    return Math.round(price * exchangeRate)
-  }
-
   const cardVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
@@ -49,14 +37,14 @@ export default function ActivityCard({
       y: -5,
       transition: { duration: 0.2, ease: easeOut },
     },
-  }
+  };
 
   const imageVariants = {
     hover: {
       scale: 1.05,
       transition: { duration: 0.3, ease: easeOut },
     },
-  }
+  };
 
   return (
     <motion.div
@@ -71,7 +59,10 @@ export default function ActivityCard({
           <div className="flex flex-col lg:flex-row">
             {/* Image Section */}
             <div className="lg:w-4/5 relative overflow-hidden ml-3">
-              <motion.div variants={imageVariants} className="w-full h-full relative">
+              <motion.div
+                variants={imageVariants}
+                className="w-full h-full relative"
+              >
                 <img
                   src={`${activity.images[0]}`}
                   alt={activity.activityName}
@@ -133,7 +124,11 @@ export default function ActivityCard({
 
                 {/* Itinerary Preview */}
                 {activity.itenary && (
-                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}>
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.4 }}
+                  >
                     <Button
                       variant="outline"
                       size="sm"
@@ -155,19 +150,32 @@ export default function ActivityCard({
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.5 }}
                 >
-                  <div className="text-sm text-gray-500 mb-1">Price from</div>
-                  <div className="text-2xl lg:text-3xl font-bold text-gray-900">
-                    {currencySymbol}
-                    {formatPrice(activity.pricePerHead)} USD
+                  <div className="mb-4">
+                    <div className="text-sm text-muted-foreground mb-2">
+                      Price range
+                    </div>
+                    <div className="text-2xl lg:text-3xl font-bold text-foreground">
+                      ₹
+                      {lowestPrice(
+                        activity.basePrice,
+                        activity.offerPercentage
+                      )}{" "}
+                      - ₹
+                      {highestPrice(
+                        activity.basePrice,
+                        activity.maxDynamicPercentage
+                      )}
+                    </div>
                   </div>
-                  <div className="text-lg text-gray-600">
-                    ₹{formatPrice(getSecondaryPrice(activity.pricePerHead))} {secondaryCurrency}
+
+                  <div className="text-sm text-muted-foreground mt-3 mb-3">
+                    Total capacity: {activity.maxCapacity}
                   </div>
-                  <div className="text-sm text-gray-500 mt-1">{activity.maxCapacity} bookings are left</div>
+
                   <Button
                     variant="link"
                     size="sm"
-                    className="text-blue-600 p-0 h-auto"
+                    className="text-primary p-0 h-auto"
                     onClick={() => onViewDetails?.(activity)}
                   >
                     Rate Details
@@ -181,19 +189,23 @@ export default function ActivityCard({
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.6 }}
                   >
-                    {buttonTitle === "EDIT" ?<Button
-                      className="w-full lg:w-auto bg-cyan-500 hover:bg-cyan-600 text-white px-8 py-3 text-lg font-semibold"
-                      onClick={() => onEdit?.(activity)}
-                    >
-                      <Pencil className="w-4 h-4 mr-2" />
-                      {buttonTitle}
-                    </Button>: <Button
-                      className="w-full lg:w-auto bg-cyan-500 hover:bg-cyan-600 text-white px-8 py-3 text-lg font-semibold"
-                      onClick={() => onViewDetails?.(activity)}
-                    >
-                      <Calendar className="w-4 h-4 mr-2" />
-                      {buttonTitle}
-                    </Button>}
+                    {buttonTitle === "EDIT" ? (
+                      <Button
+                        className="w-full lg:w-auto bg-cyan-500 hover:bg-cyan-600 text-white px-8 py-3 text-lg font-semibold"
+                        onClick={() => onEdit?.(activity)}
+                      >
+                        <Pencil className="w-4 h-4 mr-2" />
+                        {buttonTitle}
+                      </Button>
+                    ) : (
+                      <Button
+                        className="w-full lg:w-auto bg-cyan-500 hover:bg-cyan-600 text-white px-8 py-3 text-lg font-semibold"
+                        onClick={() => onViewDetails?.(activity)}
+                      >
+                        <Calendar className="w-4 h-4 mr-2" />
+                        {buttonTitle}
+                      </Button>
+                    )}
                   </motion.div>
                 )}
               </div>
@@ -202,5 +214,5 @@ export default function ActivityCard({
         </CardContent>
       </Card>
     </motion.div>
-  )
+  );
 }

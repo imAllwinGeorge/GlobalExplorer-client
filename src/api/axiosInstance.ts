@@ -2,6 +2,7 @@ import axios from "axios";
 import { handleRoleBasedLogout } from "../utils/protected/authUtils";
 import { HttpStatusCode } from "../shared/constants/constants";
 import { config } from "@/shared/constants/config";
+import { API_ROUTES } from "@/shared/constants/apiRoutes";
 
 export const axiosInstance = axios.create({
   baseURL: config.VITE_API_BASE_URL,
@@ -32,9 +33,9 @@ axiosInstance.interceptors.response.use(
           // Remove query params
           const pathname = url.split("?")[0];
           // Split by "/" and get the second element
-          const role = pathname.split("/")[1];
-
-          await axiosInstance.post("/api/auth/refresh-token", { role });
+          const role = pathname.split("/")[2];
+          console.log("pathname", pathname, "role", role);
+          await axiosInstance.post(API_ROUTES.AUTH.REFRESH_TOKEN, { role });
           console.log("retrying");
           return axiosInstance(originalRequest);
         } catch (retryError) {
