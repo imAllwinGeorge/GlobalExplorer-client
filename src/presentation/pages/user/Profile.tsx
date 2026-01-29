@@ -151,7 +151,7 @@ import MyProfile from "../../components/common/MyProfile"
 import { HttpStatusCode, ROLE } from "../../../shared/constants/constants"
 
 const Profile = () => {
-  const [profile, setProfile] = useState<User | null>(null)
+  const [profile, setProfile] = useState<Partial<User> | null>(null)
   const [loading, setLoading] = useState(true)
   const user = useSelector((state: RootState) => state.auth.user)
 
@@ -181,7 +181,9 @@ const Profile = () => {
         const response = await authService.getUserProfile(user?._id, ROLE.USER)
         console.log(response)
         if (response.status === HttpStatusCode.OK) {
-          setProfile(response.data.user as User)
+          const {_id, ...profile} = response.data.user as User
+          console.log(_id)
+          setProfile(profile)
         }
       } catch (error) {
         console.log(error)

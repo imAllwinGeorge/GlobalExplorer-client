@@ -47,6 +47,15 @@ const NavBar = ({ role }: NavBarPropsType) => {
 
   const items = navitems[role as "user" | "admin" | "host"];
 
+  const userIconClick = () => {
+    if(!user) return
+    if(user.role === ROLE.USER) {
+      navigate("/profile")
+    } else if (user.role === ROLE.HOST) {
+      navigate("/host/profile")
+    }
+  }
+
   const handleLogout = async () => {
     try {
       const response = await authAPI.logout(role);
@@ -335,7 +344,8 @@ const NavBar = ({ role }: NavBarPropsType) => {
                     </button>
                   </div>
                   <div className="flex items-center space-x-2 px-3 py-2 rounded-xl bg-gray-50">
-                    <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
+                    <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center"
+                    onClick={userIconClick}>
                       <UserIcon className="w-4 h-4 text-white" />
                     </div>
                     <span className="text-sm font-medium text-gray-700">{`${user.firstName} ${user.lastName}`}</span>

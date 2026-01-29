@@ -12,7 +12,7 @@ import { hostLogin } from "../../store/slices/hostSlice"
 
 const Profile = () => {
   const user = useSelector((state: RootState) => state.host.host)
-  const [profile, setProfile] = useState< Host >()
+  const [profile, setProfile] = useState< Partial<Host> >()
   const hostService = new HostService();
     const dispatch = useDispatch()
 
@@ -41,7 +41,9 @@ const Profile = () => {
       try {
         const response = await authService.getUserProfile(user?._id, ROLE.HOST)
         if(response.status === HttpStatusCode.OK) {
-          setProfile(response.data.user as Host);
+          const { _id, ...profile} = response.data.user as Host
+          console.log(_id, profile)
+          setProfile(profile);
         }
       } catch (error) {
         console.log(error)
