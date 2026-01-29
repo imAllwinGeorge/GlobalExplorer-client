@@ -23,7 +23,7 @@ import {
 } from "@/shared/validation/editProfileValidation";
 
 // Union type for all possible profile data
-type ProfileData = AdminProfile | User | Host;
+type ProfileData = Partial<AdminProfile> | Partial<User> | Partial<Host>;
 
 interface ProfilePageProps {
   role: "admin" | "user" | "host";

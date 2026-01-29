@@ -221,7 +221,7 @@ export default function FilterPage({
     onFiltersChange?.(clearedFilters);
   };
 
-  const hasActiveFilters = filters.search !== "" && filters.category !== "" && filters.distance !== "" ? true : false
+  const hasActiveFilters = filters.search !== "" || filters.category !== "" || filters.distance !== "" ? true : false
 
   const updateFilter = (key: keyof FilterState, value: string) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
