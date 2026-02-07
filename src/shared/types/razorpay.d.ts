@@ -14,6 +14,9 @@ declare global {
       razorpay_order_id: string;
       razorpay_signature: string;
     }) => void;
+    modal: {
+      ondismiss: () => Promise<void>;
+    };
     prefill?: {
       name?: string;
       email?: string;

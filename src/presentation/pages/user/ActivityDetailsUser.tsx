@@ -28,13 +28,7 @@ import { Separator } from "@radix-ui/react-select";
 import { Badge } from "../../../components/ui/badge";
 // import { Switch } from "../../../components/ui/switch"
 import { Avatar, AvatarFallback } from "../../../components/ui/avatar";
-import type {
-  Activity,
-  AuthResponse,
-  Booking,
-  ResponseType,
-  Review,
-} from "../../../shared/types/global";
+import type { Activity, Review } from "../../../shared/types/global";
 import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { userService } from "../../../services/UserService";
@@ -50,27 +44,21 @@ import {
 } from "date-fns";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../store";
-import { axiosInstance } from "../../../api/axiosInstance";
 
 import { formatInTimeZone } from "date-fns-tz";
-import axios from "axios";
 import { HttpStatusCode } from "../../../shared/constants/constants";
-import { averageRating, formateDate, highestPrice, lowestPrice, totalRatings } from "../../../utils/helpers/helper";
+import {
+  averageRating,
+  formateDate,
+  highestPrice,
+  lowestPrice,
+  totalRatings,
+} from "../../../utils/helpers/helper";
 import { WriteReview } from "../../components/review/WriteReview";
 import { config } from "@/shared/constants/config";
 import Loader from "@/presentation/components/mainComponents/Loader";
+import { initiateCheckout } from "@/utils/helpers/initiatePayment";
 
-interface RazorpayResponse {
-  amount: number;
-  currency: string;
-  id: string;
-}
-
-interface RazorpayVerifyResponse {
-  razorpay_payment_id: string;
-  razorpay_order_id: string;
-  razorpay_signature: string;
-}
 type Availability = { date: string; availableSeats: number; price: number };
 
 export default function ActivityDetailsUser() {
@@ -91,8 +79,6 @@ export default function ActivityDetailsUser() {
   const user = useSelector((state: RootState) => state.auth.user);
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-
-  const razorpay_api_keyId= config.VITE_RAZORPAY_KEY_ID;
 
   const formatDate = (date: Date | string | null | undefined) => {
     const parsedDate = typeof date === "string" ? new Date(date) : date;
@@ -145,96 +131,22 @@ export default function ActivityDetailsUser() {
   //   toast.success("kshasgdbjsn");
   // }
 
-  const initiateCheckout = async () => {
-    if (!activity || !selectedDate || !user) {
-      toast.error("Please complete all booking details");
-      return;
-    }
-
-    const originalDate = new Date(selectedDate);
-    const millisecondInOneDay = 24 * 60 * 60 * 100;
-    const expiryDate = new Date(originalDate.getTime() - millisecondInOneDay);
-
-    const razorpayData = {
-      amount: activity.pricePerHead * count,
-      currency: "INR",
-      activityId: activity._id,
-      activityTitle: activity.activityName,
-      participantCount: count,
-      userId: user._id,
-      hostId: activity.userId,
-      holdUntilDate: expiryDate,
-      date: formattedDate,
+  const bookActivity = async () => {
+    await initiateCheckout(
+      activity,
+      selectedDate,
+      user,
+      formattedDate,
       razorpayAccountId,
-      pricePerParticipant: activity.pricePerHead,
-    };
-    console.log("razorpay data: ", razorpayData);
-    try {
-      const res = await axiosInstance.post(
-        "/api/user/activity/booking",
-        razorpayData
-      );
-      const data = res.data as RazorpayResponse;
-      console.log("razorpay response  : ", razorpay_api_keyId);
-      const options: RazorpayOptions = {
-        key: razorpay_api_keyId,
-        amount: data.amount,
-        currency: data.currency,
-        name: activity.activityName,
-        order_id: data.id,
-        handler: async (response: RazorpayVerifyResponse) => {
-          console.log("handler response:   ", response);
-          try {
-            const verifyRes: ResponseType<AuthResponse> =
-              await axiosInstance.post("/api/user/payment/verify", {
-                ...response,
-                ...data,
-                ...razorpayData,
-              });
-            console.log(verifyRes);
-            if (verifyRes.status === 201) {
-              toast.success("Booking successful!");
-              navigate(
-                `/order-success/${(verifyRes.data.booking as Booking)._id}`,
-                {
-                  state: verifyRes.data.booking as Booking,
-                }
-              );
-            }
-          } catch (err) {
-            console.log(err);
-            toast.error("Payment verification failed");
-          }
-        },
-        prefill: {
-          name: user.firstName,
-          email: user.email,
-        },
-        theme: {
-          color: "#6366f1",
-        },
-      };
-
-      const rzp = new window.Razorpay(options);
-      rzp.open();
-    } catch (error: unknown) {
-      console.error("Booking error:", error);
-
-      if (axios.isAxiosError(error)) {
-    // Extract a message from backend response if it exists
-    const message =
-      error.response?.data?.message || "Something went wrong. Please try again.";
-    toast.error(message);
-  } else {
-    toast.error("Unexpected error occurred.");
-  }
-    }
+      count,
+      navigate,
+    );
   };
 
   useEffect(() => {
     const fetchActivity = async () => {
       try {
-        setIsLoading(true)
+        setIsLoading(true);
         const response = await userService.getActivityDetails(id as string);
         console.log(response);
         if (response.status === HttpStatusCode.OK) {
@@ -246,15 +158,15 @@ export default function ActivityDetailsUser() {
           (response.data.availability as Availability[]).forEach(
             (d: { date: string; availableSeats: number }) => {
               map[d.date] = d.availableSeats;
-            }
+            },
           );
           const priceMap: Record<string, number> = {};
           (response.data.availability as Availability[]).forEach(
-            (d: { date: string; price: number}) => {
+            (d: { date: string; price: number }) => {
               priceMap[d.date] = d.price;
-            }
-          )
-          console.log("date: availableseates",map, "date: price", priceMap);
+            },
+          );
+          console.log("date: availableseates", map, "date: price", priceMap);
           setAvailability(map);
           setPricePerDate(priceMap);
         }
@@ -264,7 +176,7 @@ export default function ActivityDetailsUser() {
           toast.error(error.message);
         }
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
     };
     fetchActivity();
@@ -371,9 +283,7 @@ export default function ActivityDetailsUser() {
               <div className="md:col-span-2 relative">
                 {activity.images.length > 0 ? (
                   <img
-                    src={`${
-                      activity.images[selectedImageIndex]
-                    }`}
+                    src={`${activity.images[selectedImageIndex]}`}
                     alt={activity.activityName}
                     className="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform duration-300"
                     onClick={() => setSelectedImageIndex(0)}
@@ -582,10 +492,17 @@ export default function ActivityDetailsUser() {
                     <div className="flex items-center justify-between">
                       <div>
                         <div className="text-3xl font-bold text-gray-900">
-                          {lowestPrice(activity.basePrice, activity.offerPercentage)}
+                          {lowestPrice(
+                            activity.basePrice,
+                            activity.offerPercentage,
+                          )}
                         </div>
                         <div className="text-3xl font-bold text-gray-900">
-                          - {highestPrice(activity.basePrice, activity.maxDynamicPercentage)}
+                          -{" "}
+                          {highestPrice(
+                            activity.basePrice,
+                            activity.maxDynamicPercentage,
+                          )}
                         </div>
                         <div className="text-sm text-gray-600">per person</div>
                       </div>
@@ -737,8 +654,8 @@ export default function ActivityDetailsUser() {
                               isSelected
                                 ? "text-white"
                                 : isToday
-                                ? "text-blue-600"
-                                : ""
+                                  ? "text-blue-600"
+                                  : ""
                             }`}
                           >
                             {format(date, "d")}
@@ -748,8 +665,8 @@ export default function ActivityDetailsUser() {
                               isSelected
                                 ? "text-white"
                                 : isAvailable
-                                ? "text-green-600 font-medium"
-                                : "text-gray-400"
+                                  ? "text-green-600 font-medium"
+                                  : "text-gray-400"
                             }`}
                           >
                             {seats > 0 ? `${seats} seats` : "No seats"}
@@ -759,8 +676,8 @@ export default function ActivityDetailsUser() {
                               isSelected
                                 ? "text-white"
                                 : isToday
-                                ? "text-blue-600"
-                                : ""
+                                  ? "text-blue-600"
+                                  : ""
                             }`}
                           >
                             {pricePerDate[format(date, "yyyy-MM-dd")]}
@@ -828,8 +745,10 @@ export default function ActivityDetailsUser() {
                             setCount((prev) =>
                               Math.min(
                                 prev + 1,
-                                availability[format(selectedDate, "yyyy-MM-dd")]
-                              )
+                                availability[
+                                  format(selectedDate, "yyyy-MM-dd")
+                                ],
+                              ),
                             )
                           }
                           className="w-8 h-8 rounded-full bg-white border border-gray-300 text-xl font-semibold hover:bg-gray-200 transition"
@@ -839,11 +758,15 @@ export default function ActivityDetailsUser() {
                       </div>
                     </div>
                     <h1>
-                      Total Payable Amount : ₹ {count * Number(pricePerDate[format(selectedDate,"yyyy-MM-dd")])}
+                      Total Payable Amount : ₹{" "}
+                      {count *
+                        Number(
+                          pricePerDate[format(selectedDate, "yyyy-MM-dd")],
+                        )}
                     </h1>
                     <Button
                       className="w-full mt-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 rounded-lg"
-                      onClick={initiateCheckout}
+                      onClick={bookActivity}
                     >
                       Book for {format(selectedDate, "MMM d, yyyy")}
                     </Button>
